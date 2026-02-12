@@ -1,0 +1,14 @@
+[
+  {
+    "title": "Home",
+    "slug": "/"
+  },
+  {
+    "title": "Projects",
+    "slug": "/projects"
+  },
+  {
+    "title": "Contact",
+    "slug": "/contact"
+  }
+]

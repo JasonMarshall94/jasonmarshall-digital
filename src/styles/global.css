@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+@theme {
+  --color-*: initial;
+  --color-dark-grey: #121212;
+  --color-med-grey: #444444;
+  --color-light-grey: #888888;
+  --color-text: #e0e0e0;
+  --color-accent: #b0b0b0;
+}
+
+@utility container {
+  max-width: 1200px; /* Set a fixed global max-width */
+  margin-inline: auto; /* Center the container */
+  padding-inline: 1rem; /* Add default interior padding */
+}

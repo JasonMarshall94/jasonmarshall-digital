@@ -1,0 +1,16 @@
+---
+import Link from "./Link.astro";
+
+import navLinks from "../data/navLinks.json";
+---
+
+<header
+  class="fixed w-full top-0 z-50 p-0 lg:pt-3 lg:px-6 bg-dark-grey lg:bg-transparent"
+>
+  <nav
+    class="container flex items-center justify-between gap-3 xl:gap-8 border-b lg:border-2 border-med-grey lg:rounded-xl mx-auto px-4 py-4.5 lg:px-3 xl:px-8 lg:header-glass-effect"
+  >
+    <div class="logo">Jason Marshall Digital</div>
+    {navLinks.map((link) => <Link href={link.slug}>{link.title}</Link>)}
+  </nav>
+</header>
