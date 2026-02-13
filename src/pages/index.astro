@@ -1,10 +1,17 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import PageHero from "../components/PageHero.astro";
+import HomeHero from "../components/HomeHero.astro";
+import Button from "../components/Button.astro";
 
 const pageTitle = "Home";
 ---
 
 <BaseLayout title={pageTitle}>
-  <PageHero title={pageTitle} />
+  <HomeHero title={pageTitle} />
+
+  <section>
+    <div class="container mx-auto py-20">
+      <Button>Get Started</Button>
+    </div>
+  </section>
 </BaseLayout>

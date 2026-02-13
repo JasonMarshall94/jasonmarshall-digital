@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap");
 @import "tailwindcss";
 
 @theme {
@@ -7,6 +8,8 @@
   --color-light-grey: #888888;
   --color-text: #e0e0e0;
   --color-accent: #b0b0b0;
+
+  --default-font-family: "JetBrains Mono", monospace;
 }
 
 @utility container {
