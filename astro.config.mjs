@@ -2,6 +2,7 @@
 import { defineConfig, fontProviders } from "astro/config";
 
 import tailwindcss from "@tailwindcss/vite";
+import yaml from "@rollup/plugin-yaml";
 
 import icon from "astro-icon";
 
@@ -9,7 +10,7 @@ import icon from "astro-icon";
 export default defineConfig({
   security: { csp: true },
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [tailwindcss(), yaml()],
   },
   integrations: [icon()],
   fonts: [

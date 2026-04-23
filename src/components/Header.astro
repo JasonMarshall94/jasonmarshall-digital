@@ -4,6 +4,8 @@ import Link from "./Link.astro";
 import { Icon } from "astro-icon/components";
 
 import navLinks from "../data/navLinks.json";
+
+import siteGlobals from "../data/siteGlobals.yaml";
 ---
 
 <header
@@ -18,7 +20,7 @@ import navLinks from "../data/navLinks.json";
       {navLinks.map((link) => <Link href={link.slug}>{link.title}</Link>)}
     </div>
 
-    <Link href="https://github.com/JasonMarshall94">
+    <Link href={siteGlobals.urls.github}>
       <Icon name="github" size="24" />
     </Link>
   </nav>
