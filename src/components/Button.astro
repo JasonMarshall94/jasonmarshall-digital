@@ -1,7 +1,12 @@
 ---
+interface Props {
+  href: string;
+  classList?: string;
+}
 
+const { href, classList, ...rest } = Astro.props;
 ---
 
-<button>
+<button class:list={["btn", classList]} {...rest}>
   <slot />
 </button>
