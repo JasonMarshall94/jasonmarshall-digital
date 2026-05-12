@@ -1,4 +1,4 @@
-import { file, glob } from "astro/loaders";
+import { glob } from "astro/loaders";
 import { z } from "astro/zod";
 import { defineCollection } from "astro:content";
 
@@ -8,9 +8,15 @@ export const collections = {
       pattern: "**/*.md",
       base: "src/data/projects",
     }),
-    schema: z.object({
-      title: z.string(),
-      excerpt: z.string(),
-    }),
+    schema: ({ image }) =>
+      z.object({
+        title: z.string(),
+        excerpt: z.string(),
+        tags: z.array(z.string()),
+        isDraft: z.boolean(),
+        cover: image(),
+        coverAlt: z.string(),
+        url: z.string().url().optional(),
+      }),
   }),
 };

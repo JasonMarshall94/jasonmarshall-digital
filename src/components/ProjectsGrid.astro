@@ -4,13 +4,14 @@ import { getCollection } from "astro:content";
 const projects = await getCollection("projects");
 ---
 
-<section class="container mx-auto pt-50 text-center">
+<section class="container mx-auto grid grid-cols-3 gap-4 pt-24 text-center">
   {
-    projects.map((project) => (
-      <div>
-        <h2>{project.data.title}</h2>
-        <p>{project.data.excerpt}</p>
-      </div>
+    projects.map((p) => (
+      <article>
+        <img src={p.data.cover.src} alt={p.data.coverAlt} />
+        <h2>{p.data.title}</h2>
+        <p>{p.data.excerpt}</p>
+      </article>
     ))
   }
 </section>
