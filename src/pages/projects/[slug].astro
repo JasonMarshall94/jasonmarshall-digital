@@ -1,18 +1,21 @@
 ---
 import type { GetStaticPaths } from "astro";
 import { getCollection, getEntry } from "astro:content";
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import PageHero from "../../components/PageHero.astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageHero from "@/components/PageHero.astro";
 
 export const getStaticPaths = (async () => {
   const projects = await getCollection("projects");
   return projects.map((project) => ({
     params: { slug: project.data.slug },
+    props: { project },
   }));
 }) satisfies GetStaticPaths;
 
-const { slug } = Astro.params;
-const project = await getEntry("projects", slug);
+// const { slug } = Astro.params;
+// const project = await getEntry("projects", slug);
+
+const { project } = Astro.props;
 
 if (!project) {
   return new Response(null, { status: 404 });

@@ -1,7 +1,15 @@
 <footer class="bg-dark-grey text-light-grey mt-20 py-6">
   <div class="container mx-auto text-center">
     <p>
-      &copy; {new Date().getFullYear()} Jason Marshall Digital LLC. All rights reserved.
+      &copy; <span id="copyright-year">{new Date().getFullYear()}</span> Jason Marshall
+      Digital LLC. All rights reserved.
     </p>
   </div>
 </footer>
+
+<script>
+  const copyrightYear = document.querySelector(
+    "#copyright-year",
+  ) as unknown as HTMLSpanElement;
+  copyrightYear.textContent = new Date().getFullYear().toString();
+</script>

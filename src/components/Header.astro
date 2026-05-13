@@ -1,11 +1,8 @@
 ---
-import Link from "./Link.astro";
-
+import Link from "@/components/Link.astro";
 import { Icon } from "astro-icon/components";
-
-import navLinks from "../data/navLinks.json";
-
-import siteGlobals from "../data/siteGlobals.yaml";
+import navLinks from "@/data/navLinks.json";
+import siteGlobals from "@/data/siteGlobals.yaml";
 ---
 
 <header
@@ -16,9 +13,17 @@ import siteGlobals from "../data/siteGlobals.yaml";
   >
     <Link href={"/"}>Jason Marshall Digital</Link>
 
-    <div class="flex items-center gap-12">
-      {navLinks.map((link) => <Link href={link.slug}>{link.title}</Link>)}
-    </div>
+    <ul class="flex list-none items-center gap-12">
+      {
+        navLinks.map((link) => {
+          return (
+            <li>
+              <Link href={link.slug}>{link.title}</Link>
+            </li>
+          );
+        })
+      }
+    </ul>
 
     <Link href={siteGlobals.urls.github} target="_blank">
       <Icon name="github" size="24" />
