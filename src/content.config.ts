@@ -11,12 +11,14 @@ export const collections = {
     schema: ({ image }) =>
       z.object({
         title: z.string(),
+        slug: z.string(),
         excerpt: z.string(),
         tags: z.array(z.string()),
+        postDate: z.date(),
         isDraft: z.boolean(),
         cover: image(),
         coverAlt: z.string(),
-        url: z.string().url().optional(),
+        url: z.url().optional(),
       }),
   }),
 };
