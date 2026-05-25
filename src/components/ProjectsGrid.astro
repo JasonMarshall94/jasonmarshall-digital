@@ -1,23 +1,76 @@
 ---
 import { getCollection } from "astro:content";
+import SectionHeading from "@/components/SectionHeading.astro";
+import ProjectCard from "@/components/ProjectCard.astro";
 
-const projects = await getCollection(
-  "projects",
-  ({ data }) => data.isDraft === false,
-);
+const allProjects = (await getCollection("projects"))
+  .filter((p) => !p.data.isDraft)
+  .sort((a, b) => b.data.postDate.valueOf() - a.data.postDate.valueOf());
+
+// Optional richer descriptions keyed by slug
+const enhancedDescriptions: Record<string, string> = {
+  "alc-development-group":
+    "A real estate development firm needed a refreshed marketing site that put its portfolio of properties front and center.",
+  "gans-plumbing":
+    "Local plumbing business website rebuilt for clarity, lead capture, and easier in-house edits.",
+  "marshall-sabatini":
+    "An architecture studio site centered on photography of their built work — quiet typography, generous space.",
+};
 ---
 
-<section class="container mx-auto grid grid-cols-3 gap-4 pt-24 text-center">
-  {
-    projects
-      .sort((a, b) => a.data.postDate.valueOf() - b.data.postDate.valueOf())
-      .map((p) => (
-        <article>
-          <img src={p.data.cover.src} alt={p.data.coverAlt} />
-          <h2>{p.data.title}</h2>
-          <p>{p.data.excerpt}</p>
-          <a href={`/projects/${p.data.slug}`}>Read more</a>
-        </article>
-      ))
-  }
+<section id="work" class="projects-section">
+  <div class="container">
+    <SectionHeading
+      index="01"
+      eyebrow="Work / Selected"
+      title="A few recent builds."
+      description="A small set of recent client work — mostly small businesses and studios who needed a real website without a real agency."
+    />
+
+    <div class="projects-grid">
+      {
+        allProjects.map((p, i) => (
+          <ProjectCard
+            project={p}
+            index={i}
+            description={enhancedDescriptions[p.data.slug]}
+          />
+        ))
+      }
+    </div>
+
+    <div class="projects-footer">
+      <span>{allProjects.length} of {allProjects.length} projects shown</span>
+      <a href="#contact" class="nav-link footer-link">
+        Have something in mind? Get in touch →
+      </a>
+    </div>
+  </div>
 </section>
+
+<style>
+  .projects-section {
+    padding: 8rem 0;
+    border-top: 1px solid var(--color-border);
+  }
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+  .projects-footer {
+    margin-top: 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--color-light-grey);
+    font-size: 0.82rem;
+    padding-top: 2rem;
+    border-top: 1px dashed var(--color-border);
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .footer-link {
+    color: var(--color-text);
+  }
+</style>

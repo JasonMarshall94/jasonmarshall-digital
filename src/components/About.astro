@@ -1,0 +1,124 @@
+---
+import SectionHeading from "@/components/SectionHeading.astro";
+
+const facts = [
+  { k: "Based", v: "Philadelphia, PA" },
+  { k: "Working", v: "Remote / US" },
+  { k: "Since", v: "2023" },
+  { k: "Focus", v: "Small business · Studios · Solo founders" },
+];
+
+const principles = [
+  {
+    n: "01",
+    title: "Build for the person editing it.",
+    body: "If the client can't update the site without breaking it, the build failed. Every project starts with who's going to maintain it.",
+  },
+  {
+    n: "02",
+    title: "Performance is a feature.",
+    body: "Sub-second loads aren't optional. Static where possible, server-rendered where it matters, JS only when it earns its weight.",
+  },
+  {
+    n: "03",
+    title: "Ship, then iterate.",
+    body: "A live v1 beats a perfect v3 that never launches. Tight scopes, clear milestones, no surprises on invoice day.",
+  },
+];
+---
+
+<section id="about" class="about-section">
+  <div class="container">
+    <SectionHeading
+      index="03"
+      eyebrow="About / The Studio"
+      title="A one-person practice, on purpose."
+      description="Jason Marshall Digital is run by Jason Marshall — designer-developer working with small teams that want a direct line to the person actually building their site."
+    />
+
+    <div class="principles-grid">
+      {
+        principles.map((p) => (
+          <div class="principle">
+            <div class="principle-label">PRINCIPLE / {p.n}</div>
+            <h4 class="principle-title">{p.title}</h4>
+            <p class="principle-body">{p.body}</p>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="facts-strip">
+      {
+        facts.map((f, i) => (
+          <div class="fact" data-last={i === facts.length - 1}>
+            <div class="fact-k">{f.k}</div>
+            <div class="fact-v">{f.v}</div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .about-section {
+    padding: 8rem 0;
+    border-top: 1px solid var(--color-border);
+  }
+  .principles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 5rem;
+  }
+  .principle {
+    padding: 2rem;
+    border: 1px solid var(--color-border);
+    background: var(--color-card);
+  }
+  .principle-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    color: var(--color-med-grey);
+    margin-bottom: 1.4rem;
+  }
+  .principle-title {
+    margin: 0 0 0.8rem;
+    font-size: 1.1rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+  }
+  .principle-body {
+    margin: 0;
+    color: var(--color-accent);
+    font-size: 0.85rem;
+    line-height: 1.65;
+  }
+
+  .facts-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    border: 1px solid var(--color-border);
+    background: var(--color-card);
+  }
+  .fact {
+    padding: 1.6rem 1.4rem;
+    border-right: 1px solid var(--color-border);
+  }
+  .fact[data-last="true"] {
+    border-right: none;
+  }
+  .fact-k {
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-med-grey);
+    margin-bottom: 0.6rem;
+  }
+  .fact-v {
+    font-size: 0.95rem;
+    color: var(--color-text);
+  }
+</style>

@@ -1,19 +1,24 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import HomeHero from "@/components/HomeHero.astro";
-import Button from "@/components/Button.astro";
-
-const pageTitle = "Home | Jason Marshall Digital";
-const pageDescription =
-  "Jason Marshall Digital specializes in WordPress, Astro, and Next JS.";
+import Nav from "@/components/Nav.astro";
+import Hero from "@/components/Hero.astro";
+import StackMarquee from "@/components/StackMarquee.astro";
+import ProjectsGrid from "@/components/ProjectsGrid.astro";
+import Services from "@/components/Services.astro";
+import About from "@/components/About.astro";
+import Contact from "@/components/Contact.astro";
+import Footer from "@/components/Footer.astro";
 ---
 
-<BaseLayout title={pageTitle} description={pageDescription}>
-  <HomeHero title="Home" />
-
-  <section>
-    <div class="container mx-auto py-20">
-      <Button href="/contact">Get Started</Button>
-    </div>
-  </section>
+<BaseLayout>
+  <Nav />
+  <main>
+    <Hero />
+    <StackMarquee />
+    <ProjectsGrid />
+    <Services />
+    <About />
+    <Contact />
+  </main>
+  <Footer />
 </BaseLayout>

@@ -1,0 +1,64 @@
+---
+interface Props {
+  items?: string[];
+}
+const {
+  items = [
+    "WordPress",
+    "Astro",
+    "Next.js",
+    "Tailwind CSS",
+    "TypeScript",
+    "ACF",
+    "Elementor",
+    "React",
+    "Headless CMS",
+    "Performance",
+    "Accessibility",
+    "SEO",
+  ],
+} = Astro.props;
+---
+
+<div class="stack-marquee scroll-fade-mask">
+  <div class="marquee">
+    {
+      [0, 1].map(() => (
+        <div class="marquee-group">
+          {items.map((t) => (
+            <span class="marquee-item">
+              {t}
+              <span class="marquee-sep">✦</span>
+            </span>
+          ))}
+        </div>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .stack-marquee {
+    border-block: 1px solid var(--color-border);
+    padding: 1.4rem 0;
+    background: rgba(255, 255, 255, 0.01);
+    overflow: hidden;
+  }
+  .marquee-group {
+    display: flex;
+    gap: 4rem;
+    font-size: 0.85rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-light-grey);
+    padding-right: 4rem;
+  }
+  .marquee-item {
+    display: flex;
+    align-items: center;
+    gap: 4rem;
+  }
+  .marquee-sep {
+    color: var(--color-med-grey);
+  }
+</style>

@@ -1,0 +1,168 @@
+---
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  project: CollectionEntry<"projects">;
+  index: number;
+  description?: string;
+}
+const { project, index, description } = Astro.props;
+const { data } = project;
+const num = String(index + 1).padStart(2, "0");
+const year = data.postDate.getFullYear();
+---
+
+<a
+  href={data.url ?? "#"}
+  target={data.url ? "_blank" : undefined}
+  rel={data.url ? "noopener noreferrer" : undefined}
+  class="project-card"
+>
+  <div class="project-image">
+    <Image
+      src={data.cover}
+      alt={data.coverAlt}
+      widths={[600, 900, 1200]}
+      sizes="(max-width: 720px) 100vw, 33vw"
+      loading="lazy"
+    />
+    <div class="img-gradient"></div>
+    <div class="img-num">/ {num}</div>
+  </div>
+
+  <div class="project-meta">
+    <div class="meta-row">
+      <h3 class="project-title">{data.title}</h3>
+      <span class="project-year">{year}</span>
+    </div>
+    <p class="project-desc">{description ?? data.excerpt}</p>
+    <div class="meta-footer">
+      <div class="tags">
+        {
+          data.tags.map((t, i) => (
+            <span class="tag">
+              {t}
+              {i < data.tags.length - 1 && <span class="tag-sep">/</span>}
+            </span>
+          ))
+        }
+      </div>
+      <span class="visit">
+        Visit <span class="arrow">↗</span>
+      </span>
+    </div>
+  </div>
+</a>
+
+<style>
+  .project-card {
+    display: block;
+    border: 1px solid var(--color-border);
+    background: var(--color-card);
+    position: relative;
+    color: var(--color-text);
+    text-decoration: none;
+  }
+  .project-image {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--color-deep);
+    border-bottom: 1px solid var(--color-border);
+    position: relative;
+  }
+  .project-image :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: grayscale(30%);
+  }
+  .img-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(18, 18, 18, 0) 60%,
+      rgba(18, 18, 18, 0.7) 100%
+    );
+    pointer-events: none;
+  }
+  .img-num {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    color: var(--color-text);
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    padding: 0.3rem 0.6rem;
+  }
+  .project-meta {
+    padding: 1.6rem 1.6rem 1.8rem;
+  }
+  .meta-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.8rem;
+  }
+  .project-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .project-year {
+    font-size: 0.78rem;
+    color: var(--color-light-grey);
+    flex-shrink: 0;
+  }
+  .project-desc {
+    margin: 0 0 1.2rem;
+    color: var(--color-accent);
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+  .meta-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border);
+  }
+  .tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    font-size: 0.7rem;
+    color: var(--color-light-grey);
+    letter-spacing: 0.06em;
+  }
+  .tag-sep {
+    color: var(--color-med-grey);
+    margin-left: 0.5rem;
+  }
+  .visit {
+    font-size: 0.75rem;
+    color: var(--color-light-grey);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .project-card:hover .visit {
+    color: var(--color-text);
+  }
+  .project-card:hover .arrow {
+    transform: translate(2px, -2px);
+  }
+  .arrow {
+    display: inline-block;
+    transition: transform 0.3s;
+  }
+</style>

@@ -1,18 +1,28 @@
 ---
-import BaseHead from "@/layouts/BaseHead.astro";
-import Footer from "@/components/Footer.astro";
-import Header from "@/components/Header.astro";
+import { Font } from "astro:assets";
+
 import "@/styles/global.css";
+import { baseData } from "@/data/siteData";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const { title = baseData.title, description = baseData.description } =
+  Astro.props;
 ---
 
 <!doctype html>
 <html lang="en">
-  <BaseHead {...Astro.props} />
-  <body class="bg-dark-grey text-text">
-    <Header />
-    <main class="relative isolate">
-      <slot />
-    </main>
-    <Footer />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <Font cssVariable="--font-jetbrains-mono" preload />
+  </head>
+  <body>
+    <slot />
   </body>
 </html>

@@ -1,0 +1,172 @@
+---
+interface Props {
+  headline?: string;
+  description?: string;
+  location?: string;
+  year?: string;
+}
+const {
+  headline = "Websites that work like they should.",
+  description = "Jason Marshall Digital builds fast, maintainable websites for small businesses and studios. WordPress when clients need to edit it, Astro and Next.js when it has to be sharper.",
+  location = "Philadelphia, PA",
+  year = "2026",
+} = Astro.props;
+
+// Split the headline onto a few lines manually
+const headlineLines = headline.split(/\s+/);
+---
+
+<section id="top" class="hero">
+  <div class="gridlines"></div>
+  <div class="hero-inner container">
+    <div class="status-row float-in" style="animation-delay: 0.05s">
+      <div class="status-pill">
+        <span class="pulse-dot status-dot"></span>
+        Available for new projects · {year}
+      </div>
+      <div class="label time-row">
+        <span>↳ <span id="hero-time">--:--</span> EST</span>
+        <span class="divider">|</span>
+        <span>{location}</span>
+      </div>
+    </div>
+
+    <h1 class="hero-headline float-in" style="animation-delay: 0.15s">
+      {headline}
+      <span class="blink hero-caret"></span>
+    </h1>
+
+    <div class="hero-sub float-in" style="animation-delay: 0.3s">
+      <span class="hero-prompt">{`>`}</span>
+      <p>{description}</p>
+    </div>
+
+    <div class="hero-cta float-in" style="animation-delay: 0.45s">
+      <a href="#work" class="btn btn-primary">
+        View Selected Work <span aria-hidden>↓</span>
+      </a>
+      <a href="#contact" class="btn">
+        Start a Project <span aria-hidden>→</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="hero-baseline">
+    <span>01 / Index</span>
+    <span class="hide-mobile">Jason Marshall Digital · est. 2023</span>
+    <span>Scroll ↓</span>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    padding-top: 180px;
+    padding-bottom: 120px;
+    overflow: hidden;
+  }
+  .hero-inner {
+    position: relative;
+    z-index: 2;
+  }
+  .status-row {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+  }
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--color-border);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-light-grey);
+  }
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #7fc88a;
+    display: inline-block;
+  }
+  .time-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .divider {
+    color: var(--color-med-grey);
+  }
+  .hero-headline {
+    font-size: clamp(2.4rem, 6.6vw, 5.6rem);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    font-weight: 500;
+    margin: 0;
+    color: var(--color-text);
+    text-wrap: balance;
+  }
+  .hero-caret {
+    display: inline-block;
+    width: 0.55em;
+    height: 0.9em;
+    background: var(--color-text);
+    vertical-align: -0.1em;
+    margin-left: 0.1em;
+  }
+  .hero-sub {
+    margin-top: 2.5rem;
+    max-width: 640px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1rem 1.5rem;
+    font-size: 1rem;
+    color: var(--color-accent);
+    line-height: 1.7;
+  }
+  .hero-sub p {
+    margin: 0;
+  }
+  .hero-prompt {
+    color: var(--color-light-grey);
+  }
+  .hero-cta {
+    margin-top: 3rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .hero-baseline {
+    position: absolute;
+    bottom: 24px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-med-grey);
+    padding: 0 1.5rem;
+  }
+</style>
+
+<script>
+  const el = document.getElementById("hero-time");
+  const tick = () => {
+    if (!el) return;
+    el.textContent = new Date().toLocaleTimeString("en-US", {
+      timeZone: "America/New_York",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+  };
+  tick();
+  setInterval(tick, 30000);
+</script>

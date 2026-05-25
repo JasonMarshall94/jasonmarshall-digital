@@ -1,0 +1,281 @@
+---
+interface Props {
+  endpoint?: string;
+}
+// Pass your form endpoint (e.g. Formspree / Resend route) here.
+// If omitted, the form runs in client-side demo mode.
+const { endpoint } = Astro.props;
+---
+
+<form class="contact-form" data-endpoint={endpoint ?? ""}>
+  <div class="form-header">
+    <div class="label">→ Project Brief</div>
+    <div class="form-reply">REPLY · WITHIN 24H</div>
+  </div>
+
+  <div class="form-row two-col">
+    <div>
+      <label class="field-label" for="cf-name">Name</label>
+      <input
+        id="cf-name"
+        name="name"
+        type="text"
+        placeholder="Your name"
+        class="field"
+        required
+      />
+    </div>
+    <div>
+      <label class="field-label" for="cf-email">Email</label>
+      <input
+        id="cf-email"
+        name="email"
+        type="email"
+        placeholder="you@company.com"
+        class="field"
+        required
+      />
+    </div>
+  </div>
+
+  <div class="form-row two-col">
+    <div>
+      <label class="field-label">Project Type</label>
+      <div class="chip-group" data-group="type">
+        {
+          ["WordPress", "Astro", "Next.js", "Not sure"].map((t, i) => (
+            <button
+              type="button"
+              class={`chip ${i === 0 ? "active" : ""}`}
+              data-value={t}
+            >
+              {t}
+            </button>
+          ))
+        }
+      </div>
+      <input type="hidden" name="type" value="WordPress" data-bind="type" />
+    </div>
+    <div>
+      <label class="field-label">Budget</label>
+      <div class="chip-group" data-group="budget">
+        {
+          ["<$3k", "$3-6k", "$6-12k", "$12k+"].map((t, i) => (
+            <button
+              type="button"
+              class={`chip ${i === 1 ? "active" : ""}`}
+              data-value={t}
+            >
+              {t}
+            </button>
+          ))
+        }
+      </div>
+      <input type="hidden" name="budget" value="$3-6k" data-bind="budget" />
+    </div>
+  </div>
+
+  <div>
+    <label class="field-label" for="cf-msg">Project Details</label>
+    <textarea
+      id="cf-msg"
+      name="message"
+      rows="4"
+      placeholder="Tell me about your project — timeline, what you're trying to accomplish, any links..."
+      class="field field-textarea"
+      required></textarea>
+  </div>
+
+  <div class="form-footer">
+    <div class="form-status" data-status="idle">
+      → Replies sent to contact@jasonmarshall.digital
+    </div>
+    <button type="submit" class="btn btn-primary form-submit">
+      <span class="submit-label">Send Brief</span>
+      <span aria-hidden>→</span>
+    </button>
+  </div>
+</form>
+
+<style>
+  .contact-form {
+    padding: 2rem;
+    border: 1px solid var(--color-border);
+    background: var(--color-card);
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+  }
+  .form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .form-reply {
+    font-size: 0.68rem;
+    color: var(--color-med-grey);
+    letter-spacing: 0.14em;
+  }
+  .form-row.two-col {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.4rem;
+  }
+  .field-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-light-grey);
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+  .field {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text);
+    padding: 0.8rem 0;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+    font-family: inherit;
+  }
+  .field::placeholder {
+    color: var(--color-med-grey);
+  }
+  .field:focus {
+    border-bottom-color: var(--color-text);
+  }
+  .field-textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+  .chip-group {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .chip {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.78rem;
+    border: 1px solid var(--color-border);
+    background: transparent;
+    color: var(--color-accent);
+    transition: all 0.2s;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .chip.active {
+    background: var(--color-text);
+    color: var(--color-dark-grey);
+    border-color: var(--color-text);
+  }
+  .form-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .form-status {
+    font-size: 0.74rem;
+    color: var(--color-med-grey);
+    letter-spacing: 0.08em;
+  }
+  .form-status[data-status="error"] {
+    color: #e08080;
+  }
+  .form-status[data-status="sent"] {
+    color: #7fc88a;
+  }
+  .form-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+</style>
+
+<script>
+  document
+    .querySelectorAll<HTMLFormElement>(".contact-form")
+    .forEach((form) => {
+      // Wire chip groups
+      form.querySelectorAll<HTMLDivElement>(".chip-group").forEach((group) => {
+        group.addEventListener("click", (e) => {
+          const target = (e.target as HTMLElement).closest<HTMLButtonElement>(
+            ".chip",
+          );
+          if (!target) return;
+          group
+            .querySelectorAll(".chip")
+            .forEach((c) => c.classList.remove("active"));
+          target.classList.add("active");
+          const groupName = group.dataset.group;
+          const hidden = form.querySelector<HTMLInputElement>(
+            `[data-bind="${groupName}"]`,
+          );
+          if (hidden) hidden.value = target.dataset.value ?? "";
+        });
+      });
+
+      const status = form.querySelector<HTMLDivElement>(".form-status");
+      const submit = form.querySelector<HTMLButtonElement>(".form-submit");
+      const setStatus = (s: string, msg: string) => {
+        if (!status) return;
+        status.dataset.status = s;
+        status.textContent = msg;
+      };
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(form).entries());
+        if (!data.name || !data.email || !data.message) {
+          setStatus("error", "× Please fill in name, email, and details.");
+          setTimeout(
+            () =>
+              setStatus(
+                "idle",
+                "→ Replies sent to contact@jasonmarshall.digital",
+              ),
+            2200,
+          );
+          return;
+        }
+        const endpoint = form.dataset.endpoint;
+        if (!endpoint) {
+          // Demo mode
+          setStatus("sent", "✓ Got it — I'll reply within 24 hours.");
+          if (submit) submit.disabled = true;
+          setTimeout(() => {
+            form.reset();
+            if (submit) submit.disabled = false;
+            setStatus(
+              "idle",
+              "→ Replies sent to contact@jasonmarshall.digital",
+            );
+          }, 2400);
+          return;
+        }
+        // Real submission
+        setStatus("idle", "→ Sending...");
+        if (submit) submit.disabled = true;
+        try {
+          const res = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+          if (!res.ok) throw new Error("Submit failed");
+          setStatus("sent", "✓ Got it — I'll reply within 24 hours.");
+          form.reset();
+        } catch {
+          setStatus("error", "× Something went wrong. Please email directly.");
+        } finally {
+          if (submit) submit.disabled = false;
+        }
+      });
+    });
+</script>
