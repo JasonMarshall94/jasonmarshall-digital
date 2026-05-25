@@ -6,15 +6,6 @@ const allProjects = (await getCollection("projects"))
   .filter((p) => !p.data.isDraft)
   .sort((a, b) => b.data.postDate.valueOf() - a.data.postDate.valueOf());
 
-const enhancedDescriptions: Record<string, string> = {
-  "alc-development-group":
-    "A real estate development firm needed a refreshed marketing site that put its portfolio of properties front and center.",
-  "gans-plumbing":
-    "Local plumbing business website rebuilt for clarity, lead capture, and easier in-house edits.",
-  "marshall-sabatini":
-    "An architecture studio site centered on photography of their built work — quiet typography, generous space.",
-};
-
 const tagSet = new Set<string>();
 allProjects.forEach((p) => p.data.tags.forEach((t) => tagSet.add(t)));
 const allTags = ["All", ...Array.from(tagSet)];
@@ -137,7 +128,8 @@ const startYear = 2023;
             <ProjectCard
               project={p}
               index={i}
-              description={enhancedDescriptions[p.data.slug]}
+              description={p.data.excerpt}
+              loading="eager"
             />
           </div>
         ))
@@ -171,7 +163,7 @@ const startYear = 2023;
         </div>
       </div>
       <a href="/#contact" class="btn btn-primary whitespace-nowrap">
-        Start a project <span aria-hidden>→</span>
+        Start a project <span aria-hidden="true">→</span>
       </a>
     </div>
   </div>

@@ -1,7 +1,7 @@
 ---
 title: Gans Plumbing
 slug: gans-plumbing
-excerpt: A WordPress website built with Elementor and ACF
+excerpt: Local plumbing business website rebuilt for clarity, lead capture, and easier in-house edits.
 tags: ["WordPress", "Elementor", "ACF"]
 postDate: 2023-06-01
 isDraft: false

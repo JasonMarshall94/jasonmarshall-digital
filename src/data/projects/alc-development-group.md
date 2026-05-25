@@ -1,9 +1,9 @@
 ---
 title: ALC Development Group
 slug: alc-development-group
-excerpt: A WordPress website built with Elementor and ACF
+excerpt: A real estate development firm needed a refreshed marketing site that put its portfolio front and center.
 tags: ["WordPress", "Elementor", "ACF"]
-postDate: 2023-07-01
+postDate: 2024-07-01
 isDraft: false
 cover: ./images/alc-development-group-cover.jpg
 coverAlt: ALC Development Group Website

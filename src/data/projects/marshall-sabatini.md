@@ -1,7 +1,7 @@
 ---
 title: Marshall Sabatini
 slug: marshall-sabatini
-excerpt: A WordPress website built with Elementor and ACF
+excerpt: An architecture studio site centered on photography of their built work — quiet typography, generous space.
 tags: ["WordPress", "Elementor", "ACF"]
 postDate: 2023-05-01
 isDraft: false

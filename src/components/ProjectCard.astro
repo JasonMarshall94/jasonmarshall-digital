@@ -6,8 +6,9 @@ interface Props {
   project: CollectionEntry<"projects">;
   index: number;
   description?: string;
+  loading?: "lazy" | "eager";
 }
-const { project, index, description } = Astro.props;
+const { project, index, description, loading = "lazy" } = Astro.props;
 const { data } = project;
 const num = String(index + 1).padStart(2, "0");
 const year = data.postDate.getFullYear();
@@ -27,7 +28,7 @@ const year = data.postDate.getFullYear();
       alt={data.coverAlt}
       widths={[600, 900, 1200]}
       sizes="(max-width: 720px) 100vw, 33vw"
-      loading="lazy"
+      loading={loading}
     />
     <div
       class="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(18,18,18,0)_60%,rgba(18,18,18,0.7)_100%)]"

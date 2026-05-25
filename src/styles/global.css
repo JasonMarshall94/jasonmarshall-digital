@@ -96,7 +96,7 @@ body {
   }
 }
 
-@keyframes pulse {
+@keyframes pulse-dot {
   0% {
     transform: scale(0.8);
     opacity: 0.5;
@@ -162,7 +162,7 @@ body {
     border-radius: 50%;
     background: inherit;
     opacity: 0.4;
-    animation: pulse 2s ease-out infinite;
+    animation: pulse-dot 2s ease-out infinite;
   }
 }
 
