@@ -1,0 +1,254 @@
+---
+import { getCollection } from "astro:content";
+import ProjectCard from "@/components/ProjectCard.astro";
+
+const allProjects = (await getCollection("projects"))
+  .filter((p) => !p.data.isDraft)
+  .sort((a, b) => b.data.postDate.valueOf() - a.data.postDate.valueOf());
+
+const enhancedDescriptions: Record<string, string> = {
+  "alc-development-group":
+    "A real estate development firm needed a refreshed marketing site that put its portfolio of properties front and center.",
+  "gans-plumbing":
+    "Local plumbing business website rebuilt for clarity, lead capture, and easier in-house edits.",
+  "marshall-sabatini":
+    "An architecture studio site centered on photography of their built work — quiet typography, generous space.",
+};
+
+const tagSet = new Set<string>();
+allProjects.forEach((p) => p.data.tags.forEach((t) => tagSet.add(t)));
+const allTags = ["All", ...Array.from(tagSet)];
+
+const total = allProjects.length;
+const startYear = 2023;
+---
+
+<!-- Page hero -->
+<section class="border-border relative overflow-hidden border-b pt-40 pb-20">
+  <div class="gridlines"></div>
+  <div class="relative z-2 container">
+    <div
+      class="float-in label mb-8 flex items-center gap-[0.6rem]"
+      style="animation-delay: 0.05s"
+    >
+      <a href="/" class="text-light-grey">← Home</a>
+      <span class="text-med-grey">/</span>
+      <span>Index / Projects</span>
+    </div>
+
+    <h1
+      class="float-in text-text m-0 text-[clamp(2.4rem,6vw,4.8rem)] leading-[1.02] font-medium tracking-[-0.03em]"
+      style="animation-delay: 0.15s"
+    >
+      All Projects.
+    </h1>
+
+    <div
+      class="float-in mt-8 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-8 max-[720px]:grid-cols-1"
+      style="animation-delay: 0.3s"
+    >
+      <p class="text-accent m-0 max-w-140 text-base leading-[1.7]">
+        Selected client work and personal builds — small business marketing
+        sites, studio portfolios, and the occasional custom application.
+      </p>
+      <div class="hide-mobile flex shrink-0 gap-10">
+        <div>
+          <div
+            class="text-med-grey mb-[0.4rem] text-[0.66rem] tracking-[0.18em] uppercase"
+          >
+            Total
+          </div>
+          <div class="text-text text-[1.8rem] tracking-[-0.02em]">
+            {String(total).padStart(2, "0")}
+          </div>
+        </div>
+        <div>
+          <div
+            class="text-med-grey mb-[0.4rem] text-[0.66rem] tracking-[0.18em] uppercase"
+          >
+            Since
+          </div>
+          <div class="text-text text-[1.8rem] tracking-[-0.02em]">
+            {startYear}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Filter / sort bar -->
+<div
+  class="bg-dark-grey/85 border-border sticky top-18 z-10 border-b backdrop-blur-[14px]"
+>
+  <div class="container flex flex-wrap items-center justify-between gap-4 py-4">
+    <div class="flex flex-wrap items-center gap-2">
+      <span class="label mr-2 text-[0.68rem]">Filter</span>
+      {
+        allTags.map((t, i) => (
+          <button
+            type="button"
+            class={`chip border-border cursor-pointer border px-[0.8rem] py-[0.4rem] font-[inherit] text-[0.74rem] tracking-[0.04em] transition-all duration-200 ${
+              i === 0
+                ? "active bg-text text-dark-grey border-text"
+                : "text-accent bg-transparent"
+            }`}
+            data-tag={t}
+          >
+            {t}
+          </button>
+        ))
+      }
+    </div>
+    <div
+      class="text-light-grey flex flex-wrap items-center gap-4 text-[0.74rem]"
+    >
+      <span>
+        <span data-count>{total}</span>/<span>{total}</span> shown
+      </span>
+      <span class="text-med-grey">|</span>
+      <span class="label text-[0.66rem]">Sort</span>
+      <button
+        type="button"
+        class="sort-btn border-border text-text cursor-pointer border bg-transparent px-[0.8rem] py-[0.4rem] font-[inherit] text-[0.74rem] tracking-[0.04em]"
+        data-sort="newest"
+      >
+        <span data-sort-label>Newest ↓</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Grid -->
+<section class="pt-20 pb-32">
+  <div class="container">
+    <div
+      id="projects-grid"
+      class="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-6"
+    >
+      {
+        allProjects.map((p, i) => (
+          <div
+            class="grid-item [[hidden]]:hidden"
+            data-tags={p.data.tags.join(",")}
+            data-year={p.data.postDate.getFullYear()}
+            data-index={i}
+          >
+            <ProjectCard
+              project={p}
+              index={i}
+              description={enhancedDescriptions[p.data.slug]}
+            />
+          </div>
+        ))
+      }
+    </div>
+
+    <div
+      class="empty-state border-border text-light-grey mt-4 hidden border border-dashed p-20 text-center [&:not([hidden])]:block"
+      hidden
+    >
+      <div class="text-text mb-6 text-[1.2rem]">
+        No projects match this filter.
+      </div>
+      <button type="button" class="btn reset-filter">
+        Show all projects
+      </button>
+    </div>
+
+    <!-- CTA strip -->
+    <div
+      class="border-border bg-card mt-20 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-8 border px-8 py-12 max-[720px]:grid-cols-1"
+    >
+      <div>
+        <div class="label mb-[0.8rem]">Looking for something specific?</div>
+        <div
+          class="text-text text-[clamp(1.3rem,2.4vw,1.9rem)] leading-tight tracking-[-0.01em]"
+        >
+          Have a project in mind? <span class="text-light-grey"
+            >Let's chat.</span
+          >
+        </div>
+      </div>
+      <a href="/#contact" class="btn btn-primary whitespace-nowrap">
+        Start a project <span aria-hidden>→</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  type SortMode = "newest" | "oldest";
+
+  let activeTag = "All";
+  let sortMode: SortMode = "newest";
+
+  const grid = document.getElementById("projects-grid");
+  const items = Array.from(
+    document.querySelectorAll<HTMLDivElement>(".grid-item"),
+  );
+  const chips = Array.from(
+    document.querySelectorAll<HTMLButtonElement>(".chip[data-tag]"),
+  );
+  const sortBtn = document.querySelector<HTMLButtonElement>(".sort-btn");
+  const sortLabel = document.querySelector<HTMLElement>("[data-sort-label]");
+  const countEl = document.querySelector<HTMLElement>("[data-count]");
+  const emptyState = document.querySelector<HTMLDivElement>(".empty-state");
+  const resetBtn = document.querySelector<HTMLButtonElement>(".reset-filter");
+
+  const setChipActive = (c: HTMLButtonElement, active: boolean) => {
+    c.classList.toggle("active", active);
+    c.classList.toggle("bg-text", active);
+    c.classList.toggle("text-dark-grey", active);
+    c.classList.toggle("border-text", active);
+    c.classList.toggle("bg-transparent", !active);
+    c.classList.toggle("text-accent", !active);
+  };
+
+  const apply = () => {
+    let visible = 0;
+    items.forEach((it) => {
+      const tags = (it.dataset.tags ?? "").split(",");
+      const show = activeTag === "All" || tags.includes(activeTag);
+      it.hidden = !show;
+      if (show) visible++;
+    });
+    if (countEl) countEl.textContent = String(visible);
+    if (emptyState) emptyState.hidden = visible !== 0;
+    if (grid) grid.hidden = visible === 0;
+
+    const sorted = items.slice().sort((a, b) => {
+      const ya = parseInt(a.dataset.year ?? "0", 10);
+      const yb = parseInt(b.dataset.year ?? "0", 10);
+      return sortMode === "newest" ? yb - ya : ya - yb;
+    });
+    sorted.forEach((el, i) => {
+      el.style.order = String(i);
+    });
+  };
+
+  chips.forEach((c) => {
+    c.addEventListener("click", () => {
+      chips.forEach((x) => setChipActive(x, false));
+      setChipActive(c, true);
+      activeTag = c.dataset.tag ?? "All";
+      apply();
+    });
+  });
+
+  sortBtn?.addEventListener("click", () => {
+    sortMode = sortMode === "newest" ? "oldest" : "newest";
+    if (sortLabel) {
+      sortLabel.textContent = sortMode === "newest" ? "Newest ↓" : "Oldest ↑";
+    }
+    apply();
+  });
+
+  resetBtn?.addEventListener("click", () => {
+    activeTag = "All";
+    chips.forEach((x) => setChipActive(x, x.dataset.tag === "All"));
+    apply();
+  });
+
+  apply();
+</script>

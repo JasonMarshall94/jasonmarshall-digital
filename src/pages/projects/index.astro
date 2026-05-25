@@ -1,13 +1,18 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import PageHero from "@/components/PageHero.astro";
-
-import ProjectsGrid from "@/components/ProjectsGrid.astro";
-
-const pageTitle = "Projects";
+import Nav from "@/components/Nav.astro";
+import ProjectsArchive from "@/components/ProjectsArchive.astro";
+import Footer from "@/components/Footer.astro";
+import { baseData } from "@/data/siteData";
 ---
 
-<BaseLayout title={pageTitle}>
-  <PageHero title={pageTitle} />
-  <ProjectsGrid />
+<BaseLayout
+  title={`Projects — ${baseData.title}`}
+  description="Selected client work and personal builds from Jason Marshall Digital."
+>
+  <Nav page="page" />
+  <main>
+    <ProjectsArchive />
+  </main>
+  <Footer />
 </BaseLayout>

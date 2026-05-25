@@ -1,39 +1,80 @@
 ---
 import Logo from "@/components/Logo.astro";
 
+interface Props {
+  // "home" => links use hash anchors (#work, #services, etc.)
+  // "page" => links route back to "/#section", Work links to /projects
+  page?: "home" | "page";
+}
+const { page = "home" } = Astro.props;
+
+const isHome = page === "home";
+const homeHref = "/";
+
 const links = [
-  { title: "Work", slug: "work" },
-  { title: "Services", slug: "services" },
-  { title: "About", slug: "about" },
-  { title: "Contact", slug: "contact" },
+  { title: "Work", slug: "work", href: isHome ? "#work" : "/projects" },
+  {
+    title: "Services",
+    slug: "services",
+    href: isHome ? "#services" : `${homeHref}#services`,
+  },
+  {
+    title: "About",
+    slug: "about",
+    href: isHome ? "#about" : `${homeHref}#about`,
+  },
+  {
+    title: "Contact",
+    slug: "contact",
+    href: isHome ? "#contact" : `${homeHref}#contact`,
+  },
 ];
+
+const currentPath = Astro.url.pathname;
+const isCurrentPage = !isHome && currentPath.startsWith("/projects");
 ---
 
-<header id="site-nav">
-  <div class="nav-inner container">
-    <a href="#top" class="brand">
+<header
+  id="site-nav"
+  data-scrolled="false"
+  class="data-[scrolled=true]:bg-dark-grey/78 data-[scrolled=true]:border-border fixed top-0 right-0 left-0 z-50 border-b border-transparent bg-transparent backdrop-blur-[14px] transition-[background-color,border-color] duration-300"
+>
+  <div class="container flex h-18 items-center justify-between">
+    <a
+      href={isHome ? "#top" : homeHref}
+      class="text-text flex items-center gap-[0.7rem]"
+    >
       <Logo size={28} />
-      <span class="brand-label hide-mobile">Jason Marshall Digital</span>
+      <span
+        class="hide-mobile text-light-grey text-[0.78rem] tracking-[0.14em] uppercase"
+      >
+        Jason Marshall Digital
+      </span>
     </a>
 
-    <nav class="nav-links">
+    <nav class="flex items-center gap-8 text-[0.82rem]">
       {
-        links.map((l) => (
-          <a
-            href={`#${l.slug}`}
-            class="nav-link hide-mobile nav-anchor"
-            data-section={l.slug}
-          >
-            {l.title}
-          </a>
-        ))
+        links.map((l) => {
+          const active = isCurrentPage && l.slug === "work";
+          return (
+            <a
+              href={l.href}
+              data-section={l.slug}
+              class={`nav-link nav-anchor hide-mobile tracking-[0.06em] transition-colors duration-200 ${
+                active ? "text-text active" : "text-light-grey"
+              }`}
+            >
+              {l.title}
+            </a>
+          );
+        })
       }
       <a
         href="https://github.com/JasonMarshall94"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="GitHub"
-        class="gh-link"
+        class="border-border text-light-grey hover:text-text hover:border-light-grey inline-flex h-9 w-9 items-center justify-center border transition-colors duration-200"
       >
         <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
           <path
@@ -45,85 +86,25 @@ const links = [
   </div>
 </header>
 
-<style>
-  #site-nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 50;
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    background: rgba(18, 18, 18, 0);
-    border-bottom: 1px solid transparent;
-    transition:
-      background 0.25s,
-      border-color 0.25s;
-  }
-  #site-nav.scrolled {
-    background: rgba(18, 18, 18, 0.78);
-    border-bottom-color: var(--color-border);
-  }
-  .nav-inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 72px;
-  }
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 0.7rem;
-    color: var(--color-text);
-  }
-  .brand-label {
-    font-size: 0.78rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--color-light-grey);
-  }
-  .nav-links {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    font-size: 0.82rem;
-  }
-  .nav-anchor {
-    color: var(--color-light-grey);
-    letter-spacing: 0.06em;
-    transition: color 0.2s;
-  }
-  .nav-anchor.active {
-    color: var(--color-text);
-  }
-  .gh-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border: 1px solid var(--color-border);
-    color: var(--color-light-grey);
-    transition: all 0.2s;
-  }
-  .gh-link:hover {
-    color: var(--color-text);
-    border-color: var(--color-light-grey);
-  }
-</style>
-
 <script>
-  // Sticky-blur on scroll + active-section scroll spy
   const nav = document.getElementById("site-nav");
   const sectionIds = ["top", "work", "services", "about", "contact"];
   const anchors = Array.from(
     document.querySelectorAll<HTMLAnchorElement>(".nav-anchor"),
   );
+  const hasSections = sectionIds.some((id) => document.getElementById(id));
+
+  const setActive = (a: HTMLAnchorElement, active: boolean) => {
+    a.classList.toggle("active", active);
+    a.classList.toggle("text-text", active);
+    a.classList.toggle("text-light-grey", !active);
+  };
 
   const onScroll = () => {
     if (!nav) return;
-    nav.classList.toggle("scrolled", window.scrollY > 24);
+    nav.dataset.scrolled = window.scrollY > 24 ? "true" : "false";
 
+    if (!hasSections) return;
     const y = window.scrollY + window.innerHeight / 3;
     let current = "top";
     for (const id of sectionIds) {
@@ -131,7 +112,14 @@ const links = [
       if (el && el.offsetTop <= y) current = id;
     }
     anchors.forEach((a) => {
-      a.classList.toggle("active", a.dataset.section === current);
+      // Skip "Work" anchor on non-home pages (it routes to /projects)
+      if (
+        a.dataset.section === "work" &&
+        a.getAttribute("href")?.startsWith("/")
+      ) {
+        return;
+      }
+      setActive(a, a.dataset.section === current);
     });
   };
 

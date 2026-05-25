@@ -27,7 +27,7 @@ const principles = [
 ];
 ---
 
-<section id="about" class="about-section">
+<section id="about" class="border-border border-t py-32">
   <div class="container">
     <SectionHeading
       index="03"
@@ -36,89 +36,41 @@ const principles = [
       description="Jason Marshall Digital is run by Jason Marshall — designer-developer working with small teams that want a direct line to the person actually building their site."
     />
 
-    <div class="principles-grid">
+    <div
+      class="mb-20 grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6"
+    >
       {
         principles.map((p) => (
-          <div class="principle">
-            <div class="principle-label">PRINCIPLE / {p.n}</div>
-            <h4 class="principle-title">{p.title}</h4>
-            <p class="principle-body">{p.body}</p>
+          <div class="border-border bg-card border p-8">
+            <div class="text-med-grey mb-[1.4rem] text-[0.7rem] tracking-[0.14em]">
+              PRINCIPLE / {p.n}
+            </div>
+            <h4 class="m-0 mb-[0.8rem] text-[1.1rem] leading-[1.3] font-medium tracking-[-0.01em]">
+              {p.title}
+            </h4>
+            <p class="text-accent m-0 text-[0.85rem] leading-[1.65]">
+              {p.body}
+            </p>
           </div>
         ))
       }
     </div>
 
-    <div class="facts-strip">
+    <div
+      class="border-border bg-card grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] border"
+    >
       {
         facts.map((f, i) => (
-          <div class="fact" data-last={i === facts.length - 1}>
-            <div class="fact-k">{f.k}</div>
-            <div class="fact-v">{f.v}</div>
+          <div
+            class={`px-[1.4rem] py-[1.6rem] ${i < facts.length - 1 ? "border-border border-r" : ""}`}
+          >
+            <div class="text-med-grey mb-[0.6rem] text-[0.68rem] tracking-[0.18em] uppercase">
+              {f.k}
+            </div>
+            <div class="text-text text-[0.95rem]">{f.v}</div>
           </div>
         ))
       }
     </div>
   </div>
 </section>
-
-<style>
-  .about-section {
-    padding: 8rem 0;
-    border-top: 1px solid var(--color-border);
-  }
-  .principles-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 5rem;
-  }
-  .principle {
-    padding: 2rem;
-    border: 1px solid var(--color-border);
-    background: var(--color-card);
-  }
-  .principle-label {
-    font-size: 0.7rem;
-    letter-spacing: 0.14em;
-    color: var(--color-med-grey);
-    margin-bottom: 1.4rem;
-  }
-  .principle-title {
-    margin: 0 0 0.8rem;
-    font-size: 1.1rem;
-    font-weight: 500;
-    letter-spacing: -0.01em;
-    line-height: 1.3;
-  }
-  .principle-body {
-    margin: 0;
-    color: var(--color-accent);
-    font-size: 0.85rem;
-    line-height: 1.65;
-  }
-
-  .facts-strip {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    border: 1px solid var(--color-border);
-    background: var(--color-card);
-  }
-  .fact {
-    padding: 1.6rem 1.4rem;
-    border-right: 1px solid var(--color-border);
-  }
-  .fact[data-last="true"] {
-    border-right: none;
-  }
-  .fact-k {
-    font-size: 0.68rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-med-grey);
-    margin-bottom: 0.6rem;
-  }
-  .fact-v {
-    font-size: 0.95rem;
-    color: var(--color-text);
-  }
-</style>

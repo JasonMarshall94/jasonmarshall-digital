@@ -1,0 +1,44 @@
+---
+interface Props {
+  label: string;
+  value: string;
+  href: string;
+}
+const { label, value, href } = Astro.props;
+---
+
+<div class="border-border bg-card flex flex-col gap-4 border p-[1.6rem]">
+  <div class="label flex justify-between">
+    <span>{label}</span>
+    <button
+      type="button"
+      class="copy-btn group text-med-grey hover:text-light-grey cursor-pointer border-none bg-none p-0 text-[0.68rem] tracking-[0.12em] transition-colors duration-200"
+      data-copy={value}
+      aria-label={`Copy ${label}`}
+    >
+      <span class="group-[.copied]:hidden">COPY</span>
+      <span class="text-text hidden group-[.copied]:inline">✓ COPIED</span>
+    </button>
+  </div>
+  <a
+    href={href}
+    class="text-text text-[clamp(1.05rem,2.2vw,1.4rem)] tracking-[-0.01em] break-all no-underline transition-colors duration-200 hover:text-[#e8e8e8]"
+  >
+    {value}
+  </a>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>(".copy-btn").forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      const v = btn.dataset.copy;
+      if (!v) return;
+      try {
+        await navigator.clipboard.writeText(v);
+        btn.classList.add("copied");
+        setTimeout(() => btn.classList.remove("copied"), 1600);
+      } catch {}
+    });
+  });
+</script>

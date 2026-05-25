@@ -2,51 +2,64 @@
 interface Props {
   endpoint?: string;
 }
-// Pass your form endpoint (e.g. Formspree / Resend route) here.
-// If omitted, the form runs in client-side demo mode.
 const { endpoint } = Astro.props;
+
+const fieldClass =
+  "w-full bg-transparent border-0 border-b border-border text-text py-3 text-[0.95rem] outline-none transition-colors duration-200 font-[inherit] focus:border-b-text placeholder:text-med-grey";
+
+const labelClass =
+  "text-[0.68rem] tracking-[0.18em] uppercase text-light-grey block mb-[0.4rem]";
 ---
 
-<form class="contact-form" data-endpoint={endpoint ?? ""}>
-  <div class="form-header">
+<form
+  class="contact-form border-border bg-card flex flex-col gap-[1.6rem] border p-8"
+  data-endpoint={endpoint ?? ""}
+>
+  <div class="flex items-center justify-between">
     <div class="label">→ Project Brief</div>
-    <div class="form-reply">REPLY · WITHIN 24H</div>
+    <div class="text-med-grey text-[0.68rem] tracking-[0.14em]">
+      REPLY · WITHIN 24H
+    </div>
   </div>
 
-  <div class="form-row two-col">
+  <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-[1.4rem]">
     <div>
-      <label class="field-label" for="cf-name">Name</label>
+      <label class={labelClass} for="cf-name">Name</label>
       <input
         id="cf-name"
         name="name"
         type="text"
         placeholder="Your name"
-        class="field"
+        class={fieldClass}
         required
       />
     </div>
     <div>
-      <label class="field-label" for="cf-email">Email</label>
+      <label class={labelClass} for="cf-email">Email</label>
       <input
         id="cf-email"
         name="email"
         type="email"
         placeholder="you@company.com"
-        class="field"
+        class={fieldClass}
         required
       />
     </div>
   </div>
 
-  <div class="form-row two-col">
+  <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-[1.4rem]">
     <div>
-      <label class="field-label">Project Type</label>
-      <div class="chip-group" data-group="type">
+      <label class={labelClass} for="type">Project Type</label>
+      <div id="type" class="chip-group flex flex-wrap gap-2" data-group="type">
         {
           ["WordPress", "Astro", "Next.js", "Not sure"].map((t, i) => (
             <button
               type="button"
-              class={`chip ${i === 0 ? "active" : ""}`}
+              class={`chip border-border cursor-pointer border px-[0.8rem] py-2 font-[inherit] text-[0.78rem] transition-all duration-200 ${
+                i === 0
+                  ? "active bg-text text-dark-grey border-text"
+                  : "text-accent bg-transparent"
+              }`}
               data-value={t}
             >
               {t}
@@ -57,13 +70,21 @@ const { endpoint } = Astro.props;
       <input type="hidden" name="type" value="WordPress" data-bind="type" />
     </div>
     <div>
-      <label class="field-label">Budget</label>
-      <div class="chip-group" data-group="budget">
+      <label class={labelClass} for="budget">Budget</label>
+      <div
+        id="budget"
+        class="chip-group flex flex-wrap gap-2"
+        data-group="budget"
+      >
         {
           ["<$3k", "$3-6k", "$6-12k", "$12k+"].map((t, i) => (
             <button
               type="button"
-              class={`chip ${i === 1 ? "active" : ""}`}
+              class={`chip border-border cursor-pointer border px-[0.8rem] py-2 font-[inherit] text-[0.78rem] transition-all duration-200 ${
+                i === 1
+                  ? "active bg-text text-dark-grey border-text"
+                  : "text-accent bg-transparent"
+              }`}
               data-value={t}
             >
               {t}
@@ -76,140 +97,60 @@ const { endpoint } = Astro.props;
   </div>
 
   <div>
-    <label class="field-label" for="cf-msg">Project Details</label>
+    <label class={labelClass} for="cf-msg">Project Details</label>
     <textarea
       id="cf-msg"
       name="message"
       rows="4"
       placeholder="Tell me about your project — timeline, what you're trying to accomplish, any links..."
-      class="field field-textarea"
+      class={`${fieldClass} resize-y min-h-30`}
       required></textarea>
   </div>
 
-  <div class="form-footer">
-    <div class="form-status" data-status="idle">
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <div
+      class="form-status text-med-grey text-[0.74rem] tracking-[0.08em] data-[status=error]:text-[#e08080] data-[status=sent]:text-[#7fc88a]"
+      data-status="idle"
+    >
       → Replies sent to contact@jasonmarshall.digital
     </div>
-    <button type="submit" class="btn btn-primary form-submit">
+    <button
+      type="submit"
+      class="btn btn-primary form-submit disabled:cursor-not-allowed disabled:opacity-60"
+    >
       <span class="submit-label">Send Brief</span>
-      <span aria-hidden>→</span>
+      <span aria-hidden="true">→</span>
     </button>
   </div>
 </form>
-
-<style>
-  .contact-form {
-    padding: 2rem;
-    border: 1px solid var(--color-border);
-    background: var(--color-card);
-    display: flex;
-    flex-direction: column;
-    gap: 1.6rem;
-  }
-  .form-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .form-reply {
-    font-size: 0.68rem;
-    color: var(--color-med-grey);
-    letter-spacing: 0.14em;
-  }
-  .form-row.two-col {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1.4rem;
-  }
-  .field-label {
-    font-size: 0.68rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-light-grey);
-    display: block;
-    margin-bottom: 0.4rem;
-  }
-  .field {
-    width: 100%;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid var(--color-border);
-    color: var(--color-text);
-    padding: 0.8rem 0;
-    font-size: 0.95rem;
-    outline: none;
-    transition: border-color 0.2s;
-    font-family: inherit;
-  }
-  .field::placeholder {
-    color: var(--color-med-grey);
-  }
-  .field:focus {
-    border-bottom-color: var(--color-text);
-  }
-  .field-textarea {
-    resize: vertical;
-    min-height: 120px;
-  }
-  .chip-group {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-  }
-  .chip {
-    padding: 0.5rem 0.8rem;
-    font-size: 0.78rem;
-    border: 1px solid var(--color-border);
-    background: transparent;
-    color: var(--color-accent);
-    transition: all 0.2s;
-    cursor: pointer;
-    font-family: inherit;
-  }
-  .chip.active {
-    background: var(--color-text);
-    color: var(--color-dark-grey);
-    border-color: var(--color-text);
-  }
-  .form-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-  .form-status {
-    font-size: 0.74rem;
-    color: var(--color-med-grey);
-    letter-spacing: 0.08em;
-  }
-  .form-status[data-status="error"] {
-    color: #e08080;
-  }
-  .form-status[data-status="sent"] {
-    color: #7fc88a;
-  }
-  .form-submit:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-</style>
 
 <script>
   document
     .querySelectorAll<HTMLFormElement>(".contact-form")
     .forEach((form) => {
-      // Wire chip groups
+      // Chip groups
       form.querySelectorAll<HTMLDivElement>(".chip-group").forEach((group) => {
         group.addEventListener("click", (e) => {
           const target = (e.target as HTMLElement).closest<HTMLButtonElement>(
             ".chip",
           );
           if (!target) return;
-          group
-            .querySelectorAll(".chip")
-            .forEach((c) => c.classList.remove("active"));
-          target.classList.add("active");
+          group.querySelectorAll(".chip").forEach((c) => {
+            c.classList.remove(
+              "active",
+              "bg-text",
+              "text-dark-grey",
+              "border-text",
+            );
+            c.classList.add("bg-transparent", "text-accent");
+          });
+          target.classList.remove("bg-transparent", "text-accent");
+          target.classList.add(
+            "active",
+            "bg-text",
+            "text-dark-grey",
+            "border-text",
+          );
           const groupName = group.dataset.group;
           const hidden = form.querySelector<HTMLInputElement>(
             `[data-bind="${groupName}"]`,
@@ -243,7 +184,6 @@ const { endpoint } = Astro.props;
         }
         const endpoint = form.dataset.endpoint;
         if (!endpoint) {
-          // Demo mode
           setStatus("sent", "✓ Got it — I'll reply within 24 hours.");
           if (submit) submit.disabled = true;
           setTimeout(() => {
@@ -256,7 +196,6 @@ const { endpoint } = Astro.props;
           }, 2400);
           return;
         }
-        // Real submission
         setStatus("idle", "→ Sending...");
         if (submit) submit.disabled = true;
         try {

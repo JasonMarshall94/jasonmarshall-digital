@@ -1,6 +1,6 @@
 ---
 import SectionHeading from "@/components/SectionHeading.astro";
-import CopyChip from "@/components/CopyChip.astro";
+import CopyChip from "@/ui/CopyChip.astro";
 import ContactForm from "@/components/ContactForm.astro";
 
 interface Props {
@@ -17,7 +17,7 @@ const {
 const telHref = `tel:${phone.replace(/[^0-9+]/g, "")}`;
 ---
 
-<section id="contact" class="contact-section">
+<section id="contact" class="border-border border-t py-32">
   <div class="container">
     <SectionHeading
       index="04"
@@ -26,13 +26,17 @@ const telHref = `tel:${phone.replace(/[^0-9+]/g, "")}`;
       description="Booking projects for the next quarter. Reach out with a short brief or just say hi — I read every email."
     />
 
-    <div class="contact-grid">
-      <div class="contact-left">
+    <div
+      class="grid grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] gap-6 max-[860px]:grid-cols-1"
+    >
+      <div class="flex flex-col gap-4">
         <CopyChip label="01 / Email" value={email} href={`mailto:${email}`} />
         <CopyChip label="02 / Phone" value={phone} href={telHref} />
-        <div class="process-card">
-          <div class="label process-label">03 / Process</div>
-          <ol>
+        <div
+          class="border-border bg-card text-accent border p-[1.6rem] text-[0.82rem] leading-[1.7]"
+        >
+          <div class="label mb-[0.8rem]">03 / Process</div>
+          <ol class="text-accent m-0 pl-[1.2rem]">
             <li>Reply within 24h</li>
             <li>Free 30-min scoping call</li>
             <li>Fixed-price proposal in writing</li>
@@ -44,41 +48,3 @@ const telHref = `tel:${phone.replace(/[^0-9+]/g, "")}`;
     </div>
   </div>
 </section>
-
-<style>
-  .contact-section {
-    padding: 8rem 0;
-    border-top: 1px solid var(--color-border);
-  }
-  .contact-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
-    gap: 1.5rem;
-  }
-  .contact-left {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  .process-card {
-    padding: 1.6rem;
-    border: 1px solid var(--color-border);
-    background: var(--color-card);
-    font-size: 0.82rem;
-    color: var(--color-accent);
-    line-height: 1.7;
-  }
-  .process-label {
-    margin-bottom: 0.8rem;
-  }
-  .process-card ol {
-    margin: 0;
-    padding-left: 1.2rem;
-    color: var(--color-accent);
-  }
-  @media (max-width: 860px) {
-    .contact-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-</style>

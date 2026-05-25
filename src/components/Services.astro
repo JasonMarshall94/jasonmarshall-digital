@@ -34,7 +34,7 @@ const items = [
 ];
 ---
 
-<section id="services" class="services-section">
+<section id="services" class="border-border border-t py-32">
   <div class="container">
     <SectionHeading
       index="02"
@@ -43,20 +43,28 @@ const items = [
       description="No religion about frameworks — the right one depends on who's editing the site, how it grows, and how often it ships."
     />
 
-    <div class="services-grid">
+    <div
+      class="bg-border border-border grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-px border"
+    >
       {
         items.map((it) => (
-          <div class="service-card">
-            <div class="card-top">
-              <span class="card-num">/ {it.n}</span>
-              <span class="label card-tag">{it.tag}</span>
+          <div class="bg-card px-8 py-[2.4rem] transition-colors duration-200 hover:bg-white/[0.025]">
+            <div class="mb-[1.6rem] flex items-baseline justify-between">
+              <span class="text-med-grey text-[0.72rem] tracking-[0.12em]">
+                / {it.n}
+              </span>
+              <span class="label text-[0.66rem]">{it.tag}</span>
             </div>
-            <h3 class="card-title">{it.title}</h3>
-            <p class="card-body">{it.body}</p>
-            <ul class="card-bullets">
+            <h3 class="m-0 mb-4 text-[1.6rem] font-medium tracking-[-0.01em]">
+              {it.title}
+            </h3>
+            <p class="text-accent m-0 text-[0.9rem] leading-[1.65]">
+              {it.body}
+            </p>
+            <ul class="text-light-grey mt-[1.8rem] flex list-none flex-col gap-2 p-0 text-[0.82rem]">
               {it.bullets.map((b) => (
-                <li>
-                  <span class="bullet-arrow">→</span> {b}
+                <li class="flex gap-[0.7rem]">
+                  <span class="text-med-grey">→</span> {b}
                 </li>
               ))}
             </ul>
@@ -66,68 +74,3 @@ const items = [
     </div>
   </div>
 </section>
-
-<style>
-  .services-section {
-    padding: 8rem 0;
-    border-top: 1px solid var(--color-border);
-  }
-  .services-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1px;
-    background: var(--color-border);
-    border: 1px solid var(--color-border);
-  }
-  .service-card {
-    background: var(--color-card);
-    padding: 2.4rem 2rem;
-    transition: background 0.25s;
-  }
-  .service-card:hover {
-    background: rgba(255, 255, 255, 0.025);
-  }
-  .card-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 1.6rem;
-  }
-  .card-num {
-    font-size: 0.72rem;
-    color: var(--color-med-grey);
-    letter-spacing: 0.12em;
-  }
-  .card-tag {
-    font-size: 0.66rem;
-  }
-  .card-title {
-    font-size: 1.6rem;
-    margin: 0 0 1rem;
-    font-weight: 500;
-    letter-spacing: -0.01em;
-  }
-  .card-body {
-    margin: 0;
-    color: var(--color-accent);
-    line-height: 1.65;
-    font-size: 0.9rem;
-  }
-  .card-bullets {
-    list-style: none;
-    padding: 0;
-    margin: 1.8rem 0 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    font-size: 0.82rem;
-    color: var(--color-light-grey);
-  }
-  .card-bullets li {
-    display: flex;
-    gap: 0.7rem;
-  }
-  .bullet-arrow {
-    color: var(--color-med-grey);
-  }
-</style>
