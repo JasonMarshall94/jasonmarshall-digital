@@ -16,6 +16,7 @@ export const collections = {
         tags: z.array(z.string()),
         postDate: z.date(),
         isDraft: z.boolean(),
+        isFeatured: z.boolean(),
         cover: image(),
         coverAlt: z.string(),
         url: z.url().optional(),

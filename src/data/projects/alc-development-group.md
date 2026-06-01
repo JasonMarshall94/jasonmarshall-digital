@@ -3,8 +3,9 @@ title: ALC Development Group
 slug: alc-development-group
 excerpt: A real estate development firm needed a refreshed marketing site that put its portfolio front and center.
 tags: ["WordPress", "Elementor", "ACF"]
-postDate: 2024-07-01
+postDate: 2024-12-07
 isDraft: false
+isFeatured: false
 cover: ./images/alc-development-group-cover.jpg
 coverAlt: ALC Development Group Website
 url: https://alcdevelopmentgroup.com/

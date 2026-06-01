@@ -3,8 +3,9 @@ title: Marshall Sabatini
 slug: marshall-sabatini
 excerpt: An architecture studio site centered on photography of their built work — quiet typography, generous space.
 tags: ["WordPress", "Elementor", "ACF"]
-postDate: 2023-05-01
+postDate: 2024-05-12
 isDraft: false
+isFeatured: true
 cover: ./images/marshall-sabatini-cover.jpg
 coverAlt: Marshall Sabatini Website
 url: https://marshallsabatini.com
