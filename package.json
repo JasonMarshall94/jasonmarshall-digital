@@ -6,13 +6,21 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "email:dev": "email dev"
   },
   "dependencies": {
     "@astrojs/netlify": "^7.0.10",
+    "@astrojs/react": "^5.0.7",
+    "@react-email/ui": "^6.5.0",
     "@tailwindcss/vite": "^4.2.4",
+    "@types/react": "^19.2.16",
+    "@types/react-dom": "^19.2.3",
     "astro": "^6.3.7",
     "astro-icon": "^1.1.5",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-email": "^6.5.0",
     "resend": "^6.12.4",
     "tailwindcss": "^4.2.4"
   },

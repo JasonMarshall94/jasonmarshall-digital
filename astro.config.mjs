@@ -8,6 +8,8 @@ import icon from "astro-icon";
 
 import netlify from "@astrojs/netlify";
 
+import react from "@astrojs/react";
+
 // https://astro.build/config
 export default defineConfig({
   security: { csp: true },
@@ -16,7 +18,7 @@ export default defineConfig({
     plugins: [tailwindcss(), yaml()],
   },
 
-  integrations: [icon()],
+  integrations: [icon(), react()],
 
   fonts: [
     {
