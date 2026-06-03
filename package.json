@@ -10,24 +10,24 @@
     "email:dev": "email dev"
   },
   "dependencies": {
-    "@astrojs/netlify": "^7.0.10",
+    "@astrojs/netlify": "^7.0.11",
     "@astrojs/react": "^5.0.7",
     "@react-email/ui": "^6.5.0",
-    "@tailwindcss/vite": "^4.2.4",
+    "@tailwindcss/vite": "^4.3.0",
     "@types/react": "^19.2.16",
     "@types/react-dom": "^19.2.3",
-    "astro": "^6.3.7",
+    "astro": "^6.4.2",
     "astro-icon": "^1.1.5",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-email": "^6.5.0",
     "resend": "^6.12.4",
-    "tailwindcss": "^4.2.4"
+    "tailwindcss": "^4.3.0"
   },
   "devDependencies": {
-    "@rollup/plugin-yaml": "^4.1.2",
+    "@rollup/plugin-yaml": "^5.0.0",
     "prettier": "^3.8.3",
     "prettier-plugin-astro": "^0.14.1",
-    "prettier-plugin-tailwindcss": "^0.0.0-insiders.f7d2598"
+    "prettier-plugin-tailwindcss": "0.8.0"
   }
 }
