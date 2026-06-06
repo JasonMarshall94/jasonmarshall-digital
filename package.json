@@ -10,6 +10,7 @@
     "email:dev": "email dev"
   },
   "dependencies": {
+    "@astrojs/check": "^0.9.9",
     "@astrojs/netlify": "^7.0.11",
     "@astrojs/react": "^5.0.7",
     "@react-email/ui": "^6.5.0",
@@ -22,7 +23,8 @@
     "react-dom": "^19.2.7",
     "react-email": "^6.5.0",
     "resend": "^6.12.4",
-    "tailwindcss": "^4.3.0"
+    "tailwindcss": "^4.3.0",
+    "typescript": "^6.0.3"
   },
   "devDependencies": {
     "@rollup/plugin-yaml": "^5.0.0",

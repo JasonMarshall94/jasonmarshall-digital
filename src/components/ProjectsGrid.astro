@@ -14,15 +14,6 @@ const allProjects = (await getCollection("projects"))
   .sort((a, b) => b.data.postDate.valueOf() - a.data.postDate.valueOf());
 
 const displayed = limit ? allProjects.slice(0, limit) : allProjects;
-
-const enhancedDescriptions: Record<string, string> = {
-  "alc-development-group":
-    "A real estate development firm needed a refreshed marketing site that put its portfolio of properties front and center.",
-  "gans-plumbing":
-    "Local plumbing business website rebuilt for clarity, lead capture, and easier in-house edits.",
-  "marshall-sabatini":
-    "An architecture studio site centered on photography of their built work — quiet typography, generous space.",
-};
 ---
 
 <section id="work" class="border-border border-t py-32">
