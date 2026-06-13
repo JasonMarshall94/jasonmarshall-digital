@@ -9,11 +9,13 @@ interface Props {
 }
 const { limit, showViewAll = true } = Astro.props;
 
-const allProjects = (await getCollection("projects"))
-  .filter((p) => !p.data.isDraft)
+const allProjects = await getCollection("projects");
+
+const filteredProjects = allProjects
+  .filter((p) => !p.data.isDraft && p.data.isFeatured)
   .sort((a, b) => b.data.postDate.valueOf() - a.data.postDate.valueOf());
 
-const displayed = limit ? allProjects.slice(0, limit) : allProjects;
+const displayed = limit ? filteredProjects.slice(0, limit) : filteredProjects;
 ---
 
 <section id="work" class="border-border border-t py-32">

@@ -1,9 +1,4 @@
 ---
-interface Props {
-  endpoint?: string;
-}
-const { endpoint } = Astro.props;
-
 const fieldClass =
   "w-full bg-transparent border-0 border-b border-border text-text py-3 text-[0.95rem] outline-none transition-colors duration-200 font-[inherit] focus:border-b-text placeholder:text-med-grey";
 
@@ -13,7 +8,6 @@ const labelClass =
 
 <form
   class="contact-form border-border bg-card flex flex-col gap-[1.6rem] border p-8"
-  data-endpoint={endpoint ?? ""}
 >
   <div class="flex items-center justify-between">
     <div class="label">→ Project Brief</div>
@@ -125,10 +119,11 @@ const labelClass =
 </form>
 
 <script>
+  import { actions } from "astro:actions";
+
   document
     .querySelectorAll<HTMLFormElement>(".contact-form")
     .forEach((form) => {
-      // Chip groups
       form.querySelectorAll<HTMLDivElement>(".chip-group").forEach((group) => {
         group.addEventListener("click", (e) => {
           const target = (e.target as HTMLElement).closest<HTMLButtonElement>(
@@ -169,52 +164,25 @@ const labelClass =
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
-        const data = Object.fromEntries(new FormData(form).entries());
-        if (!data.name || !data.email || !data.message) {
+        const formData = new FormData(form);
+        if (!formData.get("name") || !formData.get("email") || !formData.get("message")) {
           setStatus("error", "× Please fill in name, email, and details.");
           setTimeout(
-            () =>
-              setStatus(
-                "idle",
-                "→ Replies sent to contact@jasonmarshall.digital",
-              ),
+            () => setStatus("idle", "→ Replies sent to contact@jasonmarshall.digital"),
             2200,
           );
           return;
         }
-        const endpoint = form.dataset.endpoint;
-        if (!endpoint) {
-          setStatus("sent", "✓ Got it — I'll reply within 24 hours.");
-          if (submit) submit.disabled = true;
-          setTimeout(() => {
-            form.reset();
-            if (submit) submit.disabled = false;
-            setStatus(
-              "idle",
-              "→ Replies sent to contact@jasonmarshall.digital",
-            );
-          }, 2400);
-          return;
-        }
         setStatus("idle", "→ Sending...");
         if (submit) submit.disabled = true;
-        try {
-          const res = await fetch(endpoint, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-            body: JSON.stringify(data),
-          });
-          if (!res.ok) throw new Error("Submit failed");
+        const { error } = await actions.send(formData);
+        if (error) {
+          setStatus("error", "× Something went wrong. Please email directly.");
+        } else {
           setStatus("sent", "✓ Got it — I'll reply within 24 hours.");
           form.reset();
-        } catch {
-          setStatus("error", "× Something went wrong. Please email directly.");
-        } finally {
-          if (submit) submit.disabled = false;
         }
+        if (submit) submit.disabled = false;
       });
     });
 </script>
