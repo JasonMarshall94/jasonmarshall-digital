@@ -20,33 +20,52 @@ pnpm astro check
 
 ## Architecture
 
-This is a personal portfolio/agency site built with **Astro 6**, deployed to **Netlify** via `@astrojs/netlify` adapter (SSR-capable).
+This is a personal portfolio/agency site built with **Astro 6**, explicitly set to `output: "static"` (SSG). Deployed to **Netlify** via `@astrojs/netlify` adapter, which handles the contact form action as a Netlify Function.
 
 ### Key integrations
 - **Tailwind CSS v4** via `@tailwindcss/vite` — configured entirely in `src/styles/global.css` using `@theme`, `@utility`, and `@layer` directives (no `tailwind.config.js`)
-- **astro-icon** — SVG icons placed in `src/icons/` are auto-resolved
-- **React** (`@astrojs/react`) — used for interactive components and email templates only
+- **astro-icon** — SVG icons placed in `src/icons/` are auto-resolved by name (e.g. `<Icon name="github" />` → `src/icons/github.svg`)
+- **React** (`@astrojs/react`) — used for email templates only (`src/emails/`). No React components are used in the browser; no `client:*` directives exist in the project
 - **YAML** (`@rollup/plugin-yaml`) — imports `.yaml` files as JS modules
 
 ### Path aliases
 - `@/*` → `src/*`
 - `@/ui/*` → `src/components/ui/*`
+- `@/global/*` → `src/components/global/*`
+
+### Component organisation
+- `src/components/` — page section components (Hero, About, Services, Contact, ContactForm, ProjectCard, ProjectsGrid, ProjectsArchive, StackMarquee, CTA)
+- `src/components/global/` — site-wide shell components (Nav, Footer, Logo)
+- `src/components/ui/` — reusable primitives (SectionHeading, CopyChip)
 
 ### Content layer
 Projects are Markdown files in `src/data/projects/`, typed via `src/content.config.ts`. The schema requires: `title`, `slug`, `excerpt`, `tags`, `postDate`, `isDraft`, `isFeatured`, `cover` (image), `coverAlt`, and optional `url`. Cover images live in `src/data/projects/images/`.
 
+`ProjectsGrid` (homepage) filters to `isFeatured: true && isDraft: false`. `ProjectsArchive` (projects page) shows all non-draft projects.
+
 The `slug` field in frontmatter drives the URL; `getStaticPaths` in `src/pages/projects/_[slug].astro` maps `project.data.slug` to the route param.
 
 ### Server actions
-`src/actions/index.ts` exports a `send` action (form-accepting) that uses **Resend** (`RESEND_API_KEY` env var) to send transactional email. Email templates live in `src/emails/` as React Email TSX components.
+`src/actions/index.ts` exports a `send` action (`accept: "form"`) that validates fields with Zod and uses **Resend** (`RESEND_API_KEY` env var) to send email to `contact@jasonmarshall.digital`. The active email template is `src/emails/AdminNotification.tsx` — a plain React component with inline styles (no React Email component library).
 
 ### Global site data
-- `src/data/siteData.ts` — default page `title` and `description` consumed by `BaseLayout`
-- `src/data/siteGlobals.yaml` — contact info and external URLs (imported as a module anywhere needed)
-- `src/data/navLinks.json` — navigation link definitions
+- `src/data/siteData.yaml` — site title, description, contact email/phone, and GitHub URL; imported wherever global data is needed
+- `src/data/navLinks.json` — nav link definitions with shape `{ title, slug, pageHref? }[]`; `pageHref` is an optional override for the non-home href (e.g. Work → `/projects`)
+- `src/data/stackItems.ts` — `string[]` of technology names used by `StackMarquee`
+
+### Navigation
+`src/components/global/Nav.astro` includes a desktop nav and a mobile off-canvas drawer. The drawer slides in from the right and is driven entirely by a `data-open` attribute on the `<header>` — no framework needed. Hamburger → × animation uses `group-data-[open=true]/nav` Tailwind variants. The `inert` attribute is applied to `<main>` when the drawer is open.
 
 ### Styling conventions
-Custom design tokens are defined in `src/styles/global.css` under `@theme`. Reusable utility classes (`btn`, `btn-primary`, `label`, `nav-link`, `gridlines`, `float-in`, `marquee`, etc.) are defined there with `@utility` and should be extended there — not in component `<style>` blocks — when they need to be shared. The `.container` utility is also defined there (max-width 1200px, centered).
+Custom design tokens are defined in `src/styles/global.css` under `@theme`. Reusable utility classes are defined with `@utility` and should be extended there — not in component `<style>` blocks — when shared. Key utilities:
+
+- `btn` / `btn-primary` — outline and filled button styles
+- `label` — small uppercase tracking label
+- `nav-link` — underline-on-hover nav anchor
+- `hide-mobile` — `display: none` at ≤720px
+- `hide-desktop` — `display: none` at ≥721px
+- `gridlines`, `float-in`, `marquee`, `scroll-fade-mask`, `pulse-dot`, `blink`
+- `.container` — max-width 1200px, centered
 
 The design language is dark/monochrome: `--color-dark-grey` (#121212) background, `--color-text` (#e0e0e0), `--color-accent` (#b0b0b0), with JetBrains Mono as the sole typeface loaded via Fontsource.
 

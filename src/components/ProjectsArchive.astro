@@ -130,7 +130,7 @@ const startYear = 2023;
               project={p}
               index={i}
               description={p.data.excerpt}
-              loading="eager"
+              loading={i < 3 ? "eager" : "lazy"}
             />
           </div>
         ))
