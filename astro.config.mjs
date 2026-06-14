@@ -12,6 +12,7 @@ import react from "@astrojs/react";
 
 // https://astro.build/config
 export default defineConfig({
+  site: "https://jasonmarshall.digital",
   output: "static",
   security: { csp: true },
 
