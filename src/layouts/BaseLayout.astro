@@ -2,13 +2,14 @@
 import { Font } from "astro:assets";
 
 import "@/styles/global.css";
-import { baseData } from "@/data/siteData";
+import data from "@/data/siteData.yaml";
 
 interface Props {
   title?: string;
   description?: string;
 }
-const { title = baseData.title, description = baseData.description } =
+
+const { title = data.baseSEO.title, description = data.baseSEO.description } =
   Astro.props;
 ---
 

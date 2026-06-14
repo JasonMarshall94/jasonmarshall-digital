@@ -4,6 +4,7 @@ import { getCollection } from "astro:content";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import Nav from "@/global/Nav.astro";
 import Footer from "@/global/Footer.astro";
+import data from "@/data/siteData.yaml";
 
 export const getStaticPaths = (async () => {
   const projects = await getCollection("projects");
@@ -20,7 +21,7 @@ if (!project) {
 }
 
 const { title, excerpt } = project.data;
-const pageTitle = `${title} | Projects`;
+const pageTitle = `${title} | ${data.baseSEO.title}`;
 ---
 
 <BaseLayout

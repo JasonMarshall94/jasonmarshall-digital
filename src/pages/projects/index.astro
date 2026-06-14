@@ -3,11 +3,11 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import Nav from "@/global/Nav.astro";
 import ProjectsArchive from "@/components/ProjectsArchive.astro";
 import Footer from "@/global/Footer.astro";
-import { baseData } from "@/data/siteData";
+import data from "@/data/siteData.yaml";
 ---
 
 <BaseLayout
-  title={`Projects — ${baseData.title}`}
+  title={`Projects — ${data.baseSEO.title}`}
   description="Selected client work and personal builds from Jason Marshall Digital."
 >
   <Nav page="page" />

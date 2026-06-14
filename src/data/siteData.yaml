@@ -1,4 +1,7 @@
 # Site Globals
+baseSEO:
+  title: Jason Marshall Digital
+  description: Jason Marshall Digital specializes in WordPress, Astro, and Next JS.
 urls:
   github: https://github.com/JasonMarshall94
 contactInfo:

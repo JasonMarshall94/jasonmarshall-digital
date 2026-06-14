@@ -1,4 +1,8 @@
 ---
+import data from "@/data/siteData.yaml";
+
+const email: string = data.contactInfo.email;
+
 const fieldClass =
   "w-full bg-transparent border-0 border-b border-border text-text py-3 text-[0.95rem] outline-none transition-colors duration-200 font-[inherit] focus:border-b-text placeholder:text-med-grey";
 
@@ -46,7 +50,7 @@ const labelClass =
       <label class={labelClass} for="type">Project Type</label>
       <div id="type" class="chip-group flex flex-wrap gap-2" data-group="type">
         {
-          ["WordPress", "Astro", "Next.js", "Not sure"].map((t, i) => (
+          ["Website", "SEO", "Not Sure"].map((t, i) => (
             <button
               type="button"
               class={`chip border-border cursor-pointer border px-[0.8rem] py-2 font-[inherit] text-[0.78rem] transition-all duration-200 ${
@@ -61,7 +65,7 @@ const labelClass =
           ))
         }
       </div>
-      <input type="hidden" name="type" value="WordPress" data-bind="type" />
+      <input type="hidden" name="type" value="Website" data-bind="type" />
     </div>
     <div>
       <label class={labelClass} for="budget">Budget</label>
@@ -71,7 +75,7 @@ const labelClass =
         data-group="budget"
       >
         {
-          ["<$3k", "$3-6k", "$6-12k", "$12k+"].map((t, i) => (
+          ["<$5k", "$5-10k", "$10k+", "N/A"].map((t, i) => (
             <button
               type="button"
               class={`chip border-border cursor-pointer border px-[0.8rem] py-2 font-[inherit] text-[0.78rem] transition-all duration-200 ${
@@ -86,7 +90,7 @@ const labelClass =
           ))
         }
       </div>
-      <input type="hidden" name="budget" value="$3-6k" data-bind="budget" />
+      <input type="hidden" name="budget" value="$5-10k" data-bind="budget" />
     </div>
   </div>
 
@@ -106,7 +110,7 @@ const labelClass =
       class="form-status text-med-grey text-[0.74rem] tracking-[0.08em] data-[status=error]:text-[#e08080] data-[status=sent]:text-[#7fc88a]"
       data-status="idle"
     >
-      → Replies sent to contact@jasonmarshall.digital
+      → Replies sent to {email}
     </div>
     <button
       type="submit"
@@ -165,10 +169,18 @@ const labelClass =
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
         const formData = new FormData(form);
-        if (!formData.get("name") || !formData.get("email") || !formData.get("message")) {
+        if (
+          !formData.get("name") ||
+          !formData.get("email") ||
+          !formData.get("message")
+        ) {
           setStatus("error", "× Please fill in name, email, and details.");
           setTimeout(
-            () => setStatus("idle", "→ Replies sent to contact@jasonmarshall.digital"),
+            () =>
+              setStatus(
+                "idle",
+                "→ Replies sent to contact@jasonmarshall.digital",
+              ),
             2200,
           );
           return;
