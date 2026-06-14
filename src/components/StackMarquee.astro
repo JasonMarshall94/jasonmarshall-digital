@@ -1,23 +1,10 @@
 ---
+import stackItems from "@/data/stackItems.ts";
+
 interface Props {
   items?: string[];
 }
-const {
-  items = [
-    "WordPress",
-    "Elementor",
-    "ACF",
-    "Astro",
-    "Next.js",
-    "Tailwind CSS",
-    "TypeScript",
-    "React",
-    "Headless CMS",
-    "Performance",
-    "Accessibility",
-    "SEO",
-  ],
-} = Astro.props;
+const { items = stackItems } = Astro.props;
 ---
 
 <div

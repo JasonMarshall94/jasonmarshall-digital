@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import ProjectCard from "@/components/ProjectCard.astro";
+import CallToAction from "@/components/CTA.astro";
 
 const allProjects = (await getCollection("projects"))
   .filter((p) => !p.data.isDraft)
@@ -120,7 +121,7 @@ const startYear = 2023;
       {
         allProjects.map((p, i) => (
           <div
-            class="grid-item [[hidden]]:hidden"
+            class="grid-item h-full [[hidden]]:hidden"
             data-tags={p.data.tags.join(",")}
             data-year={p.data.postDate.getFullYear()}
             data-index={i}
@@ -148,24 +149,7 @@ const startYear = 2023;
       </button>
     </div>
 
-    <!-- CTA strip -->
-    <div
-      class="border-border bg-card mt-20 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-8 border px-8 py-12 max-[720px]:grid-cols-1"
-    >
-      <div>
-        <div class="label mb-[0.8rem]">Looking for something specific?</div>
-        <div
-          class="text-text text-[clamp(1.3rem,2.4vw,1.9rem)] leading-tight tracking-[-0.01em]"
-        >
-          Have a project in mind? <span class="text-light-grey"
-            >Let's chat.</span
-          >
-        </div>
-      </div>
-      <a href="/#contact" class="btn btn-primary whitespace-nowrap">
-        Start a project <span aria-hidden="true">→</span>
-      </a>
-    </div>
+    <CallToAction />
   </div>
 </section>
 

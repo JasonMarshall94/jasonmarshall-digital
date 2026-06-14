@@ -2,8 +2,8 @@
 import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import Nav from "@/components/Nav.astro";
-import Footer from "@/components/Footer.astro";
+import Nav from "@/global/Nav.astro";
+import Footer from "@/global/Footer.astro";
 
 export const getStaticPaths = (async () => {
   const projects = await getCollection("projects");

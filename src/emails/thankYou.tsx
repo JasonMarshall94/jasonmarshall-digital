@@ -38,14 +38,14 @@ export const ConfirmEmail = ({ companyName, url }: ConfirmEmailProps) => (
 
       <Body className="bg-bg-2 m-0 text-center font-sans">
         <Preview>Confirm your email address</Preview>
-        <Container className="mobile:mt-0 mx-auto mt-8 w-full max-w-[640px]">
+        <Container className="mobile:mt-0 mx-auto mt-8 w-full max-w-160">
           <Section>
             <Section className="bg-bg mobile:px-2 px-6 py-4">
               <Section className="mb-3 px-6">
                 <Row>
-                  <Column className="w-1/2 py-[7px] align-middle">
+                  <Column className="w-1/2 py-1.75 align-middle">
                     <Row>
-                      <Column className="w-[32px] align-middle">
+                      <Column className="w-8 align-middle">
                         <Img
                           src={`${baseUrl}/static/shared/logo-black.png`}
                           alt=""
@@ -55,7 +55,7 @@ export const ConfirmEmail = ({ companyName, url }: ConfirmEmailProps) => (
                       </Column>
                     </Row>
                   </Column>
-                  <Column align="right" className="w-1/2 py-[7px] align-middle">
+                  <Column align="right" className="w-1/2 py-1.75 align-middle">
                     <Text className="font-13 m-0 text-right font-sans">
                       <span className="text-fg-3">{companyName}</span>
                     </Text>
@@ -63,7 +63,7 @@ export const ConfirmEmail = ({ companyName, url }: ConfirmEmailProps) => (
                 </Row>
               </Section>
 
-              <Section className="bg-bg-2 mobile:px-6 mobile:py-12 rounded-[8px] px-[40px] py-[64px] text-center">
+              <Section className="bg-bg-2 mobile:px-6 mobile:py-12 rounded-lg px-10 py-16 text-center">
                 <Section className="mb-3">
                   <Img
                     src={`${baseUrl}/static/shared/logo-black.png`}
@@ -76,7 +76,7 @@ export const ConfirmEmail = ({ companyName, url }: ConfirmEmailProps) => (
                   </Heading>
                 </Section>
 
-                <Text className="font-16 text-fg-2 mx-auto mt-0 mb-8 max-w-[380px] text-center font-sans">
+                <Text className="font-16 text-fg-2 mx-auto mt-0 mb-8 max-w-95 text-center font-sans">
                   Thank you for signing up for {companyName}.
                   <br />
                   To verify your account, we just need to confirm your email
@@ -92,7 +92,7 @@ export const ConfirmEmail = ({ companyName, url }: ConfirmEmailProps) => (
                   </Button>
                 </Section>
 
-                <Text className="font-13 text-fg-3 mx-auto mt-8 mb-0 max-w-[400px] text-center font-sans">
+                <Text className="font-13 text-fg-3 mx-auto mt-8 mb-0 max-w-100 text-center font-sans">
                   If you didn&apos;t request this,
                   <br />
                   please ignore this email.
@@ -103,7 +103,7 @@ export const ConfirmEmail = ({ companyName, url }: ConfirmEmailProps) => (
               <Section className="bg-bg">
                 <Row>
                   <Column className="px-6 py-10 text-center">
-                    <Text className="font-13 text-fg-3 mx-auto mt-0 mb-8 max-w-[280px] text-center font-sans">
+                    <Text className="font-13 text-fg-3 mx-auto mt-0 mb-8 max-w-70 text-center font-sans">
                       Barebones is the catchy slogan that perfectly encapsulates
                       the vision of our company.
                     </Text>

@@ -1,14 +1,6 @@
 [
-  {
-    "title": "Home",
-    "slug": "/"
-  },
-  {
-    "title": "Projects",
-    "slug": "/projects"
-  },
-  {
-    "title": "Contact",
-    "slug": "/contact"
-  }
+  { "title": "Work", "slug": "work", "pageHref": "/projects" },
+  { "title": "Services", "slug": "services" },
+  { "title": "About", "slug": "about" },
+  { "title": "Contact", "slug": "contact" }
 ]

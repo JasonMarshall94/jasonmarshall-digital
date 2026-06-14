@@ -6,6 +6,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "@/ui/*": ["./src/components/ui/*"],
+      "@/global/*": ["./src/components/global/*"],
     },
     "jsx": "react-jsx",
     "jsxImportSource": "react",
