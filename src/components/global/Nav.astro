@@ -26,12 +26,14 @@ const isCurrentPage = !isHome && currentPath.startsWith("/projects");
 <header
   id="site-nav"
   data-scrolled="false"
-  class="data-[scrolled=true]:bg-dark-grey/78 data-[scrolled=true]:border-border fixed top-0 right-0 left-0 z-50 border-b border-transparent bg-transparent backdrop-blur-[14px] transition-[background-color,border-color] duration-300"
+  data-open="false"
+  class="group/nav data-[scrolled=true]:bg-dark-grey/78 data-[scrolled=true]:border-border fixed top-0 right-0 left-0 z-50 border-b border-transparent bg-transparent backdrop-blur-[14px] transition-[background-color,border-color] duration-300"
 >
   <div class="container flex h-18 items-center justify-between">
     <a
       href={isHome ? "#top" : homeHref}
       class="text-text flex items-center gap-[0.7rem]"
+      aria-label="Home"
     >
       <Logo size={28} />
       <span
@@ -41,7 +43,7 @@ const isCurrentPage = !isHome && currentPath.startsWith("/projects");
       </span>
     </a>
 
-    <nav class="flex items-center gap-8 text-[0.82rem]">
+    <nav class="flex items-center gap-6 text-[0.82rem]">
       {
         links.map((l) => {
           const active = isCurrentPage && l.slug === "work";
@@ -58,21 +60,156 @@ const isCurrentPage = !isHome && currentPath.startsWith("/projects");
           );
         })
       }
+
       <a
         href="https://github.com/JasonMarshall94"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="GitHub"
-        class="border-border text-light-grey hover:text-text hover:border-light-grey inline-flex h-9 w-9 items-center justify-center border transition-colors duration-200"
+        class="hide-mobile border-border text-light-grey hover:text-text hover:border-light-grey inline-flex h-9 w-9 items-center justify-center border transition-colors duration-200"
       >
         <Icon name="github" width={14} height={14} />
       </a>
+
+      <!-- Hamburger -->
+      <button
+        id="nav-hamburger"
+        type="button"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        aria-label="Open menu"
+        class="hide-desktop border-border text-light-grey hover:text-text relative flex h-9 w-9 flex-col items-center justify-center gap-[5px] border bg-transparent transition-colors duration-200"
+      >
+        <span
+          class="block h-px w-[18px] origin-center bg-current transition-all duration-300 group-data-[open=true]/nav:translate-y-[6px] group-data-[open=true]/nav:rotate-45"
+        ></span>
+        <span
+          class="block h-px w-[18px] bg-current transition-all duration-300 group-data-[open=true]/nav:opacity-0"
+        ></span>
+        <span
+          class="block h-px w-[18px] origin-center bg-current transition-all duration-300 group-data-[open=true]/nav:-translate-y-[6px] group-data-[open=true]/nav:-rotate-45"
+        ></span>
+      </button>
     </nav>
   </div>
 </header>
 
+<!-- Backdrop -->
+<div
+  id="nav-backdrop"
+  aria-hidden="true"
+  class="bg-dark-grey/70 pointer-events-none fixed inset-0 z-40 opacity-0 backdrop-blur-sm transition-opacity duration-300"
+>
+</div>
+
+<!-- Off-canvas drawer -->
+<div
+  id="mobile-menu"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Navigation"
+  class="border-border bg-card fixed top-0 right-0 bottom-0 z-50 flex w-[min(320px,85vw)] translate-x-full flex-col border-l transition-transform duration-[350ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+>
+  <!-- Drawer header -->
+  <div
+    class="border-border flex h-18 shrink-0 items-center justify-between border-b px-6"
+  >
+    <span class="label text-[0.68rem]">Menu</span>
+    <button
+      id="nav-close"
+      type="button"
+      aria-label="Close menu"
+      class="border-border text-light-grey hover:text-text inline-flex h-9 w-9 items-center justify-center border bg-transparent transition-colors duration-200"
+    >
+      <span aria-hidden="true" class="text-[1.1rem] leading-none">×</span>
+    </button>
+  </div>
+
+  <!-- Links -->
+  <nav class="flex flex-1 flex-col px-6 py-6">
+    {
+      links.map((l) => {
+        const active = isCurrentPage && l.slug === "work";
+        return (
+          <a
+            href={l.href}
+            data-section={l.slug}
+            class={`mobile-nav-link border-border border-b py-5 text-[1.4rem] tracking-[-0.01em] transition-colors duration-200 ${
+              active ? "text-text" : "text-light-grey hover:text-text"
+            }`}
+          >
+            {l.title}
+          </a>
+        );
+      })
+    }
+  </nav>
+
+  <!-- Drawer footer -->
+  <div class="border-border shrink-0 border-t px-6 py-6">
+    <a
+      href="https://github.com/JasonMarshall94"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="GitHub"
+      class="border-border text-light-grey hover:text-text hover:border-light-grey inline-flex h-9 w-9 items-center justify-center border transition-colors duration-200"
+    >
+      <Icon name="github" width={14} height={14} />
+    </a>
+  </div>
+</div>
+
 <script>
   const nav = document.getElementById("site-nav");
+  const hamburger = document.getElementById(
+    "nav-hamburger",
+  ) as HTMLButtonElement | null;
+  const closeBtn = document.getElementById("nav-close");
+  const backdrop = document.getElementById("nav-backdrop");
+  const drawer = document.getElementById("mobile-menu");
+
+  // ── Mobile menu ──────────────────────────────────────────────
+
+  const openMenu = () => {
+    nav?.setAttribute("data-open", "true");
+    hamburger?.setAttribute("aria-expanded", "true");
+    hamburger?.setAttribute("aria-label", "Close menu");
+    backdrop?.classList.remove("opacity-0", "pointer-events-none");
+    backdrop?.classList.add("opacity-100", "pointer-events-auto");
+    drawer?.classList.remove("translate-x-full");
+    drawer?.classList.add("translate-x-0");
+    document.body.classList.add("overflow-hidden");
+    document.querySelector("main")?.setAttribute("inert", "");
+    drawer?.querySelector<HTMLAnchorElement>("a")?.focus();
+  };
+
+  const closeMenu = () => {
+    nav?.setAttribute("data-open", "false");
+    hamburger?.setAttribute("aria-expanded", "false");
+    hamburger?.setAttribute("aria-label", "Open menu");
+    backdrop?.classList.add("opacity-0", "pointer-events-none");
+    backdrop?.classList.remove("opacity-100", "pointer-events-auto");
+    drawer?.classList.add("translate-x-full");
+    drawer?.classList.remove("translate-x-0");
+    document.body.classList.remove("overflow-hidden");
+    document.querySelector("main")?.removeAttribute("inert");
+    hamburger?.focus();
+  };
+
+  hamburger?.addEventListener("click", openMenu);
+  closeBtn?.addEventListener("click", closeMenu);
+  backdrop?.addEventListener("click", closeMenu);
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && nav?.dataset.open === "true") closeMenu();
+  });
+
+  drawer?.querySelectorAll(".mobile-nav-link").forEach((link) => {
+    link.addEventListener("click", closeMenu);
+  });
+
+  // ── Scroll detection + active section ────────────────────────
+
   const sectionIds = ["top", "work", "services", "about", "contact"];
   const anchors = Array.from(
     document.querySelectorAll<HTMLAnchorElement>(".nav-anchor"),
@@ -97,7 +234,6 @@ const isCurrentPage = !isHome && currentPath.startsWith("/projects");
       if (el && el.offsetTop <= y) current = id;
     }
     anchors.forEach((a) => {
-      // Skip "Work" anchor on non-home pages (it routes to /projects)
       if (
         a.dataset.section === "work" &&
         a.getAttribute("href")?.startsWith("/")

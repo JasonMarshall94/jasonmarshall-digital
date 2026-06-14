@@ -231,6 +231,12 @@ body {
   }
 }
 
+@utility hide-desktop {
+  @media (min-width: 721px) {
+    display: none !important;
+  }
+}
+
 /* ----- Project card composed hover (needs child selector) ----- */
 .project-card {
   transition:
