@@ -6,7 +6,7 @@
   --color-deep: #0c0c0c;
   --color-card: #181818;
   --color-border: #262626;
-  --color-med-grey: #444444;
+  --color-med-grey: #606060;
   --color-light-grey: #888888;
   --color-text: #e0e0e0;
   --color-accent: #b0b0b0;
@@ -51,10 +51,10 @@
 }
 
 /* ----- Focus styles ----- */
-:focus-visible {
+/*:focus-visible {
   outline: 2px solid var(--color-text);
   outline-offset: 3px;
-}
+}*/
 
 /* ----- Base ----- */
 html,
