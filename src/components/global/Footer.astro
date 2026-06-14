@@ -14,6 +14,7 @@ const ghLabel = githubUrl.replace(/^https?:\/\//, "");
 <footer class="border-border mt-8 border-t pt-12 pb-8">
   <div class="container">
     <div
+      data-footer-cta
       class="border-border mb-6 grid grid-cols-[auto_1fr_auto] items-center gap-8 border-b pb-10 max-[720px]:grid-cols-1 max-[720px]:justify-items-center max-[720px]:text-center"
     >
       <a
@@ -48,3 +49,22 @@ const ghLabel = githubUrl.replace(/^https?:\/\//, "");
     </div>
   </div>
 </footer>
+
+<script>
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  gsap.registerPlugin(ScrollTrigger);
+
+  gsap.matchMedia().add("(prefers-reduced-motion: no-preference)", () => {
+    const cta = document.querySelector("[data-footer-cta]");
+    if (cta) {
+      gsap.from(cta, {
+        opacity: 0,
+        y: 24,
+        duration: 0.85,
+        ease: "power3.out",
+        scrollTrigger: { trigger: cta, start: "top 90%" },
+      });
+    }
+  });
+</script>

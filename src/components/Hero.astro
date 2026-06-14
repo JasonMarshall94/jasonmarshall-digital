@@ -17,8 +17,9 @@ const {
   <div class="gridlines"></div>
   <div class="relative z-2 container">
     <div
-      class="float-in mb-12 flex flex-wrap items-center gap-6"
-      style="animation-delay: 0.05s"
+      data-hero="badge"
+      class="mb-12 flex flex-wrap items-center gap-6"
+      style="opacity: 0; transform: translateY(16px)"
     >
       <div
         class="border-border text-light-grey inline-flex items-center gap-[0.6rem] border px-[0.8rem] py-[0.4rem] text-[0.72rem] tracking-[0.12em] uppercase"
@@ -35,8 +36,9 @@ const {
     </div>
 
     <h1
-      class="float-in text-text m-0 text-[clamp(2.4rem,6.6vw,5.6rem)] leading-[1.02] font-medium tracking-[-0.03em] text-balance"
-      style="animation-delay: 0.15s"
+      data-hero="headline"
+      class="text-text m-0 text-[clamp(2.4rem,6.6vw,5.6rem)] leading-[1.02] font-medium tracking-[-0.03em] text-balance"
+      style="opacity: 0"
     >
       {headline}
       <span
@@ -45,16 +47,18 @@ const {
     </h1>
 
     <div
-      class="float-in text-accent mt-10 grid max-w-160 grid-cols-[auto_1fr] gap-x-6 gap-y-4 text-base leading-[1.7]"
-      style="animation-delay: 0.3s"
+      data-hero="desc"
+      class="text-accent mt-10 grid max-w-160 grid-cols-[auto_1fr] gap-x-6 gap-y-4 text-base leading-[1.7]"
+      style="opacity: 0; transform: translateY(16px)"
     >
       <span class="text-light-grey select-none">{`>`}</span>
       <p class="m-0">{description}</p>
     </div>
 
     <div
-      class="float-in mt-12 flex flex-wrap gap-4"
-      style="animation-delay: 0.45s"
+      data-hero="cta"
+      class="mt-12 flex flex-wrap gap-4"
+      style="opacity: 0; transform: translateY(16px)"
     >
       <a href="#work" class="btn btn-primary">
         View Selected Work <span aria-hidden="true">↓</span>
@@ -87,4 +91,59 @@ const {
   };
   tick();
   setInterval(tick, 30000);
+</script>
+
+<script>
+  import { gsap } from "gsap";
+  import { SplitText } from "gsap/SplitText";
+  gsap.registerPlugin(SplitText);
+
+  const mm = gsap.matchMedia();
+
+  mm.add("(prefers-reduced-motion: no-preference)", () => {
+    const badge = document.querySelector('[data-hero="badge"]');
+    const headline = document.querySelector('[data-hero="headline"]');
+    const desc = document.querySelector('[data-hero="desc"]');
+    const cta = document.querySelector('[data-hero="cta"]');
+
+    const tl = gsap.timeline({ delay: 0.15 });
+
+    if (badge) {
+      tl.to(badge, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" });
+    }
+
+    if (headline) {
+      const cursor = headline.querySelector(".blink");
+      const split = new SplitText(headline, { type: "chars,words" });
+      gsap.set(split.chars, { opacity: 0 });
+      gsap.set(headline, { opacity: 1 });
+      if (cursor) gsap.set(cursor, { opacity: 0 });
+      tl.to(
+        split.chars,
+        {
+          opacity: 1,
+          duration: 0,
+          stagger: 0.028,
+          ease: "none",
+          onComplete: () => cursor && gsap.set(cursor, { opacity: 1 }),
+        },
+        "<0.2"
+      );
+    }
+
+    if (desc) {
+      tl.to(desc, { opacity: 1, y: 0, duration: 0.75, ease: "power3.out" }, "-=0.7");
+    }
+
+    if (cta) {
+      tl.to(cta, { opacity: 1, y: 0, duration: 0.75, ease: "power3.out" }, "<0.3");
+    }
+  });
+
+  mm.add("(prefers-reduced-motion: reduce)", () => {
+    gsap.set(
+      ['[data-hero="badge"]', '[data-hero="headline"]', '[data-hero="desc"]', '[data-hero="cta"]'],
+      { opacity: 1, clearProps: "transform" }
+    );
+  });
 </script>

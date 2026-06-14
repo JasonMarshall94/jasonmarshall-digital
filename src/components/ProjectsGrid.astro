@@ -24,10 +24,13 @@ const displayed = limit ? filteredProjects.slice(0, limit) : filteredProjects;
       index="01"
       eyebrow="Work / Selected"
       title="A few recent builds."
-      description="A small set of recent client work — mostly small businesses and studios who needed a real website without a real agency."
+      description="A small set of recent client work. Mostly small businesses and studios who needed a real website that works for them."
     />
 
-    <div class="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-6">
+    <div
+      id="work-grid"
+      class="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-6"
+    >
       {
         displayed.map((p, i) => (
           <ProjectCard project={p} index={i} description={p.data.excerpt} />
@@ -49,3 +52,26 @@ const displayed = limit ? filteredProjects.slice(0, limit) : filteredProjects;
     }
   </div>
 </section>
+
+<script>
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  gsap.matchMedia().add("(prefers-reduced-motion: no-preference)", () => {
+    const cards = document.querySelectorAll("#work-grid .project-card");
+    if (cards.length) {
+      gsap.from(cards, {
+        opacity: 0,
+        duration: 0.9,
+        stagger: 0.18,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: "#work-grid",
+          start: "top bottom",
+        },
+      });
+    }
+  });
+</script>

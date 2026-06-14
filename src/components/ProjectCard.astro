@@ -12,13 +12,16 @@ const { project, index, description, loading = "lazy" } = Astro.props;
 const { data } = project;
 const num = String(index + 1).padStart(2, "0");
 const year = data.postDate.getFullYear();
+
+const Tag = data.url ? "a" : "div";
+const linkAttrs = data.url
+  ? { href: data.url, target: "_blank", rel: "noopener noreferrer" }
+  : {};
 ---
 
-<a
-  href={data.url ?? "#"}
-  target={data.url ? "_blank" : undefined}
-  rel={data.url ? "noopener noreferrer" : undefined}
+<Tag
   class="project-card group border-border bg-card text-text relative flex h-full flex-col border no-underline"
+  {...linkAttrs}
 >
   <div
     class="project-image bg-deep border-border relative aspect-video overflow-hidden border-b [&_img]:block [&_img]:h-full [&_img]:w-full [&_img]:object-cover"
@@ -68,16 +71,19 @@ const year = data.postDate.getFullYear();
           ))
         }
       </div>
-      <span
-        class="text-light-grey group-hover:text-text inline-flex items-center gap-[0.4rem] text-[0.75rem] tracking-[0.08em] uppercase transition-colors duration-200"
-      >
-        Visit
-        <span
-          class="inline-block transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-        >
-          ↗
-        </span>
-      </span>
+      {
+        data.url && (
+          <span
+            class="text-light-grey group-hover:text-text inline-flex items-center gap-[0.4rem] text-[0.75rem] tracking-[0.08em] uppercase transition-colors duration-200"
+            aria-hidden="true"
+          >
+            Visit
+            <span class="inline-block transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
+              ↗
+            </span>
+          </span>
+        )
+      }
     </div>
   </div>
-</a>
+</Tag>

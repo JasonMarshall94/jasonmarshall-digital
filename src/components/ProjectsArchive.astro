@@ -22,8 +22,9 @@ const startYear = 2023;
   <div class="gridlines"></div>
   <div class="relative z-2 container">
     <div
-      class="float-in label mb-8 flex items-center gap-[0.6rem]"
-      style="animation-delay: 0.05s"
+      data-arch-hero="breadcrumb"
+      class="label mb-8 flex items-center gap-[0.6rem]"
+      style="opacity: 0; transform: translateY(16px)"
     >
       <a href="/" class="text-light-grey">← Home</a>
       <span class="text-med-grey">/</span>
@@ -31,15 +32,17 @@ const startYear = 2023;
     </div>
 
     <h1
-      class="float-in text-text m-0 text-[clamp(2.4rem,6vw,4.8rem)] leading-[1.02] font-medium tracking-[-0.03em]"
-      style="animation-delay: 0.15s"
+      data-arch-hero="title"
+      class="text-text m-0 text-[clamp(2.4rem,6vw,4.8rem)] leading-[1.02] font-medium tracking-[-0.03em]"
+      style="opacity: 0; transform: translateY(16px)"
     >
       All Projects.
     </h1>
 
     <div
-      class="float-in mt-8 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-8 max-[720px]:grid-cols-1"
-      style="animation-delay: 0.3s"
+      data-arch-hero="desc"
+      class="mt-8 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-8 max-[720px]:grid-cols-1"
+      style="opacity: 0; transform: translateY(16px)"
     >
       <p class="text-accent m-0 max-w-140 text-base leading-[1.7]">
         Selected client work and personal builds — small business marketing
@@ -229,4 +232,61 @@ const startYear = 2023;
   });
 
   apply();
+</script>
+
+<script>
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  gsap.registerPlugin(ScrollTrigger);
+
+  const mm = gsap.matchMedia();
+
+  mm.add("(prefers-reduced-motion: no-preference)", () => {
+    const breadcrumb = document.querySelector('[data-arch-hero="breadcrumb"]');
+    const title = document.querySelector('[data-arch-hero="title"]');
+    const desc = document.querySelector('[data-arch-hero="desc"]');
+
+    const tl = gsap.timeline({ delay: 0.1 });
+    if (breadcrumb)
+      tl.to(breadcrumb, {
+        opacity: 1,
+        y: 0,
+        duration: 0.65,
+        ease: "power3.out",
+      });
+    if (title)
+      tl.to(
+        title,
+        { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
+        "<0.15",
+      );
+    if (desc)
+      tl.to(
+        desc,
+        { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
+        "<0.2",
+      );
+
+    const cards = document.querySelectorAll("#projects-grid .project-card");
+    if (cards.length) {
+      gsap.from(cards, {
+        opacity: 0,
+        duration: 0.75,
+        stagger: 0.08,
+        ease: "power3.out",
+        scrollTrigger: { trigger: "#projects-grid", start: "top bottom" },
+      });
+    }
+  });
+
+  mm.add("(prefers-reduced-motion: reduce)", () => {
+    gsap.set(
+      [
+        '[data-arch-hero="breadcrumb"]',
+        '[data-arch-hero="title"]',
+        '[data-arch-hero="desc"]',
+      ],
+      { opacity: 1, clearProps: "transform" },
+    );
+  });
 </script>

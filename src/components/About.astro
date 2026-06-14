@@ -41,7 +41,7 @@ const principles = [
     >
       {
         principles.map((p) => (
-          <div class="border-border bg-card border p-8">
+          <div data-principle class="border-border bg-card border p-8">
             <div class="text-med-grey mb-[1.4rem] text-[0.7rem] tracking-[0.14em]">
               PRINCIPLE / {p.n}
             </div>
@@ -57,6 +57,7 @@ const principles = [
     </div>
 
     <div
+      data-facts-bar
       class="border-border bg-card grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] border"
     >
       {
@@ -74,3 +75,34 @@ const principles = [
     </div>
   </div>
 </section>
+
+<script>
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  gsap.registerPlugin(ScrollTrigger);
+
+  gsap.matchMedia().add("(prefers-reduced-motion: no-preference)", () => {
+    const principles = document.querySelectorAll("[data-principle]");
+    if (principles.length) {
+      gsap.from(principles, {
+        opacity: 0,
+        y: 28,
+        duration: 0.8,
+        stagger: 0.13,
+        ease: "power3.out",
+        scrollTrigger: { trigger: "#about", start: "top 78%" },
+      });
+    }
+
+    const factsBar = document.querySelector("[data-facts-bar]");
+    if (factsBar) {
+      gsap.from(factsBar, {
+        opacity: 0,
+        y: 20,
+        duration: 0.75,
+        ease: "power3.out",
+        scrollTrigger: { trigger: factsBar, start: "top 88%" },
+      });
+    }
+  });
+</script>

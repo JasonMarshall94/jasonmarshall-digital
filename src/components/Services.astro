@@ -48,7 +48,10 @@ const items = [
     >
       {
         items.map((it) => (
-          <div class="bg-card px-8 py-[2.4rem] transition-colors duration-200 hover:bg-white/[0.025]">
+          <div
+            data-service
+            class="bg-card px-8 py-[2.4rem] transition-colors duration-200 hover:bg-white/[0.025]"
+          >
             <div class="mb-[1.6rem] flex items-baseline justify-between">
               <span class="text-med-grey text-[0.72rem] tracking-[0.12em]">
                 / {it.n}
@@ -74,3 +77,23 @@ const items = [
     </div>
   </div>
 </section>
+
+<script>
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  gsap.registerPlugin(ScrollTrigger);
+
+  gsap.matchMedia().add("(prefers-reduced-motion: no-preference)", () => {
+    const serviceItems = document.querySelectorAll("[data-service]");
+    if (serviceItems.length) {
+      gsap.from(serviceItems, {
+        opacity: 0,
+        y: 30,
+        duration: 0.8,
+        stagger: 0.14,
+        ease: "power3.out",
+        scrollTrigger: { trigger: "#services", start: "top 75%" },
+      });
+    }
+  });
+</script>

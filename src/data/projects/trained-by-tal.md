@@ -2,7 +2,7 @@
 title: Trained by Tal
 slug: trained-by-tal
 excerpt: A simple but sleek website to showcase client transformations for a fitness coaching business.
-tags: ["WordPress", "Elementor", "ACF"]
+tags: ["WordPress", "Elementor"]
 postDate: 2025-09-29
 isDraft: false
 isFeatured: false

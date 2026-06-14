@@ -29,6 +29,33 @@
   }
 }
 
+/* ----- Skip navigation ----- */
+.skip-link {
+  position: fixed;
+  top: -100%;
+  left: 1rem;
+  z-index: 9999;
+  padding: 0.6rem 1.2rem;
+  background: var(--color-text);
+  color: var(--color-dark-grey);
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: top 0.2s;
+  &:focus {
+    top: 1rem;
+    outline: 2px solid var(--color-dark-grey);
+    outline-offset: 2px;
+  }
+}
+
+/* ----- Focus styles ----- */
+:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 3px;
+}
+
 /* ----- Base ----- */
 html,
 body {
@@ -36,6 +63,12 @@ body {
   color: var(--color-text);
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 body {
@@ -138,12 +171,20 @@ body {
 
 @utility blink {
   animation: blink 1s steps(2, end) infinite;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 }
 
 @utility float-in {
   opacity: 0;
   transform: translateY(12px);
   animation: floatIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
 }
 
 @utility marquee {
@@ -153,6 +194,9 @@ body {
   animation: scroll 30s linear infinite;
   @media (max-width: 720px) {
     animation-duration: 8s;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
   }
 }
 
@@ -166,6 +210,9 @@ body {
     background: inherit;
     opacity: 0.4;
     animation: pulse-dot 2s ease-out infinite;
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
   }
 }
 
@@ -257,4 +304,16 @@ body {
   transition:
     transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
     filter 0.5s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-card {
+    transition: border-color 0.3s;
+  }
+  .project-card:hover {
+    transform: none;
+  }
+  .project-image img {
+    transition: none;
+  }
 }

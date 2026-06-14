@@ -47,12 +47,19 @@ const labelClass =
 
   <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-[1.4rem]">
     <div>
-      <label class={labelClass} for="type">Project Type</label>
-      <div id="type" class="chip-group flex flex-wrap gap-2" data-group="type">
+      <p id="type-label" class={labelClass}>Project Type</p>
+      <div
+        class="chip-group flex flex-wrap gap-2"
+        data-group="type"
+        role="radiogroup"
+        aria-labelledby="type-label"
+      >
         {
           ["Website", "SEO", "Not Sure"].map((t, i) => (
             <button
               type="button"
+              role="radio"
+              aria-checked={i === 0 ? "true" : "false"}
               class={`chip border-border cursor-pointer border px-[0.8rem] py-2 font-[inherit] text-[0.78rem] transition-all duration-200 ${
                 i === 0
                   ? "active bg-text text-dark-grey border-text"
@@ -68,16 +75,19 @@ const labelClass =
       <input type="hidden" name="type" value="Website" data-bind="type" />
     </div>
     <div>
-      <label class={labelClass} for="budget">Budget</label>
+      <p id="budget-label" class={labelClass}>Budget</p>
       <div
-        id="budget"
         class="chip-group flex flex-wrap gap-2"
         data-group="budget"
+        role="radiogroup"
+        aria-labelledby="budget-label"
       >
         {
           ["<$5k", "$5-10k", "$10k+", "N/A"].map((t, i) => (
             <button
               type="button"
+              role="radio"
+              aria-checked={i === 1 ? "true" : "false"}
               class={`chip border-border cursor-pointer border px-[0.8rem] py-2 font-[inherit] text-[0.78rem] transition-all duration-200 ${
                 i === 1
                   ? "active bg-text text-dark-grey border-text"
@@ -109,6 +119,8 @@ const labelClass =
     <div
       class="form-status text-med-grey text-[0.74rem] tracking-[0.08em] data-[status=error]:text-[#e08080] data-[status=sent]:text-[#7fc88a]"
       data-status="idle"
+      aria-live="polite"
+      aria-atomic="true"
     >
       → Replies sent to {email}
     </div>
@@ -129,32 +141,34 @@ const labelClass =
     .querySelectorAll<HTMLFormElement>(".contact-form")
     .forEach((form) => {
       form.querySelectorAll<HTMLDivElement>(".chip-group").forEach((group) => {
-        group.addEventListener("click", (e) => {
-          const target = (e.target as HTMLElement).closest<HTMLButtonElement>(
-            ".chip",
-          );
-          if (!target) return;
-          group.querySelectorAll(".chip").forEach((c) => {
-            c.classList.remove(
-              "active",
-              "bg-text",
-              "text-dark-grey",
-              "border-text",
-            );
+        const selectChip = (target: HTMLButtonElement) => {
+          group.querySelectorAll<HTMLButtonElement>(".chip").forEach((c) => {
+            c.classList.remove("active", "bg-text", "text-dark-grey", "border-text");
             c.classList.add("bg-transparent", "text-accent");
+            c.setAttribute("aria-checked", "false");
           });
           target.classList.remove("bg-transparent", "text-accent");
-          target.classList.add(
-            "active",
-            "bg-text",
-            "text-dark-grey",
-            "border-text",
-          );
+          target.classList.add("active", "bg-text", "text-dark-grey", "border-text");
+          target.setAttribute("aria-checked", "true");
           const groupName = group.dataset.group;
-          const hidden = form.querySelector<HTMLInputElement>(
-            `[data-bind="${groupName}"]`,
-          );
+          const hidden = form.querySelector<HTMLInputElement>(`[data-bind="${groupName}"]`);
           if (hidden) hidden.value = target.dataset.value ?? "";
+        };
+
+        group.addEventListener("click", (e) => {
+          const target = (e.target as HTMLElement).closest<HTMLButtonElement>(".chip");
+          if (target) selectChip(target);
+        });
+
+        group.addEventListener("keydown", (e) => {
+          if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) return;
+          e.preventDefault();
+          const chips = Array.from(group.querySelectorAll<HTMLButtonElement>(".chip"));
+          const current = chips.findIndex((c) => c.getAttribute("aria-checked") === "true");
+          const dir = e.key === "ArrowRight" || e.key === "ArrowDown" ? 1 : -1;
+          const next = (current + dir + chips.length) % chips.length;
+          selectChip(chips[next]);
+          chips[next].focus();
         });
       });
 
