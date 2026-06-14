@@ -151,6 +151,9 @@ body {
   gap: 4rem;
   white-space: nowrap;
   animation: scroll 30s linear infinite;
+  @media (max-width: 720px) {
+    animation-duration: 8s;
+  }
 }
 
 @utility pulse-dot {
