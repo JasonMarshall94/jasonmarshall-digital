@@ -14,7 +14,6 @@ import react from "@astrojs/react";
 export default defineConfig({
   site: "https://jasonmarshall.digital",
   output: "static",
-  security: { csp: true },
 
   vite: {
     plugins: [tailwindcss(), yaml()],

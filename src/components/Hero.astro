@@ -24,9 +24,11 @@ const {
       <div
         class="border-border text-light-grey inline-flex items-center gap-[0.6rem] border px-[0.8rem] py-[0.4rem] text-[0.72rem] tracking-[0.12em] uppercase"
       >
-        <span class="pulse-dot inline-block h-2 w-2 rounded-full bg-[#7fc88a]"
-        ></span>
-        Available for new projects · {year}
+        <p>
+          <span class="pulse-dot inline-block h-2 w-2 rounded-full bg-[#7fc88a]"
+          ></span>
+          Available for new projects · {year}
+        </p>
       </div>
       <div class="label flex items-center gap-2">
         <span>↳ <span id="hero-time">--:--</span> EST</span>
@@ -127,23 +129,36 @@ const {
           ease: "none",
           onComplete: () => cursor && gsap.set(cursor, { opacity: 1 }),
         },
-        "<0.2"
+        "<0.2",
       );
     }
 
     if (desc) {
-      tl.to(desc, { opacity: 1, y: 0, duration: 0.75, ease: "power3.out" }, "-=0.7");
+      tl.to(
+        desc,
+        { opacity: 1, y: 0, duration: 0.75, ease: "power3.out" },
+        "-=0.7",
+      );
     }
 
     if (cta) {
-      tl.to(cta, { opacity: 1, y: 0, duration: 0.75, ease: "power3.out" }, "<0.3");
+      tl.to(
+        cta,
+        { opacity: 1, y: 0, duration: 0.75, ease: "power3.out" },
+        "<0.3",
+      );
     }
   });
 
   mm.add("(prefers-reduced-motion: reduce)", () => {
     gsap.set(
-      ['[data-hero="badge"]', '[data-hero="headline"]', '[data-hero="desc"]', '[data-hero="cta"]'],
-      { opacity: 1, clearProps: "transform" }
+      [
+        '[data-hero="badge"]',
+        '[data-hero="headline"]',
+        '[data-hero="desc"]',
+        '[data-hero="cta"]',
+      ],
+      { opacity: 1, clearProps: "transform" },
     );
   });
 </script>
