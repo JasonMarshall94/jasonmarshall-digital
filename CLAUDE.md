@@ -27,6 +27,8 @@ This is a personal portfolio/agency site built with **Astro 6**, explicitly set 
 - **astro-icon** — SVG icons placed in `src/icons/` are auto-resolved by name (e.g. `<Icon name="github" />` → `src/icons/github.svg`)
 - **React** (`@astrojs/react`) — used for email templates only (`src/emails/`). No React components are used in the browser; no `client:*` directives exist in the project
 - **YAML** (`@rollup/plugin-yaml`) — imports `.yaml` files as JS modules
+- **GSAP** — used for scroll-driven and entry animations in Hero (`SplitText`), About, and Services (`ScrollTrigger`). All animations are gated with `gsap.matchMedia()` on `prefers-reduced-motion: no-preference`
+- **Prettier** — configured via `.prettierrc` with `prettier-plugin-astro` and `prettier-plugin-tailwindcss`
 
 ### Path aliases
 - `@/*` → `src/*`
@@ -46,7 +48,7 @@ Projects are Markdown files in `src/data/projects/`, typed via `src/content.conf
 The `slug` field in frontmatter drives the URL; `getStaticPaths` in `src/pages/projects/_[slug].astro` maps `project.data.slug` to the route param.
 
 ### Server actions
-`src/actions/index.ts` exports a `send` action (`accept: "form"`) that validates fields with Zod and uses **Resend** (`RESEND_API_KEY` env var) to send email to `contact@jasonmarshall.digital`. The active email template is `src/emails/AdminNotification.tsx` — a plain React component with inline styles (no React Email component library).
+`src/actions/index.ts` exports a `send` action (`accept: "form"`) that validates fields with Zod and uses **Resend** (`RESEND_API_KEY` env var) to send email to `contact@jasonmarshall.digital`. The active email template is `src/emails/AdminNotification.tsx` — a plain React component with inline styles (no React Email component library). `ThankYou.tsx`, `theme.tsx`, and `theme-fonts.tsx` also exist in `src/emails/` but are unused scaffolding; `ThankYou.tsx` does use the React Email component library (`react-email`) if it's ever wired up.
 
 ### Global site data
 - `src/data/siteData.yaml` — site title, description, contact email/phone, and GitHub URL; imported wherever global data is needed
@@ -67,7 +69,10 @@ Custom design tokens are defined in `src/styles/global.css` under `@theme`. Reus
 - `gridlines`, `float-in`, `marquee`, `scroll-fade-mask`, `pulse-dot`, `blink`
 - `.container` — max-width 1200px, centered
 
-The design language is dark/monochrome: `--color-dark-grey` (#121212) background, `--color-text` (#e0e0e0), `--color-accent` (#b0b0b0), with JetBrains Mono as the sole typeface loaded via Fontsource.
+The design language is dark/monochrome: `--color-dark-grey` (#121212) background, `--color-text` (#e0e0e0), `--color-accent` (#b0b0b0), with JetBrains Mono as the sole typeface. The font is configured via Astro's built-in font API (`fontProviders.fontsource()` in `astro.config.mjs`) and loaded with `<Font cssVariable="--font-jetbrains-mono" preload />` in `BaseLayout.astro`.
+
+### 404 page
+`src/pages/404.astro` — Astro outputs this as `404.html`; Netlify serves it automatically for unknown routes. Uses the same Hero-section design language (gridlines, blinking cursor, `float-in` staggered entry). The page wraps Nav + main + Footer in a `flex min-h-svh flex-col` div (with `flex-1 flex flex-col` on `<main>` and `flex-1` on the section) to pin the footer to the bottom of the viewport.
 
 ### Disabled route
 `src/pages/projects/_[slug].astro` — the leading underscore disables this route in Astro. Individual project pages are not live; the underscore is intentional.

@@ -1,0 +1,59 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Nav from "@/global/Nav.astro";
+import Footer from "@/global/Footer.astro";
+---
+
+<BaseLayout
+  title="404 — Page Not Found · Jason Marshall Digital"
+  description="The page you're looking for doesn't exist."
+>
+  <div class="flex min-h-svh flex-col">
+    <Nav page="page" />
+    <main id="main-content" class="flex flex-1 flex-col">
+      <section
+        class="relative flex flex-1 flex-col overflow-hidden pt-30 pb-30 md:pt-45"
+      >
+        <div class="gridlines"></div>
+        <div class="relative z-2 container">
+          <div class="label float-in mb-12" style="animation-delay: 0.05s">
+            404 — Page not found
+          </div>
+
+          <h1
+            class="text-text float-in m-0 text-[clamp(2.4rem,6.6vw,5.6rem)] leading-[1.02] font-medium tracking-[-0.03em]"
+            style="animation-delay: 0.15s"
+          >
+            Nothing here.<span
+              class="blink bg-text ml-[0.1em] inline-block h-[0.9em] w-[0.55em] align-[-0.1em]"
+            ></span>
+          </h1>
+
+          <div
+            class="text-accent float-in mt-10 grid max-w-160 grid-cols-[auto_1fr] gap-x-6 gap-y-4 text-base leading-[1.7]"
+            style="animation-delay: 0.28s"
+          >
+            <span class="text-light-grey select-none">{">"}</span>
+            <p class="m-0">
+              That page doesn't exist or may have moved. Head back home or start
+              a project.
+            </p>
+          </div>
+
+          <div
+            class="float-in mt-12 flex flex-wrap gap-4"
+            style="animation-delay: 0.4s"
+          >
+            <a href="/" class="btn btn-primary">
+              Back to home <span aria-hidden="true">↑</span>
+            </a>
+            <a href="/#contact" class="btn">
+              Start a project <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+    <Footer />
+  </div>
+</BaseLayout>
