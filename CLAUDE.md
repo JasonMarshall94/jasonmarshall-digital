@@ -28,6 +28,7 @@ This is a personal portfolio/agency site built with **Astro 6**, explicitly set 
 - **React** (`@astrojs/react`) — used for email templates only (`src/emails/`). No React components are used in the browser; no `client:*` directives exist in the project
 - **YAML** (`@rollup/plugin-yaml`) — imports `.yaml` files as JS modules
 - **GSAP** — used for scroll-driven and entry animations in Hero (`SplitText`), About, and Services (`ScrollTrigger`). All animations are gated with `gsap.matchMedia()` on `prefers-reduced-motion: no-preference`
+- **Partytown** (`@astrojs/partytown`) — offloads third-party scripts to a web worker. Configured with `forward: ["dataLayer.push", "gtag"]` in `astro.config.mjs`. Google Analytics (`G-ZMTW1L1YJX`) is loaded via Partytown in `BaseLayout.astro` using `type="text/partytown"` script tags. Do NOT use Partytown for Cloudflare Turnstile — it requires DOM access unavailable in workers.
 - **Prettier** — configured via `.prettierrc` with `prettier-plugin-astro` and `prettier-plugin-tailwindcss`
 
 ### Path aliases
@@ -49,6 +50,9 @@ The `slug` field in frontmatter drives the URL; `getStaticPaths` in `src/pages/p
 
 ### Server actions
 `src/actions/index.ts` exports a `send` action (`accept: "form"`) that validates fields with Zod and uses **Resend** (`RESEND_API_KEY` env var) to send email to `contact@jasonmarshall.digital`. The active email template is `src/emails/AdminNotification.tsx` — a plain React component with inline styles (no React Email component library). `ThankYou.tsx`, `theme.tsx`, and `theme-fonts.tsx` also exist in `src/emails/` but are unused scaffolding; `ThankYou.tsx` does use the React Email component library (`react-email`) if it's ever wired up.
+
+### Contact form spam protection
+**Cloudflare Turnstile** is integrated into `ContactForm.astro`. The widget uses `data-appearance="interaction-only"` (invisible unless a challenge is required) and `data-theme="dark"`. The Turnstile script is lazy-loaded on first form `focusin` to avoid any page-load web vitals impact. Server-side token verification happens in the `send` action before the email is sent, using `TURNSTILE_SECRET_KEY` (env var set in Netlify). The submit handler guards against submission before the token is ready. Required env vars: `RESEND_API_KEY`, `TURNSTILE_SECRET_KEY`.
 
 ### Global site data
 - `src/data/siteData.yaml` — site title, description, contact email/phone, and GitHub URL; imported wherever global data is needed
