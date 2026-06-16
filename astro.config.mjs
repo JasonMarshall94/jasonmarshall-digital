@@ -10,6 +10,8 @@ import netlify from "@astrojs/netlify";
 
 import react from "@astrojs/react";
 
+import partytown from "@astrojs/partytown";
+
 // https://astro.build/config
 export default defineConfig({
   site: "https://jasonmarshall.digital",
@@ -19,7 +21,15 @@ export default defineConfig({
     plugins: [tailwindcss(), yaml()],
   },
 
-  integrations: [icon(), react()],
+  integrations: [
+    icon(),
+    react(),
+    partytown({
+      config: {
+        forward: ["dataLayer.push", "gtag"],
+      },
+    }),
+  ],
 
   fonts: [
     {

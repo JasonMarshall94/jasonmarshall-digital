@@ -42,6 +42,20 @@ const ogImageUrl = new URL(ogImage, Astro.site).href;
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
     <Font cssVariable="--font-jetbrains-mono" preload />
+
+    <!-- Google Analytics -->
+    <script
+      type="text/partytown"
+      src="https://www.googletagmanager.com/gtag/js?id=G-ZMTW1L1YJX"
+    ></script>
+    <script type="text/partytown">
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-ZMTW1L1YJX");
+    </script>
   </head>
   <body>
     <a href="#main-content" class="skip-link">Skip to main content</a>
