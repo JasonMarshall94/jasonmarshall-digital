@@ -115,6 +115,14 @@ const labelClass =
       required></textarea>
   </div>
 
+  <div
+    class="cf-turnstile"
+    data-sitekey="0x4AAAAAADliDi_ge5DGVkfD"
+    data-theme="dark"
+    data-appearance="interaction-only"
+  >
+  </div>
+
   <div class="flex flex-wrap items-center justify-between gap-4">
     <div
       class="form-status text-med-grey text-[0.74rem] tracking-[0.08em] data-[status=error]:text-[#e08080] data-[status=sent]:text-[#7fc88a]"
@@ -137,9 +145,20 @@ const labelClass =
 <script>
   import { actions } from "astro:actions";
 
+  // Lazy-load Turnstile only when the user first interacts with a form
+  let turnstileLoaded = false;
+  const loadTurnstile = () => {
+    if (turnstileLoaded) return;
+    turnstileLoaded = true;
+    const s = document.createElement("script");
+    s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+    document.head.appendChild(s);
+  };
+
   document
     .querySelectorAll<HTMLFormElement>(".contact-form")
     .forEach((form) => {
+      form.addEventListener("focusin", loadTurnstile, { once: true });
       form.querySelectorAll<HTMLDivElement>(".chip-group").forEach((group) => {
         const selectChip = (target: HTMLButtonElement) => {
           group.querySelectorAll<HTMLButtonElement>(".chip").forEach((c) => {
@@ -197,6 +216,10 @@ const labelClass =
               ),
             2200,
           );
+          return;
+        }
+        if (!formData.get("cf-turnstile-response")) {
+          setStatus("error", "× Security check not ready — please wait a moment.");
           return;
         }
         setStatus("idle", "→ Sending...");

@@ -14,8 +14,31 @@ export const server = {
       type: z.string().min(1),
       budget: z.string().min(1),
       message: z.string().min(1),
+      "cf-turnstile-response": z.string().min(1),
     }),
-    handler: async ({ name, email, type, budget, message }) => {
+    handler: async (input) => {
+      const { name, email, type, budget, message } = input;
+      const token = input["cf-turnstile-response"];
+
+      const verify = await fetch(
+        "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({
+            secret: import.meta.env.TURNSTILE_SECRET_KEY,
+            response: token,
+          }),
+        },
+      );
+      const { success } = await verify.json();
+      if (!success) {
+        throw new ActionError({
+          code: "FORBIDDEN",
+          message: "Security check failed. Please try again.",
+        });
+      }
+
       const { data, error } = await resend.emails.send({
         from: "Jason Marshall Digital <website@jasonmarshall.digital>",
         to: ["contact@jasonmarshall.digital"],
