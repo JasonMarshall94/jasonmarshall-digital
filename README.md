@@ -2,12 +2,17 @@
 
 Personal portfolio and agency site for Jason Marshall Digital. Built with Astro 6, Tailwind CSS v4, and deployed to Netlify.
 
+**Live site:** [jasonmarshall.digital](https://jasonmarshall.digital)
+
 ## Stack
 
 - **Astro 6** — static site generation (`output: "static"`)
 - **Tailwind CSS v4** — utility-first styling via `@tailwindcss/vite`, configured in `src/styles/global.css`
+- **GSAP** — scroll-driven and entry animations (SplitText, ScrollTrigger)
 - **Netlify** — hosting and deployment via `@astrojs/netlify` adapter
 - **Resend** — transactional email for contact form submissions
+- **Cloudflare Turnstile** — spam protection on the contact form (server-side verified)
+- **Google Analytics** — via `@astrojs/partytown` (offloaded to a web worker)
 - **React** — email templates only (`src/emails/`)
 - **astro-icon** — SVG icon system from `src/icons/`
 
@@ -15,19 +20,19 @@ Personal portfolio and agency site for Jason Marshall Digital. Built with Astro 
 
 All commands use `pnpm`.
 
-| Command           | Action                                        |
-| :---------------- | :-------------------------------------------- |
-| `pnpm dev`        | Start dev server at `localhost:4321`          |
-| `pnpm build`      | Build production site to `./dist/`            |
-| `pnpm preview`    | Preview production build locally              |
-| `pnpm email:dev`  | Start React Email preview server             |
-| `pnpm astro check`| Type-check without building                  |
+| Command            | Action                                    |
+| :----------------- | :---------------------------------------- |
+| `pnpm dev`         | Start dev server at `localhost:4321`      |
+| `pnpm build`       | Build production site to `./dist/`        |
+| `pnpm preview`     | Preview production build locally          |
+| `pnpm email:dev`   | Start React Email preview server          |
+| `pnpm astro check` | Type-check without building               |
 
 ## Project Structure
 
 ```
 src/
-├── actions/          # Astro server actions (contact form → Resend)
+├── actions/          # Astro server actions (contact form → Resend + Turnstile verify)
 ├── components/
 │   ├── global/       # Site-wide shell (Nav, Footer, Logo)
 │   ├── ui/           # Reusable primitives (SectionHeading, CopyChip)
@@ -39,21 +44,23 @@ src/
 │   └── stackItems.ts # Technology list for the marquee
 ├── emails/           # React email templates (server-side only)
 ├── icons/            # SVG icons auto-resolved by astro-icon
-├── layouts/          # BaseLayout
-├── pages/            # index.astro, projects/index.astro
+├── layouts/          # BaseLayout (font, OG tags, GA scripts)
+├── pages/            # index.astro, projects/index.astro, 404.astro
 └── styles/           # global.css — Tailwind theme + shared utilities
 ```
 
 ## Environment Variables
 
-| Variable         | Description                  |
-| :--------------- | :--------------------------- |
-| `RESEND_API_KEY` | API key from resend.com      |
+| Variable               | Description                          |
+| :--------------------- | :----------------------------------- |
+| `RESEND_API_KEY`       | API key from resend.com              |
+| `TURNSTILE_SECRET_KEY` | Secret key from Cloudflare Turnstile |
 
 Create a `.env` file at the project root:
 
 ```sh
 RESEND_API_KEY=re_your_key_here
+TURNSTILE_SECRET_KEY=your_secret_key_here
 ```
 
 ## Content
