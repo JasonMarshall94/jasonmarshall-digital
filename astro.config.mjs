@@ -12,6 +12,8 @@ import react from "@astrojs/react";
 
 import partytown from "@astrojs/partytown";
 
+import sitemap from "@astrojs/sitemap";
+
 // https://astro.build/config
 export default defineConfig({
   site: "https://jasonmarshall.digital",
@@ -28,6 +30,9 @@ export default defineConfig({
       config: {
         forward: ["dataLayer.push", "gtag"],
       },
+    }),
+    sitemap({
+      filter: (page) => !page.includes("/404"),
     }),
   ],
 

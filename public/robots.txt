@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /~partytown/
+
+Sitemap: https://jasonmarshall.digital/sitemap-index.xml
