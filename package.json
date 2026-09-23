@@ -10,29 +10,29 @@
     "email:dev": "email dev"
   },
   "dependencies": {
-    "@astrojs/check": "^0.9.9",
-    "@astrojs/netlify": "^7.0.13",
+    "@astrojs/check": "^0.9.10",
+    "@astrojs/netlify": "^8.2.6",
     "@astrojs/partytown": "^2.1.7",
-    "@astrojs/react": "^5.0.7",
-    "@astrojs/sitemap": "^3.7.3",
-    "@react-email/ui": "^6.6.4",
-    "@tailwindcss/vite": "^4.3.1",
-    "@types/react": "^19.2.17",
-    "@types/react-dom": "^19.2.3",
-    "astro": "^6.4.8",
-    "astro-icon": "^1.1.5",
+    "@astrojs/react": "^6.0.6",
+    "@astrojs/sitemap": "^3.7.4",
+    "@react-email/ui": "^6.9.5",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "astro": "^7.3.3",
+    "astro-icon": "^1.2.0",
     "gsap": "^3.15.0",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7",
-    "react-email": "^6.6.4",
-    "resend": "^6.14.0",
-    "tailwindcss": "^4.3.1",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-email": "^6.9.5",
+    "resend": "^6.28.1",
+    "tailwindcss": "^4.3.3",
     "typescript": "^6.0.3"
   },
   "devDependencies": {
     "@rollup/plugin-yaml": "^5.0.0",
-    "prettier": "^3.8.4",
-    "prettier-plugin-astro": "^0.14.1",
-    "prettier-plugin-tailwindcss": "0.8.0"
+    "prettier": "^3.9.8",
+    "prettier-plugin-astro": "^1.0.1",
+    "prettier-plugin-tailwindcss": "0.8.1"
   }
 }
