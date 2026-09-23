@@ -90,6 +90,7 @@ const startYear = 2023;
                 ? "active bg-text text-dark-grey border-text"
                 : "text-accent bg-transparent"
             }`}
+            aria-pressed={i === 0 ? "true" : "false"}
             data-tag={t}
           >
             {t}
@@ -100,7 +101,7 @@ const startYear = 2023;
     <div
       class="text-light-grey flex flex-wrap items-center gap-4 text-[0.74rem]"
     >
-      <span>
+      <span aria-live="polite">
         <span data-count>{total}</span>/<span>{total}</span> shown
       </span>
       <span class="text-med-grey">|</span>
@@ -119,6 +120,7 @@ const startYear = 2023;
 <!-- Grid -->
 <section class="pt-20 pb-20 md:pb-32">
   <div class="container">
+    <h2 class="sr-only">Project list</h2>
     <div
       id="projects-grid"
       class="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-6"
@@ -179,6 +181,7 @@ const startYear = 2023;
 
   const setChipActive = (c: HTMLButtonElement, active: boolean) => {
     c.classList.toggle("active", active);
+    c.setAttribute("aria-pressed", String(active));
     c.classList.toggle("bg-text", active);
     c.classList.toggle("text-dark-grey", active);
     c.classList.toggle("border-text", active);

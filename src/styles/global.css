@@ -6,10 +6,10 @@
   --color-deep: #0c0c0c;
   --color-card: #181818;
   --color-border: #262626;
-  --color-med-grey: #606060;
-  --color-light-grey: #888888;
+  --color-med-grey: #8a8a8a;
+  --color-light-grey: #a8a8a8;
   --color-text: #e0e0e0;
-  --color-accent: #b0b0b0;
+  --color-accent: #c4c4c4;
 
   --default-font-family: var(--font-jetbrains-mono), monospace;
 }
@@ -51,10 +51,10 @@
 }
 
 /* ----- Focus styles ----- */
-/*:focus-visible {
+:focus-visible {
   outline: 2px solid var(--color-text);
   outline-offset: 3px;
-}*/
+}
 
 /* ----- Base ----- */
 html,

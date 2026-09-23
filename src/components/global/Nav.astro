@@ -42,7 +42,7 @@ const isCurrentPage = !isHome && currentPath.startsWith("/projects");
       >
     </a>
 
-    <nav class="flex items-center gap-6 text-[0.82rem]">
+    <nav aria-label="Main" class="flex items-center gap-6 text-[0.82rem]">
       {
         links.map((l) => {
           const active = isCurrentPage && l.slug === "work";
@@ -125,7 +125,7 @@ const isCurrentPage = !isHome && currentPath.startsWith("/projects");
   </div>
 
   <!-- Links -->
-  <nav class="flex flex-1 flex-col px-6 py-6">
+  <nav aria-label="Mobile" class="flex flex-1 flex-col px-6 py-6">
     {
       links.map((l) => {
         const active = isCurrentPage && l.slug === "work";
