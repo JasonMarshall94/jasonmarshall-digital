@@ -1,17 +1,48 @@
 @import "tailwindcss";
 
+/* Colours are light-dark(<light>, <dark>) pairs. The active side follows
+   `color-scheme`: the OS preference by default, or data-theme on <html> when
+   the visitor picks one with the theme toggle. */
 @theme {
   --color-*: initial;
-  --color-dark-grey: #121212;
-  --color-deep: #0c0c0c;
-  --color-card: #181818;
-  --color-border: #262626;
-  --color-med-grey: #8a8a8a;
-  --color-light-grey: #a8a8a8;
-  --color-text: #e0e0e0;
-  --color-accent: #c4c4c4;
+  --color-dark-grey: light-dark(#f2f2f2, #121212);
+  --color-deep: light-dark(#e8e8e8, #0c0c0c);
+  --color-card: light-dark(#fafafa, #181818);
+  --color-border: light-dark(#dedede, #262626);
+  --color-med-grey: light-dark(#626262, #8a8a8a);
+  --color-light-grey: light-dark(#505050, #a8a8a8);
+  --color-text: light-dark(#121212, #e0e0e0);
+  --color-accent: light-dark(#333333, #c4c4c4);
+  --color-success: light-dark(#1a7f37, #7fc88a);
+  --color-error: light-dark(#b42318, #e08080);
+  --color-white: #ffffff;
 
   --default-font-family: var(--font-jetbrains-mono), monospace;
+}
+
+:root {
+  color-scheme: light dark;
+  --glow: light-dark(rgba(255, 255, 255, 0.7), rgba(176, 176, 176, 0.05));
+  --gridline: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.03));
+  --btn-bg: light-dark(var(--color-white), transparent);
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+/* `light:` variant — matches the effective light theme (explicit or OS) */
+@custom-variant light {
+  &:where([data-theme="light"], [data-theme="light"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: light) {
+    &:where(:root:not([data-theme="dark"]), :root:not([data-theme="dark"]) *) {
+      @slot;
+    }
+  }
 }
 
 @utility container {
@@ -76,12 +107,12 @@ body {
   background:
     radial-gradient(
       1100px 600px at 80% -10%,
-      rgba(176, 176, 176, 0.05),
+      var(--glow),
       transparent 60%
     ),
     radial-gradient(
       900px 500px at 0% 90%,
-      rgba(176, 176, 176, 0.04),
+      var(--glow),
       transparent 60%
     ),
     var(--color-dark-grey);
@@ -146,8 +177,8 @@ body {
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    linear-gradient(to right, var(--gridline) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--gridline) 1px, transparent 1px);
   background-size: 80px 80px;
   mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
 }
@@ -244,7 +275,7 @@ body {
   font-size: 0.85rem;
   letter-spacing: 0.04em;
   border: 1px solid var(--color-border);
-  background: transparent;
+  background: var(--btn-bg);
   color: var(--color-text);
   transition: all 0.25s;
   text-transform: uppercase;
@@ -263,7 +294,7 @@ body {
   color: var(--color-dark-grey);
   border-color: var(--color-text);
   &:hover {
-    background: transparent;
+    background: var(--btn-bg);
     color: var(--color-text);
   }
 }

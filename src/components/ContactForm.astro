@@ -63,7 +63,7 @@ const labelClass =
               class={`chip border-border cursor-pointer border px-[0.8rem] py-2 font-[inherit] text-[0.78rem] transition-all duration-200 ${
                 i === 0
                   ? "active bg-text text-dark-grey border-text"
-                  : "text-accent bg-transparent"
+                  : "text-accent bg-(--btn-bg)"
               }`}
               data-value={t}
             >
@@ -91,7 +91,7 @@ const labelClass =
               class={`chip border-border cursor-pointer border px-[0.8rem] py-2 font-[inherit] text-[0.78rem] transition-all duration-200 ${
                 i === 1
                   ? "active bg-text text-dark-grey border-text"
-                  : "text-accent bg-transparent"
+                  : "text-accent bg-(--btn-bg)"
               }`}
               data-value={t}
             >
@@ -118,14 +118,14 @@ const labelClass =
   <div
     class="cf-turnstile"
     data-sitekey="0x4AAAAAADliDi_ge5DGVkfD"
-    data-theme="dark"
+    data-theme="auto"
     data-appearance="interaction-only"
   >
   </div>
 
   <div class="flex flex-wrap items-center justify-between gap-4">
     <div
-      class="form-status text-med-grey text-[0.74rem] tracking-[0.08em] data-[status=error]:text-[#e08080] data-[status=sent]:text-[#7fc88a]"
+      class="form-status text-med-grey text-[0.74rem] tracking-[0.08em] data-[status=error]:text-error data-[status=sent]:text-success"
       data-status="idle"
       aria-live="polite"
       aria-atomic="true"
@@ -163,10 +163,10 @@ const labelClass =
         const selectChip = (target: HTMLButtonElement) => {
           group.querySelectorAll<HTMLButtonElement>(".chip").forEach((c) => {
             c.classList.remove("active", "bg-text", "text-dark-grey", "border-text");
-            c.classList.add("bg-transparent", "text-accent");
+            c.classList.add("bg-(--btn-bg)", "text-accent");
             c.setAttribute("aria-checked", "false");
           });
-          target.classList.remove("bg-transparent", "text-accent");
+          target.classList.remove("bg-(--btn-bg)", "text-accent");
           target.classList.add("active", "bg-text", "text-dark-grey", "border-text");
           target.setAttribute("aria-checked", "true");
           const groupName = group.dataset.group;

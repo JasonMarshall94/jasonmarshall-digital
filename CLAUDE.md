@@ -39,7 +39,7 @@ This is a personal portfolio/agency site built with **Astro 6**, explicitly set 
 ### Component organisation
 - `src/components/` — page section components (Hero, About, Services, Contact, ContactForm, ProjectCard, ProjectsGrid, ProjectsArchive, StackMarquee, CTA)
 - `src/components/global/` — site-wide shell components (Nav, Footer, Logo)
-- `src/components/ui/` — reusable primitives (SectionHeading, CopyChip)
+- `src/components/ui/` — reusable primitives (SectionHeading, CopyChip, ThemeToggle)
 
 ### Content layer
 Projects are Markdown files in `src/data/projects/`, typed via `src/content.config.ts`. The schema requires: `title`, `slug`, `excerpt`, `tags`, `postDate`, `isDraft`, `isFeatured`, `cover` (image), `coverAlt`, and optional `url`. Cover images live in `src/data/projects/images/`.
@@ -52,7 +52,7 @@ The `slug` field in frontmatter drives the URL; `getStaticPaths` in `src/pages/p
 `src/actions/index.ts` exports a `send` action (`accept: "form"`) that validates fields with Zod and uses **Resend** (`RESEND_API_KEY` env var) to send email to `contact@jasonmarshall.digital`. The active email template is `src/emails/AdminNotification.tsx` — a plain React component with inline styles (no React Email component library). `ThankYou.tsx`, `theme.tsx`, and `theme-fonts.tsx` also exist in `src/emails/` but are unused scaffolding; `ThankYou.tsx` does use the React Email component library (`react-email`) if it's ever wired up.
 
 ### Contact form spam protection
-**Cloudflare Turnstile** is integrated into `ContactForm.astro`. The widget uses `data-appearance="interaction-only"` (invisible unless a challenge is required) and `data-theme="dark"`. The Turnstile script is lazy-loaded on first form `focusin` to avoid any page-load web vitals impact. Server-side token verification happens in the `send` action before the email is sent, using `TURNSTILE_SECRET_KEY` (env var set in Netlify). The submit handler guards against submission before the token is ready. Required env vars: `RESEND_API_KEY`, `TURNSTILE_SECRET_KEY`.
+**Cloudflare Turnstile** is integrated into `ContactForm.astro`. The widget uses `data-appearance="interaction-only"` (invisible unless a challenge is required) and `data-theme="auto"` (follows the visitor's OS colour scheme). The Turnstile script is lazy-loaded on first form `focusin` to avoid any page-load web vitals impact. Server-side token verification happens in the `send` action before the email is sent, using `TURNSTILE_SECRET_KEY` (env var set in Netlify). The submit handler guards against submission before the token is ready. Required env vars: `RESEND_API_KEY`, `TURNSTILE_SECRET_KEY`.
 
 ### Global site data
 - `src/data/siteData.yaml` — site title, description, contact email/phone, and GitHub URL; imported wherever global data is needed
@@ -73,7 +73,15 @@ Custom design tokens are defined in `src/styles/global.css` under `@theme`. Reus
 - `gridlines`, `float-in`, `marquee`, `scroll-fade-mask`, `pulse-dot`, `blink`
 - `.container` — max-width 1200px, centered
 
-The design language is dark/monochrome: `--color-dark-grey` (#121212) background, `--color-text` (#e0e0e0), `--color-accent` (#b0b0b0), with JetBrains Mono as the sole typeface. The font is configured via Astro's built-in font API (`fontProviders.fontsource()` in `astro.config.mjs`) and loaded with `<Font cssVariable="--font-jetbrains-mono" preload />` in `BaseLayout.astro`.
+The design language is monochrome with light and dark themes, using JetBrains Mono as the sole typeface. The font is configured via Astro's built-in font API (`fontProviders.fontsource()` in `astro.config.mjs`) and loaded with `<Font cssVariable="--font-jetbrains-mono" preload />` in `BaseLayout.astro`.
+
+### Light / dark theme
+Every `--color-*` token in `@theme` is a `light-dark(<light>, <dark>)` pair, so utilities like `text-text` or `bg-dark-grey/70` switch automatically. Token names date from the dark-only design: `dark-grey` is the **page background** (white in light mode) and `text` is the foreground. Never hard-code hex/rgba colours in components — add a token (e.g. `success`, `error`) or a `:root` variable (e.g. `--glow`, `--gridline`) instead. All text tokens meet WCAG AA (4.5:1) against `dark-grey`, `card` and `deep` in both themes; re-check contrast when changing them.
+
+- Default follows the OS via `color-scheme: light dark` on `:root` — works without JS.
+- `ThemeToggle.astro` (in the nav, visible on all breakpoints) sets `data-theme="light|dark"` on `<html>` and stores it in `localStorage.theme`. If the new choice matches the OS setting, the attribute and storage are cleared so the site resumes following the OS.
+- An `is:inline` script at the top of `<head>` in `BaseLayout.astro` applies the stored choice before first paint (no flash).
+- A custom `light:` Tailwind variant (defined in `global.css`) targets the effective light theme — explicit or OS — e.g. the sun/moon icon swap.
 
 ### 404 page
 `src/pages/404.astro` — Astro outputs this as `404.html`; Netlify serves it automatically for unknown routes. Uses the same Hero-section design language (gridlines, blinking cursor, `float-in` staggered entry). The page wraps Nav + main + Footer in a `flex min-h-svh flex-col` div (with `flex-1 flex flex-col` on `<main>` and `flex-1` on the section) to pin the footer to the bottom of the viewport.

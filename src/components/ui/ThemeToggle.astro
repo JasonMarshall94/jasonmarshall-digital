@@ -1,0 +1,59 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  class?: string;
+}
+const { class: className = "" } = Astro.props;
+---
+
+<button
+  type="button"
+  data-theme-toggle
+  aria-label="Switch to light theme"
+  class={`border-border text-light-grey hover:text-text hover:border-light-grey inline-flex h-9 w-9 cursor-pointer items-center justify-center border bg-transparent transition-colors duration-200 ${className}`}
+>
+  <!-- Sun shows in dark mode (switch to light); moon shows in light mode -->
+  <Icon name="sun" width={14} height={14} class="light:hidden" />
+  <Icon name="moon" width={14} height={14} class="hidden light:block" />
+</button>
+
+<script>
+  // The initial theme is applied by the inline script in BaseLayout <head>.
+  // An explicit choice is only stored when it differs from the OS setting,
+  // so toggling back to match the OS resumes following it.
+  const root = document.documentElement;
+  const media = window.matchMedia("(prefers-color-scheme: dark)");
+
+  const current = () =>
+    (root.dataset.theme as "light" | "dark" | undefined) ??
+    (media.matches ? "dark" : "light");
+
+  const syncLabels = () => {
+    const next = current() === "dark" ? "light" : "dark";
+    document
+      .querySelectorAll<HTMLButtonElement>("[data-theme-toggle]")
+      .forEach((btn) =>
+        btn.setAttribute("aria-label", `Switch to ${next} theme`),
+      );
+  };
+
+  document
+    .querySelectorAll<HTMLButtonElement>("[data-theme-toggle]")
+    .forEach((btn) =>
+      btn.addEventListener("click", () => {
+        const next = current() === "dark" ? "light" : "dark";
+        const system = media.matches ? "dark" : "light";
+        try {
+          if (next === system) localStorage.removeItem("theme");
+          else localStorage.setItem("theme", next);
+        } catch {}
+        if (next === system) delete root.dataset.theme;
+        else root.dataset.theme = next;
+        syncLabels();
+      }),
+    );
+
+  media.addEventListener("change", syncLabels);
+  syncLabels();
+</script>

@@ -88,7 +88,7 @@ const startYear = 2023;
             class={`chip border-border cursor-pointer border px-[0.8rem] py-[0.4rem] font-[inherit] text-[0.74rem] tracking-[0.04em] transition-all duration-200 ${
               i === 0
                 ? "active bg-text text-dark-grey border-text"
-                : "text-accent bg-transparent"
+                : "text-accent bg-(--btn-bg)"
             }`}
             aria-pressed={i === 0 ? "true" : "false"}
             data-tag={t}
@@ -108,7 +108,7 @@ const startYear = 2023;
       <span class="label text-[0.66rem]">Sort</span>
       <button
         type="button"
-        class="sort-btn border-border text-text cursor-pointer border bg-transparent px-[0.8rem] py-[0.4rem] font-[inherit] text-[0.74rem] tracking-[0.04em]"
+        class="sort-btn border-border text-text cursor-pointer border bg-(--btn-bg) px-[0.8rem] py-[0.4rem] font-[inherit] text-[0.74rem] tracking-[0.04em]"
         data-sort="newest"
       >
         <span data-sort-label>Newest ↓</span>
@@ -185,7 +185,7 @@ const startYear = 2023;
     c.classList.toggle("bg-text", active);
     c.classList.toggle("text-dark-grey", active);
     c.classList.toggle("border-text", active);
-    c.classList.toggle("bg-transparent", !active);
+    c.classList.toggle("bg-(--btn-bg)", !active);
     c.classList.toggle("text-accent", !active);
   };
 
