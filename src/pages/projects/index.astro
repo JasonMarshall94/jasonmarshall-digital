@@ -3,11 +3,13 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import Nav from "@/global/Nav.astro";
 import ProjectsArchive from "@/components/ProjectsArchive.astro";
 import Footer from "@/global/Footer.astro";
-import data from "@/data/siteData.yaml";
+import { getSiteSettings } from "@/lib/sanity";
+
+const settings = await getSiteSettings();
 ---
 
 <BaseLayout
-  title={`Projects — ${data.baseSEO.title}`}
+  title={`Projects — ${settings.title}`}
   description="Selected client work and personal builds from Jason Marshall Digital."
 >
   <Nav page="page" />

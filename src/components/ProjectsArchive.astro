@@ -3,9 +3,9 @@ import { getCollection } from "astro:content";
 import ProjectCard from "@/components/ProjectCard.astro";
 import CallToAction from "@/components/CTA.astro";
 
-const allProjects = (await getCollection("projects"))
-  .filter((p) => !p.data.isDraft)
-  .sort((a, b) => b.data.postDate.valueOf() - a.data.postDate.valueOf());
+const allProjects = (await getCollection("projects")).sort(
+  (a, b) => b.data.postDate.valueOf() - a.data.postDate.valueOf(),
+);
 
 const tagSet = new Set<string>();
 allProjects.forEach((p) => p.data.tags.forEach((t) => tagSet.add(t)));

@@ -2,7 +2,9 @@
 import { Font } from "astro:assets";
 
 import "@/styles/global.css";
-import data from "@/data/siteData.yaml";
+import { getSiteSettings } from "@/lib/sanity";
+
+const settings = await getSiteSettings();
 
 interface Props {
   title?: string;
@@ -11,8 +13,8 @@ interface Props {
 }
 
 const {
-  title = data.baseSEO.title,
-  description = data.baseSEO.description,
+  title = settings.title,
+  description = settings.description,
   ogImage = "/og-image.png",
 } = Astro.props;
 

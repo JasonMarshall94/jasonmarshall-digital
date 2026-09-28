@@ -1,7 +1,7 @@
 ---
-import data from "@/data/siteData.yaml";
+import { getSiteSettings } from "@/lib/sanity";
 
-const email: string = data.contactInfo.email;
+const { email } = await getSiteSettings();
 
 const fieldClass =
   "w-full bg-transparent border-0 border-b border-med-grey text-text py-3 text-[0.95rem] outline-none transition-colors duration-200 font-[inherit] focus:border-b-text placeholder:text-med-grey";

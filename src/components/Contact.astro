@@ -2,7 +2,9 @@
 import SectionHeading from "@/ui/SectionHeading.astro";
 import CopyChip from "@/ui/CopyChip.astro";
 import ContactForm from "@/components/ContactForm.astro";
-import data from "@/data/siteData.yaml";
+import { getSiteSettings } from "@/lib/sanity";
+
+const settings = await getSiteSettings();
 
 interface Props {
   email?: string;
@@ -10,8 +12,8 @@ interface Props {
   endpoint?: string;
 }
 const {
-  email = data.contactInfo.email,
-  phone = data.contactInfo.phone,
+  email = settings.email,
+  phone = settings.phone,
   endpoint,
 } = Astro.props;
 
