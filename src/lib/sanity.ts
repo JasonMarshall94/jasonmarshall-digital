@@ -43,21 +43,28 @@ export function imageSrcset(image: SanityImage, widths: number[], aspect: number
   };
 }
 
-interface SiteSettingsDoc {
+export interface SiteSettings {
   title: string;
+  homeTitle?: string;
   description: string;
+  projectsDescription?: string;
   email: string;
   phone: string;
   githubUrl?: string;
+  city?: string;
+  region?: string;
 }
 
-let settings: Promise<SiteSettingsDoc> | undefined;
+let settings: Promise<SiteSettings> | undefined;
 
 /** Site Settings singleton, fetched once per build. Fails the build if missing. */
 export async function getSiteSettings() {
   settings ??= sanity
-    .fetch<SiteSettingsDoc | null>(
-      `*[_id == "siteSettings"][0]{title, description, email, phone, githubUrl}`,
+    .fetch<SiteSettings | null>(
+      `*[_id == "siteSettings"][0]{
+        title, homeTitle, description, projectsDescription,
+        email, phone, githubUrl, city, region
+      }`,
     )
     .then((doc) => {
       if (!doc) throw new Error("Sanity: Site Settings document is missing");

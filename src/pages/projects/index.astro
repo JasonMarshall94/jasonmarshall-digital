@@ -10,7 +10,7 @@ const settings = await getSiteSettings();
 
 <BaseLayout
   title={`Projects — ${settings.title}`}
-  description="Selected client work and personal builds from Jason Marshall Digital."
+  description={settings.projectsDescription ?? settings.description}
 >
   <Nav page="page" />
   <main id="main-content">

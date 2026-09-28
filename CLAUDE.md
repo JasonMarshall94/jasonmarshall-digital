@@ -58,6 +58,12 @@ Projects and site settings live in **Sanity** (project `3x5s0bg9`, dataset `prod
 
 ### Global site data
 - Site title, default meta description, contact email/phone and GitHub URL come from the Sanity `siteSettings` singleton via `getSiteSettings()`
+
+### SEO
+- `BaseLayout.astro` props: `title`, `description`, `ogImage`, `noindex` (emits `robots: noindex` instead of a canonical — used by the 404), `jsonLd` (rendered as `application/ld+json`). Every other page gets `<link rel="canonical">` built from `Astro.site` + pathname; `og:url` uses the same URL.
+- Homepage `<title>` = Site Settings `homeTitle` (falls back to `title`); `/projects` description = `projectsDescription` (falls back to `description`). Other page titles append the plain site `title`.
+- `src/lib/structuredData.ts` builds the homepage JSON-LD (`ProfessionalService` + `WebSite`) from Site Settings, including `city`/`region`.
+- Internal links to the projects page use `/projects/` (trailing slash) — Netlify 301s `/projects` → `/projects/`.
 - `src/data/navLinks.json` — nav link definitions with shape `{ title, slug, pageHref? }[]`; `pageHref` is an optional override for the non-home href (e.g. Work → `/projects`)
 - `src/data/stackItems.ts` — `string[]` of technology names used by `StackMarquee`
 

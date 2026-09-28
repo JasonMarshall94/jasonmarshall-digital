@@ -10,15 +10,22 @@ interface Props {
   title?: string;
   description?: string;
   ogImage?: string;
+  /** Keep the page out of search results (and omit its canonical URL). */
+  noindex?: boolean;
+  /** schema.org structured data rendered as JSON-LD. */
+  jsonLd?: object;
 }
 
 const {
   title = settings.title,
   description = settings.description,
   ogImage = "/og-image.png",
+  noindex = false,
+  jsonLd,
 } = Astro.props;
 
 const ogImageUrl = new URL(ogImage, Astro.site).href;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
 ---
 
 <!doctype html>
@@ -37,13 +44,25 @@ const ogImageUrl = new URL(ogImage, Astro.site).href;
     </script>
     <title>{title}</title>
     <meta name="description" content={description} />
+    {
+      noindex ? (
+        <meta name="robots" content="noindex" />
+      ) : (
+        <link rel="canonical" href={canonicalUrl} />
+      )
+    }
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    {
+      jsonLd && (
+        <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+      )
+    }
 
     <!-- Open Graph -->
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImageUrl} />
-    <meta property="og:url" content={Astro.url} />
+    <meta property="og:url" content={canonicalUrl} />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Jason Marshall Digital" />
 
