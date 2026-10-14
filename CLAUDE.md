@@ -91,6 +91,9 @@ Every `--color-*` token in `@theme` is a `light-dark(<light>, <dark>)` pair, so 
 - An `is:inline` script at the top of `<head>` in `BaseLayout.astro` applies the stored choice before first paint (no flash).
 - A custom `light:` Tailwind variant (defined in `global.css`) targets the effective light theme — explicit or OS — e.g. the sun/moon icon swap.
 
+### Privacy policy
+`src/pages/privacy.astro` (`/privacy/`, linked from the footer and under the contact form) describes the site's actual data flows: contact form → Netlify Function → Turnstile → Resend email (not stored in Sanity), Google Analytics cookies, Cloudflare (proxy, Web Analytics, email obfuscation), Netlify logs, Sanity image CDN, and the `theme` localStorage key. **Update the policy and its `lastUpdated` date whenever a change adds a third-party service, cookie, storage key or form field.**
+
 ### 404 page
 `src/pages/404.astro` — Astro outputs this as `404.html`; Netlify serves it automatically for unknown routes. Uses the same Hero-section design language (gridlines, blinking cursor, `float-in` staggered entry). The page wraps Nav + main + Footer in a `flex min-h-svh flex-col` div (with `flex-1 flex flex-col` on `<main>` and `flex-1` on the section) to pin the footer to the bottom of the viewport.
 
