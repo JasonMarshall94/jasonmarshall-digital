@@ -5,6 +5,7 @@ const items = [
   {
     n: "01",
     title: "Design",
+    href: "/services/web-design/",
     tag: "Visual · Brand · UX",
     body: "Clean, intentional design built around how your customers actually move through a site. Every layout decision earns its place. No templates, no bloat.",
     bullets: [
@@ -16,6 +17,7 @@ const items = [
   {
     n: "02",
     title: "Development",
+    href: "/services/",
     tag: "WordPress · Astro · Next.js",
     body: "Custom or template builds on the right stack for the job. WordPress for sites clients need to edit, Astro or Next.js when performance and scale demand it.",
     bullets: [
@@ -27,6 +29,7 @@ const items = [
   {
     n: "03",
     title: "SEO",
+    href: "/services/seo/",
     tag: "Search · Performance · Content",
     body: "Visibility that compounds. Technical SEO baked into every build. Fast load times, clean markup, and content structure that search engines and humans both understand.",
     bullets: [
@@ -75,9 +78,21 @@ const items = [
                 </li>
               ))}
             </ul>
+            <a
+              href={it.href}
+              class="nav-link text-light-grey hover:text-text mt-[1.8rem] inline-block text-[0.75rem] tracking-[0.08em] uppercase"
+            >
+              Learn more<span class="sr-only"> about {it.title}</span> →
+            </a>
           </div>
         ))
       }
+    </div>
+
+    <div class="mt-12">
+      <a href="/services/" class="btn">
+        View all services <span aria-hidden="true">→</span>
+      </a>
     </div>
   </div>
 </section>

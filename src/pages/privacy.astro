@@ -6,9 +6,10 @@ import { getSiteSettings } from "@/lib/sanity";
 
 const settings = await getSiteSettings();
 const { email } = settings;
+const location = [settings.city, settings.region].filter(Boolean).join(", ");
 
 // Update this whenever the policy text changes.
-const lastUpdated = "October 13, 2026";
+const lastUpdated = "October 25, 2026";
 ---
 
 <BaseLayout
@@ -44,10 +45,10 @@ const lastUpdated = "October 13, 2026";
 
     <section class="py-16 md:py-24">
       <div class="container">
-        <div class="text-accent max-w-[76ch] text-[0.95rem] leading-[1.8] [&_a]:text-text [&_a]:underline [&_a]:underline-offset-4 [&_h2]:text-text [&_h2]:mt-12 [&_h2]:mb-4 [&_h2]:text-[1.2rem] [&_h2]:font-medium [&_h2]:tracking-[-0.01em] [&_li]:mb-2 [&_p]:mb-4 [&_strong]:text-text [&_strong]:font-medium [&_ul]:mb-4 [&_ul]:pl-5">
+        <div class="prose-site">
           <p>
             Jason Marshall Digital (“we”) is a web design and development
-            business in Philadelphia, PA, USA. This policy explains what
+            business in {location}, USA. This policy explains what
             information we collect on <strong>jasonmarshall.digital</strong> and
             how we use it.
           </p>

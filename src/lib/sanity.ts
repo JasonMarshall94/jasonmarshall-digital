@@ -53,6 +53,7 @@ export interface SiteSettings {
   githubUrl?: string;
   city?: string;
   region?: string;
+  areaServed?: string[];
 }
 
 let settings: Promise<SiteSettings> | undefined;
@@ -63,7 +64,7 @@ export async function getSiteSettings() {
     .fetch<SiteSettings | null>(
       `*[_id == "siteSettings"][0]{
         title, homeTitle, description, projectsDescription,
-        email, phone, githubUrl, city, region
+        email, phone, githubUrl, city, region, areaServed
       }`,
     )
     .then((doc) => {

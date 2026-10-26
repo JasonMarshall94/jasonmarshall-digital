@@ -14,14 +14,20 @@ const { page = "home" } = Astro.props;
 const isHome = page === "home";
 const homeHref = "/";
 
-const links = navLinksData.map(({ title, slug, pageHref }) => ({
-  title,
-  slug,
-  href: isHome ? `#${slug}` : (pageHref ?? `${homeHref}#${slug}`),
-}));
+type NavLink = { title: string; slug: string; pageHref?: string; href?: string };
 
 const currentPath = Astro.url.pathname;
-const isCurrentPage = !isHome && currentPath.startsWith("/projects");
+
+// `href` = a real page (same on every page); otherwise a homepage section,
+// with `pageHref` overriding the link used on other pages.
+const links = (navLinksData as NavLink[]).map(({ title, slug, pageHref, href }) => ({
+  title,
+  slug,
+  href: href ?? (isHome ? `#${slug}` : (pageHref ?? `${homeHref}#${slug}`)),
+  active: href
+    ? currentPath.startsWith(href)
+    : !isHome && !!pageHref && currentPath.startsWith(pageHref),
+}));
 ---
 
 <header
@@ -46,11 +52,13 @@ const isCurrentPage = !isHome && currentPath.startsWith("/projects");
     <nav aria-label="Main" class="flex items-center gap-6 text-[0.82rem]">
       {
         links.map((l) => {
-          const active = isCurrentPage && l.slug === "work";
+          const active = l.active;
           return (
             <a
               href={l.href}
               data-section={l.slug}
+            aria-current={active ? "page" : undefined}
+              aria-current={active ? "page" : undefined}
               class={`nav-link nav-anchor hide-mobile tracking-[0.06em] transition-colors duration-200 ${
                 active ? "text-text active" : "text-light-grey"
               }`}
@@ -131,11 +139,12 @@ const isCurrentPage = !isHome && currentPath.startsWith("/projects");
   <nav aria-label="Mobile" class="flex flex-1 flex-col px-6 py-6">
     {
       links.map((l) => {
-        const active = isCurrentPage && l.slug === "work";
+        const active = l.active;
         return (
           <a
             href={l.href}
             data-section={l.slug}
+            aria-current={active ? "page" : undefined}
             class={`mobile-nav-link border-border border-b py-5 text-[1.4rem] tracking-[-0.01em] transition-colors duration-200 ${
               active ? "text-text" : "text-light-grey hover:text-text"
             }`}
@@ -236,12 +245,8 @@ const isCurrentPage = !isHome && currentPath.startsWith("/projects");
       if (el && el.offsetTop <= y) current = id;
     }
     anchors.forEach((a) => {
-      if (
-        a.dataset.section === "work" &&
-        a.getAttribute("href")?.startsWith("/")
-      ) {
-        return;
-      }
+      // Links to other pages keep their server-rendered active state
+      if (a.getAttribute("href")?.startsWith("/")) return;
       setActive(a, a.dataset.section === current);
     });
   };

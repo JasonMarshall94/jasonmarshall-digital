@@ -1,0 +1,152 @@
+---
+import type { GetStaticPaths } from "astro";
+import { getCollection, getEntry } from "astro:content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Nav from "@/global/Nav.astro";
+import Footer from "@/global/Footer.astro";
+import PageHero from "@/components/content/PageHero.astro";
+import RichText from "@/components/content/RichText.astro";
+import ProjectCard from "@/components/ProjectCard.astro";
+import CallToAction from "@/components/CTA.astro";
+import { getSiteSettings } from "@/lib/sanity";
+import {
+  breadcrumbNode,
+  businessNode,
+  faqNode,
+  graph,
+  serviceNode,
+} from "@/lib/structuredData";
+
+export const getStaticPaths = (async () => {
+  const services = await getCollection("services");
+  return services.map((service) => ({
+    params: { slug: service.data.slug },
+    props: { service },
+  }));
+}) satisfies GetStaticPaths;
+
+const { service } = Astro.props;
+const s = service.data;
+const settings = await getSiteSettings();
+const site = Astro.site!;
+const path = `/services/${s.slug}/`;
+
+const related = (
+  await Promise.all(s.relatedProjects.map((id) => getEntry("projects", id)))
+).filter((p) => !!p);
+
+const faqs = s.faqs ?? [];
+
+const jsonLd = graph(
+  businessNode(settings, site),
+  breadcrumbNode(
+    [
+      ["Services", "/services/"],
+      [s.title, path],
+    ],
+    site,
+  ),
+  serviceNode({ name: s.title, description: s.intro, path }, settings, site),
+  ...(faqs.length ? [faqNode(faqs)] : []),
+);
+---
+
+<BaseLayout
+  title={s.seo?.title ?? `${s.title} — ${settings.title}`}
+  description={s.seo?.description ?? s.summary}
+  jsonLd={jsonLd}
+>
+  <Nav page="page" />
+  <main id="main-content">
+    <PageHero
+      heading={s.heading}
+      intro={s.intro}
+      breadcrumbs={[
+        { label: "Services", href: "/services/" },
+        { label: s.title },
+      ]}
+    >
+      <a href="/#contact" class="btn btn-primary float-in mt-10" style="animation-delay: 0.3s">
+        Start a project <span aria-hidden="true">→</span>
+      </a>
+    </PageHero>
+
+    <section class="py-16 md:py-24">
+      <div
+        class="container grid grid-cols-[minmax(0,1fr)_minmax(260px,340px)] items-start gap-16 max-[900px]:grid-cols-1"
+      >
+        <RichText value={s.body} />
+
+        {
+          s.included?.length && (
+            <div class="border-border bg-card border p-8 min-[901px]:sticky min-[901px]:top-28">
+              <h2 class="label m-0 mb-6">What's included</h2>
+              <ul class="text-accent m-0 flex list-none flex-col gap-3 p-0 text-[0.88rem] leading-[1.6]">
+                {s.included.map((item) => (
+                  <li class="flex gap-[0.7rem]">
+                    <span class="text-med-grey" aria-hidden="true">
+                      →
+                    </span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )
+        }
+      </div>
+    </section>
+
+    {
+      related.length > 0 && (
+        <section class="border-border border-t py-16 md:py-24">
+          <div class="container">
+            <h2 class="text-text m-0 mb-10 text-[clamp(1.5rem,3vw,2.2rem)] font-medium tracking-[-0.02em]">
+              Related work
+            </h2>
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-6">
+              {related.map((p, i) => (
+                <ProjectCard project={p} index={i} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )
+    }
+
+    {
+      faqs.length > 0 && (
+        <section class="border-border border-t py-16 md:py-24">
+          <div class="container">
+            <h2 class="text-text m-0 mb-10 text-[clamp(1.5rem,3vw,2.2rem)] font-medium tracking-[-0.02em]">
+              Frequently asked questions
+            </h2>
+            <div class="border-border max-w-[76ch] border-t">
+              {faqs.map((f) => (
+                <details class="group border-border border-b">
+                  <summary class="text-text flex cursor-pointer list-none items-center justify-between gap-6 py-6 text-[1rem] font-medium [&::-webkit-details-marker]:hidden">
+                    {f.question}
+                    <span
+                      aria-hidden="true"
+                      class="text-light-grey shrink-0 transition-transform duration-200 group-open:rotate-45"
+                    >
+                      +
+                    </span>
+                  </summary>
+                  <p class="text-accent m-0 pb-6 text-[0.92rem] leading-[1.75]">
+                    {f.answer}
+                  </p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+      )
+    }
+
+    <div class="container pb-20 md:pb-32">
+      <CallToAction />
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

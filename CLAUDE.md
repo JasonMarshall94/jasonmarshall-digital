@@ -26,7 +26,7 @@ This is a personal portfolio/agency site built with **Astro 7**, explicitly set 
 - **Tailwind CSS v4** via `@tailwindcss/vite` — configured entirely in `src/styles/global.css` using `@theme`, `@utility`, and `@layer` directives (no `tailwind.config.js`)
 - **astro-icon** — SVG icons placed in `src/icons/` are auto-resolved by name (e.g. `<Icon name="github" />` → `src/icons/github.svg`)
 - **React** (`@astrojs/react`) — used for email templates only (`src/emails/`). No React components are used in the browser; no `client:*` directives exist in the project
-- **Sanity** (`@sanity/client`, `@sanity/image-url`) — headless CMS for projects and site settings, fetched at build time. See *Content (Sanity)* below
+- **Sanity** (`@sanity/client`, `@sanity/image-url`) — headless CMS for projects, services, pages and site settings, fetched at build time. Rich text is rendered with `astro-portabletext`. See *Content (Sanity)* below
 - **GSAP** — used for scroll-driven and entry animations in Hero (`SplitText`), About, and Services (`ScrollTrigger`). All animations are gated with `gsap.matchMedia()` on `prefers-reduced-motion: no-preference`
 - **Partytown** (`@astrojs/partytown`) — offloads third-party scripts to a web worker. Configured with `forward: ["dataLayer.push", "gtag"]` in `astro.config.mjs`. Google Analytics (`G-ZMTW1L1YJX`) is loaded via Partytown in `BaseLayout.astro` using `type="text/partytown"` script tags. Do NOT use Partytown for Cloudflare Turnstile — it requires DOM access unavailable in workers.
 - **Prettier** — configured via `.prettierrc` with `prettier-plugin-astro` and `prettier-plugin-tailwindcss`
@@ -40,12 +40,16 @@ This is a personal portfolio/agency site built with **Astro 7**, explicitly set 
 - `src/components/` — page section components (Hero, About, Services, Contact, ContactForm, ProjectCard, ProjectsGrid, ProjectsArchive, StackMarquee, CTA)
 - `src/components/global/` — site-wide shell components (Nav, Footer, Logo)
 - `src/components/ui/` — reusable primitives (SectionHeading, CopyChip, ThemeToggle)
+- `src/components/content/` — CMS page building blocks: `PageHero` (breadcrumb trail + H1 + intro, used by inner pages), `RichText` (Portable Text in a `prose-site` wrapper; `RichLink` opens external links in a new tab, `RichImage` renders Sanity images at 16:9)
 
 ### Content (Sanity)
-Projects and site settings live in **Sanity** (project `3x5s0bg9`, dataset `production`, public-read). The Studio is a **separate repo** in the sibling folder `../studio-jason-marshall-digital/` (schemas in `schemaTypes/`), hosted by Sanity via `sanity deploy`. Content is fetched **at build time only** — publishing in Sanity does nothing until the site is rebuilt.
+Projects, services, pages and site settings live in **Sanity** (project `3x5s0bg9`, dataset `production`, public-read). The Studio is a **separate repo** in the sibling folder `../studio-jason-marshall-digital/` (schemas in `schemaTypes/`), hosted by Sanity via `sanity deploy`. Content is fetched **at build time only** — publishing in Sanity does nothing until the site is rebuilt.
 
 - `src/lib/sanity.ts` — the client (`perspective: "published"`, `useCdn: false`), `imageSrcset()` for responsive Sanity CDN images (honours Studio crop/hotspot; format negotiated by the CDN), and `getSiteSettings()` (the `siteSettings` singleton, memoised per build). Project id/dataset are public, so there are no Sanity env vars.
 - `src/content.config.ts` — the `projects` collection uses an inline loader that queries Sanity; components still use `getCollection("projects")`. Fields: `title`, `slug`, `excerpt`, `tags`, `postDate`, `isFeatured`, `cover` (`{asset, crop, hotspot, alt}`), optional `url`, `body` (Portable Text case study, not rendered yet), `seoTitle`, `seoDescription`. Drafts never reach the site (published perspective). The loader throws on zero projects and `getSiteSettings()` throws if the singleton is missing, so a broken CMS fails the build instead of shipping empty pages.
+- `services` collection (Sanity `service`): `title`, `slug`, `order`, `summary` (overview card), `heading` (H1), `intro`, `included[]`, `body`, `faqs[]`, `relatedProjects` (project slugs = `projects` collection ids), `seo{title,description}`. Rendered at `/services/` (`src/pages/services/index.astro`, cards sorted by `order`) and `/services/<slug>/`.
+- `pages` collection (Sanity `page`): `title`, `slug`, `heading`, `intro`, `body`, `seo`. `src/pages/[slug].astro` renders each at `/<slug>/` (e.g. `/about/`) except reserved slugs that have their own routes; the `services` page document supplies the heading/intro/SEO for `/services/`. Add new reserved slugs inside that file's `getStaticPaths` (it can't see module scope).
+- SEO titles: `seo.title` is used as the **full** `<title>` when set; otherwise `"<title> — <site title>"`.
 - `ProjectsGrid` (homepage) shows `isFeatured` projects; `ProjectsArchive` (projects page) shows all. `ProjectCard` renders covers with `imageSrcset()` at 16:9 — `cdn.sanity.io` is allowed in the CSP `img-src` in `netlify.toml`.
 - **Deploys:** the Studio's *Deploy* tool writes the `deployTrigger` document; a Sanity webhook filtered to `_type == "deployTrigger"` calls the Netlify build hook (the hook URL lives only in the webhook config, never in the public Studio bundle).
 - `getStaticPaths` in `src/pages/projects/_[slug].astro` maps `project.data.slug` to the route param (route currently disabled — see below).
@@ -57,14 +61,14 @@ Projects and site settings live in **Sanity** (project `3x5s0bg9`, dataset `prod
 **Cloudflare Turnstile** is integrated into `ContactForm.astro`. The widget uses `data-appearance="interaction-only"` (invisible unless a challenge is required) and `data-theme="auto"` (follows the visitor's OS colour scheme). The Turnstile script is lazy-loaded on first form `focusin` to avoid any page-load web vitals impact. Server-side token verification happens in the `send` action before the email is sent, using `TURNSTILE_SECRET_KEY` (env var set in Netlify). The submit handler guards against submission before the token is ready. Required env vars: `RESEND_API_KEY`, `TURNSTILE_SECRET_KEY`.
 
 ### Global site data
-- Site title, default meta description, contact email/phone and GitHub URL come from the Sanity `siteSettings` singleton via `getSiteSettings()`
+- Site title, default meta description, contact email/phone, GitHub URL and location (`city`, `region`, `areaServed[]` — the business is in West Chester, PA, serving Philadelphia and the surrounding area) come from the Sanity `siteSettings` singleton via `getSiteSettings()`. The About section's "Based" fact and the privacy policy read the location from it.
 
 ### SEO
 - `BaseLayout.astro` props: `title`, `description`, `ogImage`, `noindex` (emits `robots: noindex` instead of a canonical — used by the 404), `jsonLd` (rendered as `application/ld+json`). Every other page gets `<link rel="canonical">` built from `Astro.site` + pathname; `og:url` uses the same URL.
 - Homepage `<title>` = Site Settings `homeTitle` (falls back to `title`); `/projects` description = `projectsDescription` (falls back to `description`). Other page titles append the plain site `title`.
-- `src/lib/structuredData.ts` builds the homepage JSON-LD (`ProfessionalService` + `WebSite`) from Site Settings, including `city`/`region`.
+- `src/lib/structuredData.ts` has node builders combined with `graph(...)`: `businessNode` (`ProfessionalService` from Site Settings, incl. address and `areaServed`), `homepageJsonLd`, `breadcrumbNode`, `serviceNode` and `faqNode`. Inner pages include `businessNode` so `provider` `@id` references resolve on the same page.
 - Internal links to the projects page use `/projects/` (trailing slash) — Netlify 301s `/projects` → `/projects/`.
-- `src/data/navLinks.json` — nav link definitions with shape `{ title, slug, pageHref? }[]`; `pageHref` is an optional override for the non-home href (e.g. Work → `/projects`)
+- `src/data/navLinks.json` — nav link definitions with shape `{ title, slug, pageHref?, href? }[]`. `href` = a real page used on every page (Services → `/services/`, About → `/about/`); without it the link targets the homepage section `#slug`, with `pageHref` overriding the off-home link (Work → `/projects/`). Page links get their active state (and `aria-current`) server-side from the path; only `#section` links are highlighted on scroll.
 - `src/data/stackItems.ts` — `string[]` of technology names used by `StackMarquee`
 
 ### Navigation
@@ -75,6 +79,7 @@ Custom design tokens are defined in `src/styles/global.css` under `@theme`. Reus
 
 - `btn` / `btn-primary` — outline and filled button styles
 - `label` — small uppercase tracking label
+- `prose-site` — long-form text styling (headings, lists, links, images) for CMS rich text and the privacy policy
 - `nav-link` — underline-on-hover nav anchor
 - `hide-mobile` — `display: none` at ≤720px
 - `hide-desktop` — `display: none` at ≥721px

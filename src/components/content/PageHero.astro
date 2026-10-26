@@ -1,0 +1,61 @@
+---
+export interface Crumb {
+  label: string;
+  /** Omit for the current page */
+  href?: string;
+}
+
+interface Props {
+  heading: string;
+  intro?: string | null;
+  /** Trail after Home, ending with the current page */
+  breadcrumbs: Crumb[];
+}
+const { heading, intro, breadcrumbs } = Astro.props;
+---
+
+<section
+  class="border-border relative overflow-hidden border-b pt-30 pb-16 md:pt-40 md:pb-20"
+>
+  <div class="gridlines"></div>
+  <div class="relative z-2 container">
+    <nav aria-label="Breadcrumb" class="float-in mb-8">
+      <ol class="label m-0 flex list-none flex-wrap items-center gap-[0.6rem] p-0">
+        <li><a href="/" class="text-light-grey hover:text-text">Home</a></li>
+        {
+          breadcrumbs.map((c) => (
+            <li class="flex items-center gap-[0.6rem]">
+              <span class="text-med-grey" aria-hidden="true">
+                /
+              </span>
+              {c.href ? (
+                <a href={c.href} class="text-light-grey hover:text-text">
+                  {c.label}
+                </a>
+              ) : (
+                <span aria-current="page">{c.label}</span>
+              )}
+            </li>
+          ))
+        }
+      </ol>
+    </nav>
+    <h1
+      class="text-text float-in m-0 max-w-[22ch] text-[clamp(2.2rem,5.4vw,4.4rem)] leading-[1.04] font-medium tracking-[-0.03em] text-balance"
+      style="animation-delay: 0.1s"
+    >
+      {heading}
+    </h1>
+    {
+      intro && (
+        <p
+          class="text-accent float-in mt-8 mb-0 max-w-[62ch] text-base leading-[1.7]"
+          style="animation-delay: 0.2s"
+        >
+          {intro}
+        </p>
+      )
+    }
+    <slot />
+  </div>
+</section>

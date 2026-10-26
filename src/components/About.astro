@@ -1,8 +1,11 @@
 ---
 import SectionHeading from "@/ui/SectionHeading.astro";
+import { getSiteSettings } from "@/lib/sanity";
+
+const { city, region } = await getSiteSettings();
 
 const facts = [
-  { k: "Based", v: "Philadelphia, PA" },
+  { k: "Based", v: [city, region].filter(Boolean).join(", ") },
   { k: "Working", v: "Remote / US" },
   { k: "Experience", v: "10+ years" },
   { k: "Focus", v: "Small businesses · Studios" },
@@ -72,6 +75,12 @@ const principles = [
           </div>
         ))
       }
+    </div>
+
+    <div class="mt-12">
+      <a href="/about/" class="btn">
+        More about me <span aria-hidden="true">→</span>
+      </a>
     </div>
   </div>
 </section>

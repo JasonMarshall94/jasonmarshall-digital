@@ -1,0 +1,23 @@
+---
+import { imageSrcset, type SanityImage } from "@/lib/sanity";
+
+interface Props {
+  node: SanityImage & { alt?: string };
+}
+const { node } = Astro.props;
+// Body images keep the 16:9 card ratio so pages stay visually consistent
+const img = imageSrcset(node, [480, 760, 1140], 16 / 9);
+---
+
+<figure>
+  <img
+    src={img.src}
+    srcset={img.srcset}
+    sizes="(max-width: 760px) calc(100vw - 3rem), 760px"
+    width={img.width}
+    height={img.height}
+    alt={node.alt ?? ""}
+    loading="lazy"
+    decoding="async"
+  />
+</figure>

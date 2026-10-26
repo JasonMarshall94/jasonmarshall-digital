@@ -1,0 +1,22 @@
+---
+import { PortableText } from "astro-portabletext";
+import RichLink from "./RichLink.astro";
+import RichImage from "./RichImage.astro";
+
+interface Props {
+  value: unknown[] | null | undefined;
+  class?: string;
+}
+const { value, class: className = "" } = Astro.props;
+---
+
+{
+  value?.length ? (
+    <div class={`prose-site ${className}`}>
+      <PortableText
+        value={value as never}
+        components={{ mark: { link: RichLink }, type: { image: RichImage } }}
+      />
+    </div>
+  ) : null
+}
