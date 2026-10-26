@@ -1,0 +1,208 @@
+---
+import type { GetStaticPaths } from "astro";
+import { getCollection } from "astro:content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Nav from "@/global/Nav.astro";
+import Footer from "@/global/Footer.astro";
+import PageHero from "@/components/content/PageHero.astro";
+import RichText from "@/components/content/RichText.astro";
+import ProjectCard from "@/components/ProjectCard.astro";
+import CallToAction from "@/components/CTA.astro";
+import { getSiteSettings, imageSrcset } from "@/lib/sanity";
+import {
+  breadcrumbNode,
+  businessNode,
+  caseStudyNode,
+  graph,
+} from "@/lib/structuredData";
+
+export const getStaticPaths = (async () => {
+  const projects = await getCollection("projects");
+  return projects.map((project) => ({
+    params: { slug: project.data.slug },
+    props: { project },
+  }));
+}) satisfies GetStaticPaths;
+
+const { project } = Astro.props;
+const p = project.data;
+const settings = await getSiteSettings();
+const site = Astro.site!;
+const path = `/projects/${p.slug}/`;
+const year = p.postDate.getFullYear();
+
+const cover = imageSrcset(p.cover, [640, 960, 1280, 1920], 16 / 9);
+
+// Up to 3 other projects, newest first
+const more = (await getCollection("projects"))
+  .filter((other) => other.id !== project.id)
+  .sort((a, b) => b.data.postDate.valueOf() - a.data.postDate.valueOf())
+  .slice(0, 3);
+
+const details = [
+  p.location && { label: "Location", value: p.location },
+  { label: "Year", value: String(year) },
+  p.tags.length && { label: "Built with", value: p.tags.join(" · ") },
+].filter((d): d is { label: string; value: string } => !!d);
+
+const jsonLd = graph(
+  businessNode(settings, site),
+  breadcrumbNode(
+    [
+      ["Projects", "/projects/"],
+      [p.title, path],
+    ],
+    site,
+  ),
+  caseStudyNode(
+    {
+      name: p.title,
+      description: p.excerpt,
+      path,
+      image: cover.src,
+      liveUrl: p.url,
+    },
+    site,
+  ),
+);
+---
+
+<BaseLayout
+  title={p.seoTitle ?? `${p.title} — Website Case Study`}
+  description={p.seoDescription ?? p.excerpt}
+  jsonLd={jsonLd}
+>
+  <Nav page="page" />
+  <main id="main-content">
+    <PageHero
+      heading={p.title}
+      intro={p.excerpt}
+      breadcrumbs={[{ label: "Projects", href: "/projects/" }, { label: p.title }]}
+    >
+      {
+        p.url && (
+          <a
+            href={p.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn float-in mt-10"
+            style="animation-delay: 0.3s"
+          >
+            Visit live site <span aria-hidden="true">↗</span>
+          </a>
+        )
+      }
+    </PageHero>
+
+    <div class="container pt-16 md:pt-20">
+      <div class="border-border bg-deep aspect-video overflow-hidden border">
+        <img
+          src={cover.src}
+          srcset={cover.srcset}
+          sizes="(max-width: 1200px) calc(100vw - 3rem), 1152px"
+          width={cover.width}
+          height={cover.height}
+          alt={p.cover.alt}
+          fetchpriority="high"
+          decoding="async"
+          class="block h-full w-full object-cover"
+        />
+      </div>
+    </div>
+
+    <section class="py-16 md:py-24">
+      <div
+        class="container grid grid-cols-[minmax(0,1fr)_minmax(260px,340px)] items-start gap-16 max-[900px]:grid-cols-1"
+      >
+        <RichText value={p.body} />
+
+        <div
+          class="border-border bg-card border p-8 min-[901px]:sticky min-[901px]:top-28"
+        >
+          <h2 class="label m-0 mb-6">Project details</h2>
+          <dl class="m-0 flex flex-col gap-5 text-[0.88rem]">
+            {
+              details.map((d) => (
+                <div>
+                  <dt class="text-med-grey mb-1 text-[0.68rem] tracking-[0.16em] uppercase">
+                    {d.label}
+                  </dt>
+                  <dd class="text-text m-0">{d.value}</dd>
+                </div>
+              ))
+            }
+            {
+              p.services.length > 0 && (
+                <div>
+                  <dt class="text-med-grey mb-1 text-[0.68rem] tracking-[0.16em] uppercase">
+                    Services
+                  </dt>
+                  <dd class="m-0">
+                    <ul class="m-0 flex list-none flex-col gap-1 p-0">
+                      {p.services.map((s) => (
+                        <li>
+                          <a
+                            href={`/services/${s.slug}/`}
+                            class="text-text underline underline-offset-4"
+                          >
+                            {s.title}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </dd>
+                </div>
+              )
+            }
+            {
+              p.url && (
+                <div>
+                  <dt class="text-med-grey mb-1 text-[0.68rem] tracking-[0.16em] uppercase">
+                    Website
+                  </dt>
+                  <dd class="m-0">
+                    <a
+                      href={p.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-text break-all underline underline-offset-4"
+                    >
+                      {p.url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "")} ↗
+                    </a>
+                  </dd>
+                </div>
+              )
+            }
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    {
+      more.length > 0 && (
+        <section class="border-border border-t py-16 md:py-24">
+          <div class="container">
+            <div class="mb-10 flex flex-wrap items-end justify-between gap-4">
+              <h2 class="text-text m-0 text-[clamp(1.5rem,3vw,2.2rem)] font-medium tracking-[-0.02em]">
+                More projects
+              </h2>
+              <a href="/projects/" class="nav-link text-light-grey text-[0.82rem]">
+                View all projects →
+              </a>
+            </div>
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-6">
+              {more.map((m, i) => (
+                <ProjectCard project={m} index={i} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )
+    }
+
+    <div class="container pb-20 md:pb-32">
+      <CallToAction />
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

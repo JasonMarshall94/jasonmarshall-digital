@@ -11,6 +11,8 @@ const PROJECTS_QUERY = `*[_type == "project" && defined(slug.current)]{
   isFeatured,
   cover{ asset, crop, hotspot, alt },
   url,
+  location,
+  "services": services[]->{ title, "slug": slug.current },
   body,
   seoTitle,
   seoDescription
@@ -71,6 +73,12 @@ export const collections = {
         alt: z.string(),
       }),
       url: z.url().nullish(),
+      location: z.string().nullish(),
+      // Unpublished service references resolve to null
+      services: z
+        .array(z.object({ title: z.string(), slug: z.string() }).nullable())
+        .nullish()
+        .transform((a) => (a ?? []).filter((x) => !!x)),
       body: z.array(z.any()).nullish(),
       seoTitle: z.string().nullish(),
       seoDescription: z.string().nullish(),

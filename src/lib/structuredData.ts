@@ -97,3 +97,34 @@ export function faqNode(faqs: { question: string; answer: string }[]) {
     })),
   };
 }
+
+/** A portfolio project / case study, credited to the business. */
+export function caseStudyNode(
+  project: {
+    name: string;
+    description: string;
+    path: string;
+    image: string;
+    liveUrl?: string | null;
+  },
+  site: URL,
+) {
+  return {
+    "@type": "CreativeWork",
+    name: project.name,
+    description: project.description,
+    url: new URL(project.path, site).href,
+    image: project.image,
+    creator: { "@id": businessId(site) },
+    ...(project.liveUrl && { sameAs: project.liveUrl }),
+  };
+}
+
+/** The contact page, pointing at the business. */
+export function contactPageNode(path: string, site: URL) {
+  return {
+    "@type": "ContactPage",
+    url: new URL(path, site).href,
+    about: { "@id": businessId(site) },
+  };
+}

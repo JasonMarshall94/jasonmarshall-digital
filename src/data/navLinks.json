@@ -2,5 +2,5 @@
   { "title": "Work", "slug": "work", "pageHref": "/projects/" },
   { "title": "Services", "slug": "services", "href": "/services/" },
   { "title": "About", "slug": "about", "href": "/about/" },
-  { "title": "Contact", "slug": "contact" }
+  { "title": "Contact", "slug": "contact", "href": "/contact/" }
 ]

@@ -10,24 +10,34 @@ interface Props {
   email?: string;
   phone?: string;
   endpoint?: string;
+  /** Show the section heading (false on /contact/, where the page hero replaces it) */
+  heading?: boolean;
 }
 const {
   email = settings.email,
   phone = settings.phone,
   endpoint,
+  heading = true,
 } = Astro.props;
 
 const telHref = `tel:${phone.replace(/[^0-9+]/g, "")}`;
 ---
 
-<section id="contact" class="border-border border-t py-20 md:py-32">
+<section
+  id="contact"
+  class={heading ? "border-border border-t py-20 md:py-32" : "py-16 md:py-24"}
+>
   <div class="container">
-    <SectionHeading
-      index="04"
-      eyebrow="Contact / Start Here"
-      title="Got a project? Let's talk."
-      description="I am available for new work. Reach out with a short project brief or just say hi. I read every email."
-    />
+    {
+      heading && (
+        <SectionHeading
+          index="04"
+          eyebrow="Contact / Start Here"
+          title="Got a project? Let's talk."
+          description="I am available for new work. Reach out with a short project brief or just say hi. I read every email."
+        />
+      )
+    }
 
     <div
       class="grid grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] gap-6 max-[860px]:grid-cols-1"
