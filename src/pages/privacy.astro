@@ -2,6 +2,7 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import Nav from "@/global/Nav.astro";
 import Footer from "@/global/Footer.astro";
+import PageHero from "@/components/content/PageHero.astro";
 import { getSiteSettings } from "@/lib/sanity";
 
 const settings = await getSiteSettings();
@@ -18,30 +19,11 @@ const lastUpdated = "October 28, 2026";
 >
   <Nav page="page" />
   <main id="main-content">
-    <section class="border-line relative overflow-hidden border-b pt-12 pb-16">
-      <div class="gridlines"></div>
-      <div class="relative z-2 container">
-        <div class="label float-in mb-8 flex items-center gap-[0.6rem]">
-          <a href="/" class="text-light-grey">
-            ← Home
-          </a>
-          <span class="text-med-grey">/</span>
-          <span>Legal / Privacy</span>
-        </div>
-        <h1
-          class="text-text float-in m-0 text-[clamp(2.4rem,6vw,4.8rem)] leading-[1.02] font-medium tracking-[-0.03em]"
-          style="animation-delay: 0.1s"
-        >
-          Privacy Policy.
-        </h1>
-        <p
-          class="text-light-grey float-in mt-8 mb-0 text-[0.82rem] tracking-[0.08em] uppercase"
-          style="animation-delay: 0.2s"
-        >
-          Last updated {lastUpdated}
-        </p>
-      </div>
-    </section>
+    <PageHero
+      heading="Privacy Policy"
+      subline={`Last updated ${lastUpdated}`}
+      breadcrumbs={[{ label: "Privacy" }]}
+    />
 
     <section class="py-16 md:py-24">
       <div class="container">

@@ -30,14 +30,6 @@
   --color-error: light-dark(#b42318, #e08080);
   --color-white: #ffffff;
 
-  /* Legacy names from the previous design (same values), removed once every
-     page uses the names above */
-  --color-dark-grey: var(--color-bg);
-  --color-border: var(--color-line);
-  --color-med-grey: var(--color-faint);
-  --color-light-grey: var(--color-muted);
-  --color-accent: var(--color-body);
-
   --font-sans: var(--font-geist), system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
   --default-font-family: var(--font-sans);
@@ -48,7 +40,6 @@
 :root {
   color-scheme: light dark;
   --gridline: light-dark(rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.04));
-  --btn-bg: transparent;
 }
 :root[data-theme="light"] {
   color-scheme: light;
@@ -92,7 +83,7 @@
   z-index: 9999;
   padding: 0.6rem 1.2rem;
   background: var(--color-text);
-  color: var(--color-dark-grey);
+  color: var(--color-bg);
   font-size: 0.85rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -100,7 +91,7 @@
   transition: top 0.2s;
   &:focus {
     top: 1rem;
-    outline: 2px solid var(--color-dark-grey);
+    outline: 2px solid var(--color-bg);
     outline-offset: 2px;
   }
 }
@@ -114,7 +105,7 @@
 /* ----- Base ----- */
 html,
 body {
-  background: var(--color-dark-grey);
+  background: var(--color-bg);
   color: var(--color-text);
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
@@ -140,7 +131,7 @@ body {
 
 ::selection {
   background: var(--color-text);
-  color: var(--color-dark-grey);
+  color: var(--color-bg);
 }
 
 ::-webkit-scrollbar {
@@ -148,13 +139,13 @@ body {
   height: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--color-dark-grey);
+  background: var(--color-bg);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--color-med-grey);
+  background: var(--color-control);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-light-grey);
+  background: var(--color-muted);
 }
 
 /* ----- Keyframes ----- */

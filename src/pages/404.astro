@@ -16,30 +16,27 @@ import Footer from "@/global/Footer.astro";
         class="relative flex flex-1 flex-col overflow-hidden pt-16 pb-24 md:pt-24"
       >
         <div class="gridlines"></div>
-        <div class="relative z-2 container">
+        <div class="relative container">
           <div class="label float-in mb-12" style="animation-delay: 0.05s">
             404 — Page not found
           </div>
 
           <h1
-            class="text-text float-in m-0 text-[clamp(2.4rem,6.6vw,5.6rem)] leading-[1.02] font-medium tracking-[-0.03em]"
+            class="text-text float-in m-0 text-[clamp(44px,6vw,80px)] leading-none font-medium tracking-[-0.04em]"
             style="animation-delay: 0.15s"
           >
             Nothing here.<span
-              class="blink bg-text ml-[0.1em] inline-block h-[0.9em] w-[0.55em] align-[-0.1em]"
+              aria-hidden="true"
+              class="blink bg-signal ml-[0.08em] inline-block h-[0.82em] w-[0.5em] align-[-0.06em]"
             ></span>
           </h1>
 
-          <div
-            class="text-accent float-in mt-10 grid max-w-160 grid-cols-[auto_1fr] gap-x-6 gap-y-4 text-base leading-[1.7]"
+          <p
+            class="text-body float-in mt-8 mb-0 max-w-[540px] text-lg leading-[1.65]"
             style="animation-delay: 0.28s"
           >
-            <span class="text-light-grey select-none">{">"}</span>
-            <p class="m-0">
-              That page doesn't exist or may have moved. Head back home or start
-              a project.
-            </p>
-          </div>
+            That page doesn't exist or may have moved. Head back home or start a project.
+          </p>
 
           <div
             class="float-in mt-12 flex flex-wrap gap-4"
