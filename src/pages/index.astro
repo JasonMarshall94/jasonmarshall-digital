@@ -2,11 +2,9 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import Nav from "@/global/Nav.astro";
 import Hero from "@/components/Hero.astro";
-import StackMarquee from "@/components/StackMarquee.astro";
-import ProjectsGrid from "@/components/ProjectsGrid.astro";
+import ServicesTicker from "@/components/ServicesTicker.astro";
+import RecentWork from "@/components/RecentWork.astro";
 import Services from "@/components/Services.astro";
-import About from "@/components/About.astro";
-import Contact from "@/components/Contact.astro";
 import Footer from "@/global/Footer.astro";
 import { getSiteSettings } from "@/lib/sanity";
 import { homepageJsonLd } from "@/lib/structuredData";
@@ -21,11 +19,9 @@ const settings = await getSiteSettings();
   <Nav />
   <main id="main-content">
     <Hero />
-    <StackMarquee />
-    <ProjectsGrid limit={3} />
+    <ServicesTicker />
+    <RecentWork />
     <Services />
-    <About />
-    <Contact />
   </main>
   <Footer />
 </BaseLayout>

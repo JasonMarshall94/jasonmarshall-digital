@@ -27,7 +27,7 @@ This is a personal portfolio/agency site built with **Astro 7**, explicitly set 
 - **astro-icon** — SVG icons placed in `src/icons/` are auto-resolved by name (e.g. `<Icon name="github" />` → `src/icons/github.svg`)
 - **React** (`@astrojs/react`) — used for email templates only (`src/emails/`). No React components are used in the browser; no `client:*` directives exist in the project
 - **Sanity** (`@sanity/client`, `@sanity/image-url`) — headless CMS for projects, services, pages and site settings, fetched at build time. Rich text is rendered with `astro-portabletext`. See *Content (Sanity)* below
-- **GSAP** — used for scroll-driven and entry animations in Hero (`SplitText`), About, and Services (`ScrollTrigger`). All animations are gated with `gsap.matchMedia()` on `prefers-reduced-motion: no-preference`
+- **GSAP** — still used by older sections (ProjectsArchive, SectionHeading) until they are rebuilt; the redesigned pages use CSS animations instead. All animations are gated with `gsap.matchMedia()` on `prefers-reduced-motion: no-preference`
 - **Partytown** (`@astrojs/partytown`) — offloads third-party scripts to a web worker. Configured with `forward: ["dataLayer.push", "gtag"]` in `astro.config.mjs`. Google Analytics (`G-ZMTW1L1YJX`) is loaded via Partytown in `BaseLayout.astro` using `type="text/partytown"` script tags. Do NOT use Partytown for Cloudflare Turnstile — it requires DOM access unavailable in workers.
 - **Prettier** — configured via `.prettierrc` with `prettier-plugin-astro` and `prettier-plugin-tailwindcss`
 
@@ -37,7 +37,7 @@ This is a personal portfolio/agency site built with **Astro 7**, explicitly set 
 - `@/global/*` → `src/components/global/*`
 
 ### Component organisation
-- `src/components/` — page section components (Hero, About, Services, Contact, ContactForm, ProjectCard, ProjectsGrid, ProjectsArchive, StackMarquee)
+- `src/components/` — page section components. Homepage: `Hero` (status badge, H1 with blinking accent cursor, headshot from `src/assets/jason-headshot.jpg`, two buttons, animated build graphic hidden on phones), `ServicesTicker` (scrolling service links on a dark band), `RecentWork` (newest featured project as a large card plus two equal `ProjectCard`s; all three become one swipe row on phones), `Services` (four short cards). Also Contact, ContactForm, ProjectCard (equal-size card linking to the case study), ProjectsArchive.
 - `src/components/global/` — site-wide shell components (Nav, Footer, Logo). `Footer` renders inside a dark `band`: the "Got a project? Let's talk." contact band with four steps (turn off with `contactBand={false}`, as on /contact/ and the 404), then the multi-column footer (services from Sanity, company links, contact details from Site Settings).
 - `src/components/ui/` — reusable primitives (SectionHeading, CopyChip, ThemeToggle, StatusBadge)
 - `src/components/content/` — CMS page building blocks: `PageHero` (breadcrumb trail + H1 + optional mono `subline` + intro, used by inner pages), `RichText` (Portable Text in a `prose-site` wrapper; `RichLink` opens external links in a new tab, `RichImage` renders Sanity images at 16:9)
@@ -70,7 +70,6 @@ Projects, services, pages and site settings live in **Sanity** (project `3x5s0bg
 - `src/lib/structuredData.ts` has node builders combined with `graph(...)`: `businessNode` (`ProfessionalService` from Site Settings, incl. address and `areaServed`), `homepageJsonLd`, `breadcrumbNode`, `serviceNode` and `faqNode`. Inner pages include `businessNode` so `provider` `@id` references resolve on the same page.
 - Internal links to the projects page use `/projects/` (trailing slash) — Netlify 301s `/projects` → `/projects/`.
 - `src/data/navLinks.json` — nav link definitions with shape `{ title, slug, pageHref?, href? }[]`. `href` = a real page used on every page (Services → `/services/`, About → `/about/`); without it the link targets the homepage section `#slug`, with `pageHref` overriding the off-home link (Work → `/projects/`). Page links get their active state (and `aria-current`) server-side from the path; only `#section` links are highlighted on scroll.
-- `src/data/stackItems.ts` — `string[]` of technology names used by `StackMarquee`
 
 ### Navigation
 `src/components/global/Nav.astro` includes a desktop nav and a mobile off-canvas drawer. The drawer slides in from the right and is driven entirely by a `data-open` attribute on the `<header>` — no framework needed. Hamburger → × animation uses `group-data-[open=true]/nav` Tailwind variants. The `inert` attribute is applied to `<main>` when the drawer is open.
@@ -87,6 +86,7 @@ Custom design tokens are defined in `src/styles/global.css` under `@theme`. Reus
 - `hide-mobile` — `display: none` at ≤720px
 - `hide-desktop` — `display: none` at ≥721px
 - `gridlines`, `float-in`, `marquee`, `scroll-fade-mask`, `pulse-dot`, `blink`
+- `ticker` (looping marquee that pauses on hover/focus), `draw` / `flow` / `bar` / `ring` / `scan` (SVG diagram motion), `lift` (card hover), `swipe-sm` (horizontal swipe row at ≤720px); all stop under reduced motion
 - `.container` — max-width 1200px, centered
 
 The design language ("Evolve: Signal") is near-monochrome and square-cornered with one blue accent, in light and dark themes. It follows the design system at https://claude.ai/artifact/Uk46fGXDgdWgFRXt2xNUaS. **Geist** (`font-sans`, the default) is used for headings and copy, **JetBrains Mono** (`font-mono`) for labels, buttons, tags and meta. Both come from Astro's font API (`fontProviders.fontsource()` in `astro.config.mjs`) and load with `<Font … preload />` in `BaseLayout.astro`. Marketing copy never names specific frameworks; say "a custom build" or "a modern framework".

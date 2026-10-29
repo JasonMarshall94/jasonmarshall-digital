@@ -502,3 +502,153 @@ body {
     transition: none;
   }
 }
+
+/* ----- Redesign motion: services ticker and line-drawing graphics ----- */
+@keyframes draw {
+  from {
+    stroke-dashoffset: 600;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes flow {
+  from {
+    stroke-dashoffset: 24;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes bar {
+  from {
+    transform: scaleY(0.2);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+@keyframes ring {
+  from {
+    stroke-dashoffset: 251;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes scan {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(300px);
+  }
+}
+
+@utility ticker {
+  display: flex;
+  width: max-content;
+  animation: scroll 40s linear infinite;
+  &:hover,
+  &:focus-within {
+    animation-play-state: paused;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+/* SVG strokes that draw themselves in once */
+@utility draw {
+  stroke-dasharray: 600;
+  animation: draw 1.8s var(--ease-expo) both;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    stroke-dasharray: none;
+  }
+}
+
+/* Dashed SVG strokes that flow continuously */
+@utility flow {
+  stroke-dasharray: 6 6;
+  animation: flow 1s linear infinite;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+/* SVG bars that rise and fall */
+@utility bar {
+  transform-origin: bottom;
+  transform-box: fill-box;
+  animation: bar 1.6s var(--ease-expo) infinite alternate;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+/* A score ring that fills once (r=40 circle) */
+@utility ring {
+  stroke-dasharray: 251;
+  animation: ring 2.2s var(--ease-expo) 0.6s both;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+/* A highlight line that sweeps down a mock browser */
+@utility scan {
+  animation: scan 4s linear infinite alternate;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+/* Cards that lift on hover; images inside scale slightly */
+@utility lift {
+  transition:
+    transform 0.45s var(--ease-expo),
+    border-color 0.3s;
+  & img {
+    transition: transform 0.7s var(--ease-expo);
+  }
+  &:hover {
+    transform: translateY(-4px);
+    border-color: var(--color-line-strong);
+  }
+  &:hover img {
+    transform: scale(1.03);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    &,
+    & img {
+      transition: none;
+    }
+    &:hover {
+      transform: none;
+    }
+    &:hover img {
+      transform: none;
+    }
+  }
+}
+
+/* Horizontal swipe row on phones (cards at 84% width) */
+@utility swipe-sm {
+  @media (max-width: 720px) {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    margin-right: -1.5rem;
+    padding-right: 1.5rem;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    & > * {
+      flex: 0 0 84%;
+      scroll-snap-align: start;
+    }
+  }
+}

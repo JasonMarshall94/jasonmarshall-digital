@@ -1,0 +1,36 @@
+---
+import { getCollection } from "astro:content";
+
+const services = (await getCollection("services")).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+---
+
+<!-- Scrolling list of services; the second copy only exists for the loop -->
+<nav aria-label="Services" class="band border-line overflow-hidden border-b">
+  <div class="ticker">
+    {
+      [false, true].map((copy) => (
+        <ul
+          aria-hidden={copy ? "true" : undefined}
+          class="m-0 flex list-none items-center gap-10 py-5.5 pr-10 pl-0 font-mono text-[13px] tracking-[0.14em] whitespace-nowrap uppercase"
+        >
+          {services.map((s) => (
+            <li class="flex items-center gap-10">
+              <a
+                href={`/services/${s.data.slug}/`}
+                tabindex={copy ? -1 : undefined}
+                class="text-text hover:text-signal-ink"
+              >
+                {s.data.title}
+              </a>
+              <span aria-hidden="true" class="text-signal-ink">
+                ✦
+              </span>
+            </li>
+          ))}
+        </ul>
+      ))
+    }
+  </div>
+</nav>
