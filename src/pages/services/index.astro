@@ -4,7 +4,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import Nav from "@/global/Nav.astro";
 import Footer from "@/global/Footer.astro";
 import PageHero from "@/components/content/PageHero.astro";
-import RichText from "@/components/content/RichText.astro";
+import ServiceDiagram, { type DiagramName } from "@/components/ServiceDiagram.astro";
 import { getSiteSettings } from "@/lib/sanity";
 import {
   breadcrumbNode,
@@ -20,6 +20,15 @@ if (!page) throw new Error('Sanity: the "services" page document is missing');
 const services = (await getCollection("services")).sort(
   (a, b) => a.data.order - b.data.order,
 );
+
+// One diagram per card; unknown services fall back to the browser sketch
+const cardDiagram: Record<string, DiagramName> = {
+  "web-design": "browser",
+  "wordpress-development": "editor",
+  "custom-development": "pipeline",
+  seo: "search",
+  "website-maintenance": "checklist",
+};
 
 const jsonLd = graph(
   businessNode(settings, site),
@@ -47,65 +56,40 @@ const jsonLd = graph(
   <main id="main-content">
     <PageHero
       heading={page.data.heading}
+      subline="Design, development, SEO and ongoing support"
       intro={page.data.intro}
       breadcrumbs={[{ label: "Services" }]}
     />
 
-    <section class="py-16 md:py-24">
-      <div class="container">
-        <RichText value={page.data.body} class="mb-16" />
-
-        <div
-          class="bg-border border-border grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-px border"
-        >
+    <section class="border-line border-b">
+      <div class="container pt-18 pb-28 max-[720px]:pt-12 max-[720px]:pb-16">
+        <div class="bg-line border-line grid grid-cols-[repeat(auto-fit,minmax(min(100%,320px),1fr))] gap-px border">
           {
-            services.map((s, i) => (
+            services.map((s) => (
               <a
                 href={`/services/${s.data.slug}/`}
-                class="group bg-card hover:bg-text/[0.025] flex flex-col px-8 py-[2.4rem] no-underline transition-colors duration-200"
+                class="group bg-card text-text flex flex-col gap-3.5 p-8 max-[720px]:p-6"
               >
-                <span class="text-med-grey mb-[1.6rem] text-[0.72rem] tracking-[0.12em]">
-                  / {String(i + 1).padStart(2, "0")}
-                </span>
-                <h2 class="text-text m-0 mb-4 text-[1.5rem] font-medium tracking-[-0.01em]">
-                  {s.data.title}
-                </h2>
-                <p class="text-accent m-0 mb-8 text-[0.9rem] leading-[1.65]">
-                  {s.data.summary}
-                </p>
-                <span class="text-light-grey group-hover:text-text mt-auto inline-flex items-center gap-[0.4rem] text-[0.75rem] tracking-[0.08em] uppercase transition-colors duration-200">
-                  Learn more
-                  <span
-                    aria-hidden="true"
-                    class="transition-transform duration-300 group-hover:translate-x-0.5"
-                  >
-                    →
-                  </span>
-                </span>
+                <figure class="border-line bg-deep m-0 mb-2.5 border p-5 max-[720px]:p-3.5">
+                  <ServiceDiagram name={cardDiagram[s.data.slug] ?? "browser"} />
+                </figure>
+                <h2 class="mt-1.5 mb-0 text-2xl font-medium tracking-[-0.01em]">{s.data.title}</h2>
+                <p class="text-body m-0 text-[15px] leading-[1.65]">{s.data.summary}</p>
+                <span class="link-more mt-auto pt-3">Learn more →</span>
               </a>
             ))
           }
-          <a
-            href="/contact/"
-            class="group bg-card hover:bg-text/[0.025] flex flex-col px-8 py-[2.4rem] no-underline transition-colors duration-200"
-          >
-            <span class="label mb-[1.6rem] text-[0.66rem]">Not sure yet?</span>
-            <h2 class="text-text m-0 mb-4 text-[1.5rem] font-medium tracking-[-0.01em]">
-              Let's figure it out together
-            </h2>
-            <p class="text-accent m-0 mb-8 text-[0.9rem] leading-[1.65]">
-              Tell me about your business and goals, and I'll recommend the
-              right mix of services for your budget.
+          <a href="/contact/" class="band group flex flex-col gap-3.5 p-8 max-[720px]:p-6">
+            <figure class="border-line bg-deep m-0 mb-2.5 border p-5 max-[720px]:p-3.5">
+              <ServiceDiagram name="bubbles" />
+            </figure>
+            <div class="label">Not sure yet?</div>
+            <h2 class="m-0 text-2xl font-medium tracking-[-0.01em]">Let's figure it out together.</h2>
+            <p class="text-body m-0 text-[15px] leading-[1.65]">
+              Tell me about your business and goals, and I'll recommend the right mix for your
+              budget.
             </p>
-            <span class="text-light-grey group-hover:text-text mt-auto inline-flex items-center gap-[0.4rem] text-[0.75rem] tracking-[0.08em] uppercase transition-colors duration-200">
-              Start a conversation
-              <span
-                aria-hidden="true"
-                class="transition-transform duration-300 group-hover:translate-x-0.5"
-              >
-                →
-              </span>
-            </span>
+            <span class="link-more mt-auto pt-3">Start a conversation →</span>
           </a>
         </div>
       </div>

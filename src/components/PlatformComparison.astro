@@ -1,0 +1,47 @@
+---
+// "WordPress or custom?" table, shown on the WordPress and custom development
+// pages (the service's showComparison switch in Sanity).
+const rows = [
+  ["Best for", "Sites you want to edit yourself, with room to add features", "Maximum speed, security and custom functionality"],
+  ["Editing", "WordPress dashboard with a page builder or blocks", "A clean, simple content dashboard"],
+  ["Performance", "Fast when built lean", "Exceptionally fast by default"],
+  ["Upkeep", "Regular plugin and core updates", "Very little ongoing maintenance"],
+];
+---
+
+<section class="border-line border-b">
+  <div class="container py-28 max-[720px]:py-16">
+    <div class="label">Choosing a platform</div>
+    <h2 class="mt-4 mb-4 text-[clamp(30px,3.6vw,46px)] leading-[1.08] font-medium tracking-[-0.03em]">
+      WordPress or custom?
+    </h2>
+    <p class="text-body mt-0 mb-10 max-w-[620px] text-[17px] leading-[1.65]">
+      Both make great small business websites. Here's how they differ, and I'll recommend the
+      right one for your project.
+    </p>
+    <div class="overflow-x-auto" tabindex="0" role="region" aria-label="WordPress compared with a custom build">
+      <table class="bg-line border-line w-full min-w-160 border-separate border-spacing-px border text-left">
+        <thead>
+          <tr>
+            <td class="bg-card w-45"></td>
+            <th scope="col" class="bg-card px-5 py-4.5 text-lg font-medium">WordPress</th>
+            <th scope="col" class="bg-card px-5 py-4.5 text-lg font-medium">Custom build</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            rows.map(([label, wp, custom]) => (
+              <tr>
+                <th scope="row" class="label bg-card px-5 py-4.5 align-top font-normal tracking-[0.14em]">
+                  {label}
+                </th>
+                <td class="text-body bg-card px-5 py-4.5 align-top text-[15px] leading-normal">{wp}</td>
+                <td class="text-body bg-card px-5 py-4.5 align-top text-[15px] leading-normal">{custom}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

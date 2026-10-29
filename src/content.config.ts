@@ -24,9 +24,12 @@ const SERVICES_QUERY = `*[_type == "service" && defined(slug.current)] | order(o
   order,
   summary,
   heading,
+  subline,
   intro,
   included,
   body,
+  "example": example{ "project": project->slug.current, notes[]{ title, text, x, y } },
+  showComparison,
   faqs[]{ question, answer },
   "relatedProjects": relatedProjects[]->slug.current,
   seo
@@ -98,9 +101,27 @@ export const collections = {
       order: z.number(),
       summary: z.string(),
       heading: z.string(),
+      subline: z.string().nullish(),
       intro: z.string(),
       included: z.array(z.string()).nullish(),
       body: z.array(z.any()).nullish(),
+      // Annotated screenshot of one project; project is a slug (null if unpublished)
+      example: z
+        .object({
+          project: z.string().nullish(),
+          notes: z
+            .array(
+              z.object({
+                title: z.string(),
+                text: z.string(),
+                x: z.number().nullish(),
+                y: z.number().nullish(),
+              }),
+            )
+            .nullish(),
+        })
+        .nullish(),
+      showComparison: z.boolean().nullish().transform(Boolean),
       faqs: z
         .array(z.object({ question: z.string(), answer: z.string() }))
         .nullish(),
