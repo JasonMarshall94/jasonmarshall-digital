@@ -3,16 +3,14 @@ import * as React from "react";
 interface Props {
   name: string;
   email: string;
-  type: string;
-  budget: string;
+  needs: string[];
   message: string;
 }
 
 export default function AdminNotification({
   name,
   email,
-  type,
-  budget,
+  needs,
   message,
 }: Props) {
   return (
@@ -30,13 +28,12 @@ export default function AdminNotification({
             <tbody>
               <Field label="Name" value={name} />
               <Field label="Email" value={email} />
-              <Field label="Project Type" value={type} />
-              <Field label="Budget" value={budget} />
+              <Field label="Needs" value={needs.length ? needs.join(", ") : "Not specified"} />
             </tbody>
           </table>
           <hr style={hr} />
           <p style={fieldLabel}>Message</p>
-          <p style={message_}>{message}</p>
+          <p style={message_}>{message || "(No message)"}</p>
           <hr style={hr} />
           <p style={footer}>Reply to this email to respond to {name}.</p>
         </div>

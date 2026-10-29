@@ -1,0 +1,165 @@
+---
+import { getCollection, getEntry } from "astro:content";
+import { Image } from "astro:assets";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Nav from "@/global/Nav.astro";
+import Footer from "@/global/Footer.astro";
+import ProjectCard from "@/components/ProjectCard.astro";
+import StatusBadge from "@/ui/StatusBadge.astro";
+import headshot from "@/assets/jason-headshot.jpg";
+import { getSiteSettings } from "@/lib/sanity";
+import { breadcrumbNode, businessNode, graph } from "@/lib/structuredData";
+
+// The Sanity "about" page document supplies the SEO title and description;
+// the page copy below follows the redesign.
+const page = await getEntry("pages", "about");
+const settings = await getSiteSettings();
+const site = Astro.site!;
+
+const recent = (await getCollection("projects"))
+  .filter((p) => p.data.isFeatured)
+  .sort((a, b) => b.data.postDate.valueOf() - a.data.postDate.valueOf())
+  .slice(0, 3);
+
+const timeline = [
+  { when: "2016", title: "First websites", text: "Started designing and building sites, and never really stopped." },
+  {
+    when: "Agency experience",
+    title: "Real clients, real deadlines",
+    text: "Sites for clients of every size, and a clear sense of what makes a website work.",
+  },
+  {
+    when: "2023",
+    title: "Jason Marshall Digital",
+    text: "Started my own studio to work one-on-one with small businesses.",
+    highlight: true,
+  },
+  { when: "Now", title: "Your project?", text: "Designing, building and looking after sites for small businesses.", now: true },
+];
+
+const tools = ["WordPress", "Elementor", "ACF", "Astro", "Next.js", "React", "Sanity", "Tailwind CSS", "TypeScript", "Netlify"];
+
+const jsonLd = graph(businessNode(settings, site), breadcrumbNode([["About", "/about/"]], site));
+---
+
+<BaseLayout
+  title={page?.data.seo?.title ?? `About — ${settings.title}`}
+  description={page?.data.seo?.description ?? page?.data.intro ?? undefined}
+  jsonLd={jsonLd}
+>
+  <Nav page="page" />
+  <main id="main-content">
+    <section class="border-line relative overflow-hidden border-b">
+      <div class="gridlines"></div>
+      <div class="relative container pt-12 pb-18 max-[720px]:pb-14">
+        <nav aria-label="Breadcrumb" class="float-in">
+          <ol class="label m-0 flex list-none flex-wrap items-center gap-2.5 p-0">
+            <li><a href="/" class="text-faint hover:text-text">Home</a></li>
+            <li class="flex items-center gap-2.5">
+              <span class="text-line-strong" aria-hidden="true">/</span>
+              <span aria-current="page" class="text-muted">About</span>
+            </li>
+          </ol>
+        </nav>
+        <div class="mt-9 grid items-center gap-9 min-[721px]:grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)] min-[721px]:gap-16">
+          <div class="relative">
+            <Image
+              src={headshot}
+              alt="Jason Marshall, web designer and developer"
+              widths={[360, 540, 720, 900]}
+              sizes="(max-width: 720px) calc(100vw - 3rem), 480px"
+              class="border-line bg-card block aspect-square h-auto w-full border object-cover"
+              loading="eager"
+            />
+            <div class="band border-line absolute bottom-5 left-5 border px-3.5 py-2.25">
+              <StatusBadge class="text-text" />
+            </div>
+          </div>
+          <div class="float-in" style="animation-delay: 0.1s">
+            <h1 class="m-0 text-[clamp(40px,5vw,64px)] leading-none font-medium tracking-[-0.04em]">
+              Hi, I'm Jason.
+            </h1>
+            <p class="subline mt-3.5 mb-0">Web designer &amp; developer</p>
+            <p class="text-body mt-7 mb-0 max-w-[520px] text-[19px] leading-[1.6]">
+              I've been designing and building websites for over ten years. When you work with me,
+              the person you talk to is the person building your site.
+            </p>
+            <div class="mt-9 flex flex-wrap gap-3 max-[720px]:flex-nowrap max-[720px]:gap-2">
+              <a href="/contact/" class="btn btn-primary max-[720px]:flex-1 max-[720px]:px-2 max-[720px]:text-[11px]">
+                Start a project <span aria-hidden="true">→</span>
+              </a>
+              <a href="/projects/" class="btn max-[720px]:flex-1 max-[720px]:px-2 max-[720px]:text-[11px]">See my work</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="border-line border-b">
+      <div class="container py-26 max-[720px]:py-16">
+        <div class="label">My background</div>
+        <h2 class="mt-4 mb-14 text-[clamp(30px,3.6vw,46px)] leading-[1.08] font-medium tracking-[-0.03em] max-[720px]:mb-10">
+          Ten years of client work.
+        </h2>
+        <ol class="m-0 grid list-none gap-8 p-0 md:grid-cols-2 lg:grid-cols-4">
+          {
+            timeline.map((t) => (
+              <li class:list={["relative border-t pt-9", t.highlight ? "border-signal" : t.now ? "border-line-strong border-dashed" : "border-line-strong"]}>
+                {t.now ? (
+                  <span aria-hidden="true" class="pulse-dot bg-signal absolute -top-1.5 left-0 h-2.75 w-2.75 rounded-full" />
+                ) : (
+                  <span
+                    aria-hidden="true"
+                    class:list={[
+                      "absolute -top-1.5 left-0 h-2.75 w-2.75",
+                      t.highlight ? "bg-signal" : "bg-bg border-line-strong border",
+                    ]}
+                  />
+                )}
+                <div class:list={["font-mono text-[13px]", t.highlight ? "text-signal-ink" : "text-muted"]}>{t.when}</div>
+                <h3 class="mt-2.5 mb-2 text-xl font-medium">{t.title}</h3>
+                <p class="text-body m-0 text-[15px] leading-[1.6]">{t.text}</p>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </section>
+
+    <section class="band border-line border-b">
+      <div class="container grid items-center gap-x-18 gap-y-10 py-24 max-[720px]:py-16 min-[961px]:grid-cols-2">
+        <div>
+          <div class="label">What I work with</div>
+          <h2 class="mt-4 mb-5 text-[clamp(30px,3.6vw,46px)] leading-[1.08] font-medium tracking-[-0.03em]">
+            The right tools for the job.
+          </h2>
+          <p class="text-body m-0 max-w-[460px] text-[17px] leading-[1.65]">
+            Years of agency work have put just about every platform and tool you can name in front
+            of me. I'll pick whatever fits your project best.
+          </p>
+        </div>
+        <ul class="m-0 flex list-none flex-wrap gap-2.5 p-0" aria-label="Tools and technologies">
+          {tools.map((t) => <li class="tag px-3.5 py-2.25 text-xs">{t}</li>)}
+        </ul>
+      </div>
+    </section>
+
+    <section class="border-line border-b">
+      <div class="container py-26 max-[720px]:py-16">
+        <div class="mb-8 flex flex-wrap items-end justify-between gap-5">
+          <div>
+            <div class="label">Recent work</div>
+            <h2 class="mt-4 mb-0 text-[clamp(28px,3vw,38px)] leading-[1.1] font-medium tracking-[-0.03em]">
+              A few sites I've built.
+            </h2>
+          </div>
+          <a href="/projects/" class="btn">All work <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="swipe-sm grid gap-6 md:grid-cols-3">
+          {recent.map((p) => <ProjectCard project={p} />)}
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</BaseLayout>

@@ -3,9 +3,8 @@ import { getEntry } from "astro:content";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import Nav from "@/global/Nav.astro";
 import Footer from "@/global/Footer.astro";
-import PageHero from "@/components/content/PageHero.astro";
-import RichText from "@/components/content/RichText.astro";
-import Contact from "@/components/Contact.astro";
+import ContactForm from "@/components/ContactForm.astro";
+import StatusBadge from "@/ui/StatusBadge.astro";
 import { getSiteSettings } from "@/lib/sanity";
 import {
   breadcrumbNode,
@@ -19,6 +18,13 @@ const site = Astro.site!;
 const page = await getEntry("pages", "contact");
 if (!page) throw new Error('Sanity: the "contact" page document is missing');
 const p = page.data;
+const telHref = `tel:${settings.phone.replace(/[^\d+]/g, "")}`;
+const steps = [
+  "I reply within a day",
+  "A free 30-minute call about your goals",
+  "A fixed-price proposal in writing",
+  "We get building",
+];
 
 const jsonLd = graph(
   businessNode(settings, site),
@@ -34,17 +40,81 @@ const jsonLd = graph(
 >
   <Nav page="page" />
   <main id="main-content">
-    <PageHero heading={p.heading} intro={p.intro} breadcrumbs={[{ label: p.title }]} />
-    <Contact heading={false} />
-    {
-      p.body?.length ? (
-        <section class="pb-20 md:pb-32">
-          <div class="container">
-            <RichText value={p.body} />
+    <section class="border-line relative overflow-hidden border-b">
+      <div class="gridlines"></div>
+      <div class="relative container pt-12 pb-28 max-[720px]:pb-16">
+        <nav aria-label="Breadcrumb" class="float-in">
+          <ol class="label m-0 flex list-none flex-wrap items-center gap-2.5 p-0">
+            <li><a href="/" class="text-faint hover:text-text">Home</a></li>
+            <li class="flex items-center gap-2.5">
+              <span class="text-line-strong" aria-hidden="true">/</span>
+              <span aria-current="page" class="text-muted">Contact</span>
+            </li>
+          </ol>
+        </nav>
+        <!-- Phones: intro, form, then contact details; desktop: two columns -->
+        <div
+          class="mt-9 grid items-start gap-10 [grid-template-areas:'intro'_'form'_'details'] min-[961px]:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] min-[961px]:grid-rows-[auto_1fr] min-[961px]:gap-x-16 min-[961px]:[grid-template-areas:'intro_form'_'details_form']"
+        >
+          <div class="float-in [grid-area:intro]">
+            <StatusBadge />
+            <h1 class="mt-5 mb-0 text-[clamp(40px,5vw,60px)] leading-none font-medium tracking-[-0.04em]">
+              Let's talk.
+            </h1>
+            <p class="text-body mt-6 mb-0 max-w-[440px] text-lg leading-[1.65]">
+              Tell me a bit about your business and what you need. I'll reply personally within a
+              day.
+            </p>
           </div>
-        </section>
-      ) : null
-    }
+
+          <div class="min-w-0 [grid-area:form]">
+            <ContactForm />
+          </div>
+
+          <div class="[grid-area:details]">
+            <ul class="border-line m-0 list-none border-b p-0">
+              <li class="border-line border-t">
+                <a
+                  href={`mailto:${settings.email}`}
+                  class="group grid grid-cols-[24px_minmax(0,1fr)_auto] items-center gap-4 py-4.5 transition-[padding] duration-350 hover:pl-2"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5" aria-hidden="true" class="stroke-signal">
+                    <rect x="3" y="5" width="18" height="14" />
+                    <path d="M3 6 L12 13 L21 6" />
+                  </svg>
+                  <span class="text-[17px] break-all">{settings.email}</span>
+                  <span aria-hidden="true" class="text-signal-ink font-mono text-[13px]">→</span>
+                </a>
+              </li>
+              <li class="border-line border-t">
+                <a
+                  href={telHref}
+                  class="group grid grid-cols-[24px_minmax(0,1fr)_auto] items-center gap-4 py-4.5 transition-[padding] duration-350 hover:pl-2"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5" aria-hidden="true" class="stroke-signal">
+                    <path d="M5 3 H9 L11 8 L8.5 9.5 C9.5 12 12 14.5 14.5 15.5 L16 13 L21 15 V19 C21 20 20 21 19 21 C10 21 3 14 3 5 C3 4 4 3 5 3 Z" />
+                  </svg>
+                  <span class="text-[17px]">{settings.phone}</span>
+                  <span aria-hidden="true" class="text-signal-ink font-mono text-[13px]">→</span>
+                </a>
+              </li>
+            </ul>
+
+            <h2 class="label mt-10 mb-0 font-normal">What happens next</h2>
+            <ol class="m-0 mt-4 flex list-none flex-col gap-3 p-0">
+              {
+                steps.map((step, i) => (
+                  <li class="text-body grid grid-cols-[32px_minmax(0,1fr)] gap-3 text-[15px]">
+                    <span class="text-signal-ink pt-0.5 font-mono text-xs">{String(i + 1).padStart(2, "0")}</span>
+                    {step}
+                  </li>
+                ))
+              }
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
   <Footer contactBand={false} />
 </BaseLayout>

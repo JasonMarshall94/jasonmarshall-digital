@@ -12,7 +12,7 @@ import { breadcrumbNode, businessNode, graph } from "@/lib/structuredData";
 // Sanity "page" documents at /<slug>/.
 export const getStaticPaths = (async () => {
   // These slugs have their own routes (getStaticPaths can't see outer scope)
-  const RESERVED = new Set(["services", "projects", "contact", "privacy", "404"]);
+  const RESERVED = new Set(["services", "projects", "contact", "privacy", "about", "404"]);
   const pages = await getCollection("pages");
   return pages
     .filter((p) => !RESERVED.has(p.data.slug))

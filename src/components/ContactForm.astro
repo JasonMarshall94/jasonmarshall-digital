@@ -1,122 +1,81 @@
 ---
-import { getSiteSettings } from "@/lib/sanity";
+// The project brief form. "What do you need?" options are real checkboxes
+// styled as tiles, so the form works without JavaScript; JS adds the live
+// "Your brief" summary, Turnstile and the submit handling.
+const needs = [
+  { value: "A new website", icon: "web" },
+  { value: "A redesign", icon: "redesign" },
+  { value: "A custom build", icon: "custom" },
+  { value: "Better SEO", icon: "seo" },
+  { value: "Ongoing care", icon: "care" },
+  { value: "Not sure yet", icon: "unsure" },
+];
 
-const { email } = await getSiteSettings();
-
+const labelClass = "label mb-2 block text-[10px]";
 const fieldClass =
-  "w-full bg-transparent border-0 border-b border-med-grey text-text py-3 text-[0.95rem] outline-none transition-colors duration-200 font-[inherit] focus:border-b-text placeholder:text-med-grey";
-
-const labelClass =
-  "text-[0.68rem] tracking-[0.18em] uppercase text-light-grey block mb-[0.4rem]";
+  "border-control text-text placeholder:text-faint focus:border-text w-full border-0 border-b bg-transparent py-3 font-[inherit] text-base transition-colors duration-200 outline-none";
 ---
 
-<form
-  class="contact-form border-border bg-card flex flex-col gap-[1.6rem] border p-8"
->
-  <div class="flex items-center justify-between">
-    <div class="label">→ Project Brief</div>
-    <div class="text-med-grey text-[0.68rem] tracking-[0.14em]">
-      REPLY · WITHIN 24H
+<form class="contact-form border-line bg-card flex flex-col gap-8 border p-9 max-[720px]:p-6">
+  <fieldset class="m-0 min-w-0 border-0 p-0">
+    <legend class="label mb-3.5 p-0">What do you need? <span class="text-muted">Pick any</span></legend>
+    <div class="grid grid-cols-2 gap-2 min-[721px]:grid-cols-3">
+      {
+        needs.map((n, i) => (
+          <label class="border-control text-text hover:border-text has-checked:border-signal has-checked:bg-[color-mix(in_oklab,var(--color-signal)_9%,var(--color-card))] has-focus-visible:outline-focus relative flex cursor-pointer items-center gap-2.5 border py-2.75 pr-8.5 pl-3.5 text-sm whitespace-nowrap transition-colors duration-250 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 max-[720px]:flex-col max-[720px]:items-start max-[720px]:p-3.5">
+            <input type="checkbox" name="needs" value={n.value} checked={i === 0} class="peer sr-only" />
+            <span aria-hidden="true" class="text-signal-ink absolute top-1/2 right-3 -translate-y-1/2 font-mono text-xs opacity-0 transition-opacity peer-checked:opacity-100 max-[720px]:top-3 max-[720px]:translate-y-0">
+              ✓
+            </span>
+            <svg viewBox="0 0 48 48" fill="none" stroke-width="1.8" aria-hidden="true" class="stroke-signal h-4.5 w-4.5 shrink-0 max-[720px]:h-5.5 max-[720px]:w-5.5">
+              {n.icon === "web" && <path d="M4 8 H44 V40 H4 Z M4 16 H44 M12 24 H28 M12 30 H22" />}
+              {n.icon === "redesign" && <path d="M40 20 A16 16 0 1 0 38 32 M40 10 V20 H30" />}
+              {n.icon === "custom" && <path d="M16 12 L6 24 L16 36 M32 12 L42 24 L32 36 M27 10 L21 38" />}
+              {n.icon === "seo" && <path d="M6 42 H42 M13 42 V30 M24 42 V22 M35 42 V12" />}
+              {n.icon === "care" && <path d="M24 4 L40 10 V22 C40 32 33 39 24 44 C15 39 8 32 8 22 V10 Z M16 24 L22 30 L33 18" />}
+              {n.icon === "unsure" && (
+                <>
+                  <circle cx="24" cy="24" r="18" />
+                  <path d="M19 19 C19 14 29 14 29 20 C29 24 24 24 24 29" />
+                  <circle cx="24" cy="34" r="1" class="fill-signal" />
+                </>
+              )}
+            </svg>
+            {n.value}
+          </label>
+        ))
+      }
     </div>
-  </div>
+  </fieldset>
 
-  <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-[1.4rem]">
+  <div class="grid gap-6 min-[521px]:grid-cols-2">
     <div>
       <label class={labelClass} for="cf-name">Name</label>
-      <input
-        id="cf-name"
-        name="name"
-        type="text"
-        placeholder="Your name"
-        class={fieldClass}
-        required
-      />
+      <input id="cf-name" name="name" type="text" autocomplete="name" placeholder="Your name" class={fieldClass} required />
     </div>
     <div>
       <label class={labelClass} for="cf-email">Email</label>
-      <input
-        id="cf-email"
-        name="email"
-        type="email"
-        placeholder="you@company.com"
-        class={fieldClass}
-        required
-      />
-    </div>
-  </div>
-
-  <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-[1.4rem]">
-    <div>
-      <p id="type-label" class={labelClass}>Project Type</p>
-      <div
-        class="chip-group flex flex-wrap gap-2"
-        data-group="type"
-        role="radiogroup"
-        aria-labelledby="type-label"
-      >
-        {
-          ["Website", "SEO", "Not Sure"].map((t, i) => (
-            <button
-              type="button"
-              role="radio"
-              aria-checked={i === 0 ? "true" : "false"}
-              class={`chip border-border cursor-pointer border px-[0.8rem] py-2 font-[inherit] text-[0.78rem] transition-all duration-200 ${
-                i === 0
-                  ? "active bg-text text-dark-grey border-text"
-                  : "text-accent bg-(--btn-bg)"
-              }`}
-              data-value={t}
-            >
-              {t}
-            </button>
-          ))
-        }
-      </div>
-      <input type="hidden" name="type" value="Website" data-bind="type" />
-    </div>
-    <div>
-      <p id="budget-label" class={labelClass}>Budget</p>
-      <div
-        class="chip-group flex flex-wrap gap-2"
-        data-group="budget"
-        role="radiogroup"
-        aria-labelledby="budget-label"
-      >
-        {
-          ["<$5k", "$5-10k", "$10k+", "N/A"].map((t, i) => (
-            <button
-              type="button"
-              role="radio"
-              aria-checked={i === 1 ? "true" : "false"}
-              class={`chip border-border cursor-pointer border px-[0.8rem] py-2 font-[inherit] text-[0.78rem] transition-all duration-200 ${
-                i === 1
-                  ? "active bg-text text-dark-grey border-text"
-                  : "text-accent bg-(--btn-bg)"
-              }`}
-              data-value={t}
-            >
-              {t}
-            </button>
-          ))
-        }
-      </div>
-      <input type="hidden" name="budget" value="$5-10k" data-bind="budget" />
+      <input id="cf-email" name="email" type="email" autocomplete="email" placeholder="you@company.com" class={fieldClass} required />
     </div>
   </div>
 
   <div>
-    <label class={labelClass} for="cf-msg">Project Details</label>
+    <label class={labelClass} for="cf-msg">Anything else?</label>
     <textarea
       id="cf-msg"
       name="message"
       rows="4"
-      placeholder="Tell me about your project — timeline, what you're trying to accomplish, any links..."
-      class={`${fieldClass} resize-y min-h-30`}
-      required></textarea>
+      placeholder="Your business, timeline, sites you like..."
+      class={`${fieldClass} min-h-28 resize-y`}></textarea>
+  </div>
+
+  <div class="border-control flex flex-wrap items-baseline gap-x-3 gap-y-1.5 border border-dashed px-4.5 py-4" aria-hidden="true">
+    <span class="label text-[10px]">Your brief</span>
+    <span class="text-text text-[15px]" data-summary>Looking for a new website.</span>
   </div>
 
   <div
-    class="cf-turnstile"
+    class="cf-turnstile empty:hidden"
     data-sitekey="0x4AAAAAADliDi_ge5DGVkfD"
     data-theme="auto"
     data-appearance="interaction-only"
@@ -124,29 +83,20 @@ const labelClass =
   </div>
 
   <div class="flex flex-wrap items-center justify-between gap-4">
-    <div
-      class="form-status text-med-grey text-[0.74rem] tracking-[0.08em] data-[status=error]:text-error data-[status=sent]:text-success"
-      data-status="idle"
-      aria-live="polite"
-      aria-atomic="true"
-    >
-      → Replies sent to {email}
-    </div>
-    <button
-      type="submit"
-      class="btn btn-primary form-submit disabled:cursor-not-allowed disabled:opacity-60"
-    >
-      <span class="submit-label">Send Brief</span>
+    <p class="text-faint m-0 text-[13px]">
+      Only used to reply. <a href="/privacy/" class="text-muted hover:text-text underline underline-offset-3">Privacy Policy</a>
+    </p>
+    <button type="submit" class="btn btn-primary form-submit disabled:cursor-not-allowed disabled:opacity-60">
+      <span class="submit-label">Send</span>
       <span aria-hidden="true">→</span>
     </button>
   </div>
-
-  <p class="text-med-grey m-0 text-[0.72rem] leading-[1.6] tracking-[0.04em]">
-    Your details are only used to reply to your enquiry. See the <a
-      href="/privacy/"
-      class="text-light-grey hover:text-text underline underline-offset-4"
-      >Privacy Policy</a
-    >.
+  <p
+    class="form-status data-[status=error]:text-error data-[status=sent]:text-success m-0 font-mono text-xs empty:hidden"
+    data-status="idle"
+    aria-live="polite"
+    aria-atomic="true"
+  >
   </p>
 </form>
 
@@ -163,83 +113,52 @@ const labelClass =
     document.head.appendChild(s);
   };
 
-  document
-    .querySelectorAll<HTMLFormElement>(".contact-form")
-    .forEach((form) => {
-      form.addEventListener("focusin", loadTurnstile, { once: true });
-      form.querySelectorAll<HTMLDivElement>(".chip-group").forEach((group) => {
-        const selectChip = (target: HTMLButtonElement) => {
-          group.querySelectorAll<HTMLButtonElement>(".chip").forEach((c) => {
-            c.classList.remove("active", "bg-text", "text-dark-grey", "border-text");
-            c.classList.add("bg-(--btn-bg)", "text-accent");
-            c.setAttribute("aria-checked", "false");
-          });
-          target.classList.remove("bg-(--btn-bg)", "text-accent");
-          target.classList.add("active", "bg-text", "text-dark-grey", "border-text");
-          target.setAttribute("aria-checked", "true");
-          const groupName = group.dataset.group;
-          const hidden = form.querySelector<HTMLInputElement>(`[data-bind="${groupName}"]`);
-          if (hidden) hidden.value = target.dataset.value ?? "";
-        };
+  const sentence = (items: string[]) =>
+    items.length > 1 ? `${items.slice(0, -1).join(", ")} and ${items.at(-1)}` : (items[0] ?? "");
 
-        group.addEventListener("click", (e) => {
-          const target = (e.target as HTMLElement).closest<HTMLButtonElement>(".chip");
-          if (target) selectChip(target);
-        });
+  document.querySelectorAll<HTMLFormElement>(".contact-form").forEach((form) => {
+    form.addEventListener("focusin", loadTurnstile, { once: true });
 
-        group.addEventListener("keydown", (e) => {
-          if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) return;
-          e.preventDefault();
-          const chips = Array.from(group.querySelectorAll<HTMLButtonElement>(".chip"));
-          const current = chips.findIndex((c) => c.getAttribute("aria-checked") === "true");
-          const dir = e.key === "ArrowRight" || e.key === "ArrowDown" ? 1 : -1;
-          const next = (current + dir + chips.length) % chips.length;
-          selectChip(chips[next]);
-          chips[next].focus();
-        });
-      });
+    // Live "Your brief" line
+    const summary = form.querySelector("[data-summary]")!;
+    const updateSummary = () => {
+      const picked = Array.from(form.querySelectorAll<HTMLInputElement>('[name="needs"]:checked')).map((c) =>
+        c.value.charAt(0).toLowerCase() + c.value.slice(1),
+      );
+      summary.textContent = picked.length ? `Looking for ${sentence(picked)}.` : "Pick what you need above.";
+    };
+    form.addEventListener("change", updateSummary);
+    updateSummary();
 
-      const status = form.querySelector<HTMLDivElement>(".form-status");
-      const submit = form.querySelector<HTMLButtonElement>(".form-submit");
-      const setStatus = (s: string, msg: string) => {
-        if (!status) return;
-        status.dataset.status = s;
-        status.textContent = msg;
-      };
+    const status = form.querySelector<HTMLElement>(".form-status")!;
+    const submit = form.querySelector<HTMLButtonElement>(".form-submit")!;
+    const setStatus = (s: string, msg: string) => {
+      status.dataset.status = s;
+      status.textContent = msg;
+    };
 
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const formData = new FormData(form);
-        if (
-          !formData.get("name") ||
-          !formData.get("email") ||
-          !formData.get("message")
-        ) {
-          setStatus("error", "× Please fill in name, email, and details.");
-          setTimeout(
-            () =>
-              setStatus(
-                "idle",
-                "→ Replies sent to contact@jasonmarshall.digital",
-              ),
-            2200,
-          );
-          return;
-        }
-        if (!formData.get("cf-turnstile-response")) {
-          setStatus("error", "× Security check not ready — please wait a moment.");
-          return;
-        }
-        setStatus("idle", "→ Sending...");
-        if (submit) submit.disabled = true;
-        const { error } = await actions.send(formData);
-        if (error) {
-          setStatus("error", "× Something went wrong. Please email directly.");
-        } else {
-          setStatus("sent", "✓ Got it — I'll reply within 24 hours.");
-          form.reset();
-        }
-        if (submit) submit.disabled = false;
-      });
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      if (!formData.get("name") || !formData.get("email")) {
+        setStatus("error", "× Please add your name and email.");
+        return;
+      }
+      if (!formData.get("cf-turnstile-response")) {
+        setStatus("error", "× Security check not ready. Please wait a moment and try again.");
+        return;
+      }
+      setStatus("idle", "→ Sending...");
+      submit.disabled = true;
+      const { error } = await actions.send(formData);
+      if (error) {
+        setStatus("error", "× Something went wrong. Please email me directly.");
+      } else {
+        setStatus("sent", "✓ Got it. I'll reply within a day.");
+        form.reset();
+        updateSummary();
+      }
+      submit.disabled = false;
     });
+  });
 </script>
