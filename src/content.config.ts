@@ -14,6 +14,12 @@ const PROJECTS_QUERY = `*[_type == "project" && defined(slug.current)]{
   industry,
   location,
   "services": services[]->{ title, "slug": slug.current },
+  comparison{
+    before{ asset, crop, hotspot, alt },
+    after{ asset, crop, hotspot, alt },
+    beforeLabel, afterLabel, caption
+  },
+  gallery[]{ asset, crop, hotspot, alt, caption },
   body,
   seoTitle,
   seoDescription
@@ -44,6 +50,13 @@ const PAGES_QUERY = `*[_type == "page" && defined(slug.current)]{
   body,
   seo
 }`;
+
+const imageSchema = z.object({
+  asset: z.object({ _ref: z.string() }),
+  crop: z.any().optional(),
+  hotspot: z.any().optional(),
+  alt: z.string(),
+});
 
 const seoSchema = z
   .object({
@@ -84,6 +97,20 @@ export const collections = {
         .array(z.object({ title: z.string(), slug: z.string() }).nullable())
         .nullish()
         .transform((a) => (a ?? []).filter((x) => !!x)),
+      // Before/after screenshots (both images needed to show the slider)
+      comparison: z
+        .object({
+          before: imageSchema.nullish(),
+          after: imageSchema.nullish(),
+          beforeLabel: z.string().nullish(),
+          afterLabel: z.string().nullish(),
+          caption: z.string().nullish(),
+        })
+        .nullish(),
+      gallery: z
+        .array(imageSchema.extend({ caption: z.string() }))
+        .nullish()
+        .transform((a) => a ?? []),
       body: z.array(z.any()).nullish(),
       seoTitle: z.string().nullish(),
       seoDescription: z.string().nullish(),
