@@ -1,0 +1,100 @@
+---
+import { imageSrcset, type SanityImage } from "@/lib/sanity";
+
+interface Props {
+  images: (SanityImage & { alt: string; caption: string })[];
+}
+const { images } = Astro.props;
+const total = String(images.length).padStart(2, "0");
+const slides = images.map((img) => ({
+  ...img,
+  ...imageSrcset(img, [640, 960, 1280, 1920], 16 / 10, { top: true }),
+}));
+const navButton =
+  "border-control text-text hover:border-text flex h-11 w-11 cursor-pointer items-center justify-center border bg-transparent font-mono";
+---
+
+<section class="band border-line border-b" aria-roledescription="carousel" aria-label="Gallery">
+  <div class="container py-28 max-[720px]:py-16" data-gallery>
+    <div class="mb-10 flex items-end justify-between gap-6">
+      <div>
+        <div class="label">Gallery</div>
+        <h2 class="mt-4 mb-0 text-[clamp(30px,3.6vw,46px)] leading-[1.08] font-medium tracking-[-0.03em]">
+          Around the site.
+        </h2>
+      </div>
+      <span class="text-muted font-mono text-[13px]" aria-live="polite">
+        <span data-pos>01</span> / {total}
+      </span>
+    </div>
+
+    <div class="border-line bg-card border">
+      <div class="bg-deep relative aspect-16/10 overflow-hidden">
+        {
+          slides.map((s, i) => (
+            <img
+              src={s.src}
+              srcset={s.srcset}
+              sizes="(max-width: 1200px) calc(100vw - 3rem), 1152px"
+              width={s.width}
+              height={s.height}
+              alt={s.alt}
+              loading="lazy"
+              decoding="async"
+              hidden={i > 0}
+              data-slide
+              class="absolute inset-0 block h-full w-full object-cover object-top"
+            />
+          ))
+        }
+      </div>
+      <div class="border-line flex items-center justify-between gap-4 border-t px-5 py-3.5">
+        <span class="text-body text-[15px]" data-caption>{slides[0]?.caption}</span>
+        <span class="flex shrink-0 gap-2">
+          <button type="button" class={navButton} aria-label="Previous image" data-prev>←</button>
+          <button type="button" class={navButton} aria-label="Next image" data-next>→</button>
+        </span>
+      </div>
+    </div>
+
+    <div class="mt-5 flex flex-wrap gap-2">
+      {
+        slides.map((s, i) => (
+          <button
+            type="button"
+            aria-label={`Show ${s.caption}`}
+            aria-pressed={i === 0 ? "true" : "false"}
+            data-dot={i}
+            class="group flex h-11 cursor-pointer items-center border-0 bg-transparent px-1"
+          >
+            <span class="bg-control group-aria-pressed:bg-signal block h-1 w-3 transition-all duration-300 group-aria-pressed:w-7" />
+          </button>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-gallery]").forEach((g) => {
+    const slides = Array.from(g.querySelectorAll<HTMLImageElement>("[data-slide]"));
+    const dots = Array.from(g.querySelectorAll<HTMLButtonElement>("[data-dot]"));
+    const caption = g.querySelector("[data-caption]")!;
+    const pos = g.querySelector("[data-pos]")!;
+    const captions = dots.map((d) => d.getAttribute("aria-label")!.replace(/^Show /, ""));
+    let i = 0;
+    const go = (n: number) => {
+      i = (n + slides.length) % slides.length;
+      slides.forEach((s, k) => {
+        s.hidden = k !== i;
+        if (k === i) s.loading = "eager";
+      });
+      dots.forEach((d, k) => d.setAttribute("aria-pressed", String(k === i)));
+      caption.textContent = captions[i];
+      pos.textContent = String(i + 1).padStart(2, "0");
+    };
+    g.querySelector("[data-prev]")!.addEventListener("click", () => go(i - 1));
+    g.querySelector("[data-next]")!.addEventListener("click", () => go(i + 1));
+    dots.forEach((d, k) => d.addEventListener("click", () => go(k)));
+  });
+</script>

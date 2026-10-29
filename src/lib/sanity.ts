@@ -24,10 +24,16 @@ export interface SanityImage {
  * Responsive src/srcset for a Sanity image cropped to a fixed aspect ratio.
  * Honours the crop and hotspot set in the Studio; format is negotiated by the CDN.
  */
-export function imageSrcset(image: SanityImage, widths: number[], aspect: number) {
+export function imageSrcset(
+  image: SanityImage,
+  widths: number[],
+  aspect: number,
+  /** Keep the top of tall screenshots instead of the centre (when no hotspot is set) */
+  { top = false }: { top?: boolean } = {},
+) {
+  const base = top && !image.hotspot ? builder.image(image).crop("top") : builder.image(image);
   const url = (w: number) =>
-    builder
-      .image(image)
+    base
       .width(w)
       .height(Math.round(w / aspect))
       .fit("crop")

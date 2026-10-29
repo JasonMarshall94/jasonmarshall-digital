@@ -1,0 +1,116 @@
+---
+import { imageSrcset, type SanityImage } from "@/lib/sanity";
+
+type Shot = SanityImage & { alt: string };
+interface Props {
+  before: Shot;
+  after: Shot;
+  beforeLabel?: string | null;
+  afterLabel?: string | null;
+  caption?: string | null;
+}
+const { before, after, beforeLabel, afterLabel, caption } = Astro.props;
+
+const widths = [640, 960, 1280, 1920];
+const a = imageSrcset(after, widths, 16 / 10, { top: true });
+const b = imageSrcset(before, widths, 16 / 10, { top: true });
+const sizes = "(max-width: 1200px) calc(100vw - 3rem), 1152px";
+// Phones show just "Before" / "After"; the full label (with year) from 721px up
+const short = (label: string | null | undefined, fallback: string) => (label ?? fallback).split(" · ")[0];
+---
+
+<section class="border-line border-b">
+  <div class="container pt-12 pb-16 max-[720px]:pt-8 max-[720px]:pb-12">
+    <div class="mb-4 flex items-end justify-between gap-4">
+      <div class="label">Before &amp; after</div>
+      <div class="label hide-mobile">Drag the handle to compare</div>
+    </div>
+    <figure class="m-0" data-compare>
+      <div class="border-line bg-deep relative aspect-16/10 overflow-hidden border select-none">
+        <img
+          src={a.src}
+          srcset={a.srcset}
+          sizes={sizes}
+          width={a.width}
+          height={a.height}
+          alt={after.alt}
+          fetchpriority="high"
+          decoding="async"
+          class="absolute inset-0 block h-full w-full object-cover"
+        />
+        <!-- The old site sits on top, clipped to the left of the handle -->
+        <div class="absolute inset-0" style="clip-path: inset(0 50% 0 0)" data-before>
+          <img
+            src={b.src}
+            srcset={b.srcset}
+            sizes={sizes}
+            width={b.width}
+            height={b.height}
+            alt={before.alt}
+            decoding="async"
+            class="block h-full w-full object-cover"
+          />
+        </div>
+        <span
+          aria-hidden="true"
+          data-before-label
+          class="band border-line absolute top-4 left-4 border px-2.5 py-1.5 font-mono text-[11px] tracking-[0.14em] uppercase transition-opacity max-[720px]:top-2 max-[720px]:left-2 max-[720px]:px-1.5 max-[720px]:py-0.75 max-[720px]:text-[9px] max-[720px]:tracking-widest"
+        >
+          <span class="hide-desktop">{short(beforeLabel, "Before")}</span>
+          <span class="hide-mobile">{beforeLabel ?? "Before"}</span>
+        </span>
+        <span
+          aria-hidden="true"
+          data-after-label
+          class="bg-signal text-on-signal absolute top-4 right-4 px-2.5 py-1.5 font-mono text-[11px] font-medium tracking-[0.14em] uppercase transition-opacity max-[720px]:top-2 max-[720px]:right-2 max-[720px]:px-1.5 max-[720px]:py-0.75 max-[720px]:text-[9px] max-[720px]:tracking-widest"
+        >
+          <span class="hide-desktop">{short(afterLabel, "After")}</span>
+          <span class="hide-mobile">{afterLabel ?? "After"}</span>
+        </span>
+        <!-- Handle -->
+        <div
+          aria-hidden="true"
+          data-handle
+          class="bg-signal pointer-events-none absolute inset-y-0 left-1/2 w-0.5 -translate-x-1/2"
+        >
+          <span
+            class="bg-signal text-on-signal absolute top-1/2 left-1/2 flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full font-mono text-base"
+          >
+            ↔
+          </span>
+        </div>
+        <input
+          type="range"
+          min="0"
+          max="100"
+          value="50"
+          aria-label="Compare before and after: move left to see more of the new site, right to see more of the old one"
+          class="absolute inset-0 m-0 h-full w-full cursor-ew-resize opacity-0"
+          data-range
+        />
+      </div>
+      {caption && <figcaption class="text-faint mt-3 font-mono text-xs">{caption}</figcaption>}
+    </figure>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-compare]").forEach((fig) => {
+    const range = fig.querySelector<HTMLInputElement>("[data-range]")!;
+    const before = fig.querySelector<HTMLElement>("[data-before]")!;
+    const handle = fig.querySelector<HTMLElement>("[data-handle]")!;
+    const beforeLabel = fig.querySelector<HTMLElement>("[data-before-label]")!;
+    const afterLabel = fig.querySelector<HTMLElement>("[data-after-label]")!;
+    const clamp = (n: number) => Math.max(0, Math.min(1, n));
+    const update = () => {
+      const split = Number(range.value);
+      before.style.clipPath = `inset(0 ${100 - split}% 0 0)`;
+      handle.style.left = `${split}%`;
+      // Each label fades out as the handle passes over it
+      beforeLabel.style.opacity = String(clamp((split - 6) / 14));
+      afterLabel.style.opacity = String(clamp((94 - split) / 14));
+    };
+    range.addEventListener("input", update);
+    update();
+  });
+</script>

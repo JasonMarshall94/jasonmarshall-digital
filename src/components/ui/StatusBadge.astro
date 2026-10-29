@@ -1,0 +1,15 @@
+---
+interface Props {
+  class?: string;
+}
+const { class: className = "" } = Astro.props;
+---
+
+<span
+  class={`text-muted inline-flex items-center gap-2.5 font-mono text-[11px] tracking-[0.14em] uppercase ${className}`}
+>
+  <span
+    aria-hidden="true"
+    class="pulse-dot bg-signal inline-block h-2 w-2 shrink-0 rounded-full"></span>
+  Available for new projects
+</span>

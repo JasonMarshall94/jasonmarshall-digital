@@ -11,13 +11,17 @@ export const server = {
     input: z.object({
       name: z.string().min(1),
       email: z.email(),
-      type: z.string().min(1),
-      budget: z.string().min(1),
-      message: z.string().min(1),
+      // "What do you need?" checkboxes (zero or more)
+      needs: z.array(z.string().max(60)).max(10).default([]),
+      message: z
+        .string()
+        .max(5000)
+        .nullish()
+        .transform((v) => v ?? ""),
       "cf-turnstile-response": z.string().min(1),
     }),
     handler: async (input) => {
-      const { name, email, type, budget, message } = input;
+      const { name, email, needs, message } = input;
       const token = input["cf-turnstile-response"];
 
       const verify = await fetch(
@@ -44,7 +48,7 @@ export const server = {
         to: ["contact@jasonmarshall.digital"],
         replyTo: email,
         subject: `New project brief from ${name}`,
-        react: ContactNotification({ name, email, type, budget, message }),
+        react: ContactNotification({ name, email, needs, message }),
       });
 
       if (error) {

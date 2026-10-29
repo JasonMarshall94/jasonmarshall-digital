@@ -5,26 +5,41 @@
    the visitor picks one with the theme toggle. */
 @theme {
   --color-*: initial;
-  --color-dark-grey: light-dark(#f2f2f2, #121212);
+  /* Surfaces */
+  --color-bg: light-dark(#f2f2f2, #121212);
   --color-deep: light-dark(#e8e8e8, #0c0c0c);
   --color-card: light-dark(#fafafa, #181818);
-  --color-border: light-dark(#dedede, #262626);
-  --color-med-grey: light-dark(#626262, #8a8a8a);
-  --color-light-grey: light-dark(#505050, #a8a8a8);
+  /* Borders: line = hairlines, line-strong = decorative, control = anything
+     clickable or typeable (3:1 on every surface in both themes) */
+  --color-line: light-dark(#dedede, #262626);
+  --color-line-strong: light-dark(#c9c9c9, #3a3a3a);
+  --color-control: light-dark(#808080, #666666);
+  /* Text, strongest to weakest (all 4.5:1+ on bg, card and deep) */
   --color-text: light-dark(#121212, #e0e0e0);
-  --color-accent: light-dark(#333333, #c4c4c4);
+  --color-body: light-dark(#333333, #c4c4c4);
+  --color-muted: light-dark(#505050, #a8a8a8);
+  --color-faint: light-dark(#626262, #8a8a8a);
+  --color-ink-max: light-dark(#000000, #ffffff);
+  /* Accent: signal = fills/strokes (same in both themes, never text in
+     light), signal-ink = accent text, on-signal = text on a signal fill */
+  --color-signal: #7aa7ff;
+  --color-signal-ink: light-dark(#202f4d, #7aa7ff);
+  --color-on-signal: #121212;
+  --color-focus: light-dark(#202f4d, #7aa7ff);
   --color-success: light-dark(#1a7f37, #7fc88a);
   --color-error: light-dark(#b42318, #e08080);
   --color-white: #ffffff;
 
-  --default-font-family: var(--font-jetbrains-mono), monospace;
+  --font-sans: var(--font-geist), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+  --default-font-family: var(--font-sans);
+
+  --ease-expo: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 :root {
   color-scheme: light dark;
-  --glow: light-dark(rgba(255, 255, 255, 0.7), rgba(176, 176, 176, 0.05));
-  --gridline: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.03));
-  --btn-bg: light-dark(var(--color-white), transparent);
+  --gridline: light-dark(rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.04));
 }
 :root[data-theme="light"] {
   color-scheme: light;
@@ -68,7 +83,7 @@
   z-index: 9999;
   padding: 0.6rem 1.2rem;
   background: var(--color-text);
-  color: var(--color-dark-grey);
+  color: var(--color-bg);
   font-size: 0.85rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -76,21 +91,21 @@
   transition: top 0.2s;
   &:focus {
     top: 1rem;
-    outline: 2px solid var(--color-dark-grey);
+    outline: 2px solid var(--color-bg);
     outline-offset: 2px;
   }
 }
 
 /* ----- Focus styles ----- */
 :focus-visible {
-  outline: 2px solid var(--color-text);
-  outline-offset: 3px;
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
 }
 
 /* ----- Base ----- */
 html,
 body {
-  background: var(--color-dark-grey);
+  background: var(--color-bg);
   color: var(--color-text);
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
@@ -104,23 +119,19 @@ body {
 
 body {
   min-height: 100vh;
-  background:
-    radial-gradient(
-      1100px 600px at 80% -10%,
-      var(--glow),
-      transparent 60%
-    ),
-    radial-gradient(
-      900px 500px at 0% 90%,
-      var(--glow),
-      transparent 60%
-    ),
-    var(--color-dark-grey);
+}
+
+/* A section that stays dark in both themes (ticker, contact band, footer):
+   light-dark() tokens resolve against the element's colour scheme. */
+@utility band {
+  color-scheme: dark;
+  background: var(--color-deep);
+  color: var(--color-text);
 }
 
 ::selection {
   background: var(--color-text);
-  color: var(--color-dark-grey);
+  color: var(--color-bg);
 }
 
 ::-webkit-scrollbar {
@@ -128,13 +139,13 @@ body {
   height: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--color-dark-grey);
+  background: var(--color-bg);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--color-med-grey);
+  background: var(--color-control);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-light-grey);
+  background: var(--color-muted);
 }
 
 /* ----- Keyframes ----- */
@@ -267,63 +278,142 @@ body {
   }
 }
 
+/* Buttons: inverted fill; on hover a fill wipes in from the left */
 @utility btn {
+  position: relative;
+  z-index: 0;
+  overflow: hidden;
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.85rem 1.4rem;
-  font-size: 0.85rem;
-  letter-spacing: 0.04em;
-  border: 1px solid var(--color-border);
-  background: var(--btn-bg);
-  color: var(--color-text);
-  transition: all 0.25s;
+  justify-content: center;
+  gap: 10px;
+  padding: 15px 22px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  cursor: pointer;
-  font-family: inherit;
+  white-space: nowrap;
   text-decoration: none;
-  &:hover {
+  cursor: pointer;
+  color: var(--color-text);
+  background: transparent;
+  border: 1px solid var(--color-control);
+  transition:
+    color 0.35s var(--ease-expo),
+    border-color 0.35s;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
     background: var(--color-text);
-    color: var(--color-dark-grey);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.45s var(--ease-expo);
+  }
+  &:hover {
+    color: var(--color-bg);
     border-color: var(--color-text);
+  }
+  &:hover::before {
+    transform: scaleX(1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    &::before {
+      transition: none;
+    }
   }
 }
 
 @utility btn-primary {
   background: var(--color-text);
-  color: var(--color-dark-grey);
+  color: var(--color-bg);
   border-color: var(--color-text);
+  &::before {
+    background: var(--color-bg);
+  }
   &:hover {
-    background: var(--btn-bg);
     color: var(--color-text);
   }
 }
 
+@utility btn-sm {
+  padding: 11px 16px;
+  font-size: 12px;
+}
+
+/* "Learn more →" style text link in the accent */
+@utility link-more {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-signal-ink);
+}
+
+/* Eyebrow above a heading: small mono uppercase in the faintest text tier */
 @utility label {
-  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--color-light-grey);
+  color: var(--color-faint);
+}
+
+/* Mono subline under a page title */
+@utility subline {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
+}
+
+/* Square outlined tag (tech lists) */
+@utility tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 11px;
+  border: 1px solid var(--color-line-strong);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+/* Smaller filled tag (services provided on cards) */
+@utility tag-quiet {
+  padding: 4px 8px;
+  border-color: var(--color-line);
+  background: var(--color-card);
+  font-size: 10px;
+  color: var(--color-muted);
 }
 
 /* Long-form text from the CMS and legal pages */
 @utility prose-site {
-  max-width: 76ch;
-  color: var(--color-accent);
-  font-size: 0.95rem;
-  line-height: 1.8;
+  max-width: 68ch;
+  overflow-wrap: break-word;
+  color: var(--color-body);
+  font-size: 17px;
+  line-height: 1.75;
   & h2 {
-    margin: 3rem 0 1rem;
+    margin: 48px 0 14px;
     color: var(--color-text);
-    font-size: 1.35rem;
+    font-size: 26px;
     font-weight: 500;
-    letter-spacing: -0.01em;
-    line-height: 1.3;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    @media (max-width: 720px) {
+      font-size: 22px;
+    }
   }
   & h3 {
-    margin: 2rem 0 0.75rem;
+    margin: 32px 0 10px;
     color: var(--color-text);
-    font-size: 1rem;
+    font-size: 19px;
     font-weight: 500;
   }
   & > :first-child {
@@ -334,14 +424,31 @@ body {
   & ol,
   & blockquote,
   & figure {
-    margin: 0 0 1rem;
+    margin: 0 0 16px;
   }
-  & ul,
+  & ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  & ul > li {
+    display: flex;
+    gap: 12px;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  & ul > li::before {
+    content: "→";
+    color: var(--color-signal-ink);
+    font-family: var(--font-mono);
+  }
   & ol {
     padding-left: 1.25rem;
   }
-  & li {
-    margin-bottom: 0.5rem;
+  & ol > li {
+    margin-bottom: 8px;
   }
   & a {
     color: var(--color-text);
@@ -353,15 +460,15 @@ body {
     font-weight: 500;
   }
   & blockquote {
-    border-left: 2px solid var(--color-border);
+    border-left: 2px solid var(--color-line-strong);
     padding-left: 1.25rem;
-    color: var(--color-light-grey);
+    color: var(--color-muted);
   }
   & img {
     display: block;
     width: 100%;
     height: auto;
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--color-line);
   }
 }
 
@@ -405,5 +512,155 @@ body {
   }
   .project-image img {
     transition: none;
+  }
+}
+
+/* ----- Redesign motion: services ticker and line-drawing graphics ----- */
+@keyframes draw {
+  from {
+    stroke-dashoffset: 600;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes flow {
+  from {
+    stroke-dashoffset: 24;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes bar {
+  from {
+    transform: scaleY(0.2);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+@keyframes ring {
+  from {
+    stroke-dashoffset: 251;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes scan {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(300px);
+  }
+}
+
+@utility ticker {
+  display: flex;
+  width: max-content;
+  animation: scroll 40s linear infinite;
+  &:hover,
+  &:focus-within {
+    animation-play-state: paused;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+/* SVG strokes that draw themselves in once */
+@utility draw {
+  stroke-dasharray: 600;
+  animation: draw 1.8s var(--ease-expo) both;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    stroke-dasharray: none;
+  }
+}
+
+/* Dashed SVG strokes that flow continuously */
+@utility flow {
+  stroke-dasharray: 6 6;
+  animation: flow 1s linear infinite;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+/* SVG bars that rise and fall */
+@utility bar {
+  transform-origin: bottom;
+  transform-box: fill-box;
+  animation: bar 1.6s var(--ease-expo) infinite alternate;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+/* A score ring that fills once (r=40 circle) */
+@utility ring {
+  stroke-dasharray: 251;
+  animation: ring 2.2s var(--ease-expo) 0.6s both;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+/* A highlight line that sweeps down a mock browser */
+@utility scan {
+  animation: scan 4s linear infinite alternate;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+/* Cards that lift on hover; images inside scale slightly */
+@utility lift {
+  transition:
+    transform 0.45s var(--ease-expo),
+    border-color 0.3s;
+  & img {
+    transition: transform 0.7s var(--ease-expo);
+  }
+  &:hover {
+    transform: translateY(-4px);
+    border-color: var(--color-line-strong);
+  }
+  &:hover img {
+    transform: scale(1.03);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    &,
+    & img {
+      transition: none;
+    }
+    &:hover {
+      transform: none;
+    }
+    &:hover img {
+      transform: none;
+    }
+  }
+}
+
+/* Horizontal swipe row on phones (cards at 84% width) */
+@utility swipe-sm {
+  @media (max-width: 720px) {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    margin-right: -1.5rem;
+    padding-right: 1.5rem;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    & > * {
+      flex: 0 0 84%;
+      scroll-snap-align: start;
+    }
   }
 }

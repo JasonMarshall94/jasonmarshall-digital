@@ -4,10 +4,10 @@ import { getCollection } from "astro:content";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import Nav from "@/global/Nav.astro";
 import Footer from "@/global/Footer.astro";
-import PageHero from "@/components/content/PageHero.astro";
+import BeforeAfter from "@/components/BeforeAfter.astro";
+import Gallery from "@/components/Gallery.astro";
 import RichText from "@/components/content/RichText.astro";
 import ProjectCard from "@/components/ProjectCard.astro";
-import CallToAction from "@/components/CTA.astro";
 import { getSiteSettings, imageSrcset } from "@/lib/sanity";
 import {
   breadcrumbNode,
@@ -39,10 +39,17 @@ const more = (await getCollection("projects"))
   .sort((a, b) => b.data.postDate.valueOf() - a.data.postDate.valueOf())
   .slice(0, 3);
 
+const meta = [p.industry, p.location, String(year)].filter(Boolean).join(" · ");
+const liveHost = p.url?.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
+const compare =
+  p.comparison?.before && p.comparison?.after
+    ? { ...p.comparison, before: p.comparison.before, after: p.comparison.after }
+    : undefined;
+
 const details = [
+  p.industry && { label: "Industry", value: p.industry },
   p.location && { label: "Location", value: p.location },
-  { label: "Year", value: String(year) },
-  p.tags.length && { label: "Built with", value: p.tags.join(" · ") },
+  { label: "Launched", value: String(year) },
 ].filter((d): d is { label: string; value: string } => !!d);
 
 const jsonLd = graph(
@@ -74,135 +81,153 @@ const jsonLd = graph(
 >
   <Nav page="page" />
   <main id="main-content">
-    <PageHero
-      heading={p.title}
-      intro={p.excerpt}
-      breadcrumbs={[{ label: "Projects", href: "/projects/" }, { label: p.title }]}
-    >
-      {
-        p.url && (
-          <a
-            href={p.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="btn float-in mt-10"
-            style="animation-delay: 0.3s"
-          >
-            Visit live site <span aria-hidden="true">↗</span>
-          </a>
-        )
-      }
-    </PageHero>
-
-    <div class="container pt-16 md:pt-20">
-      <div class="border-border bg-deep aspect-video overflow-hidden border">
-        <img
-          src={cover.src}
-          srcset={cover.srcset}
-          sizes="(max-width: 1200px) calc(100vw - 3rem), 1152px"
-          width={cover.width}
-          height={cover.height}
-          alt={p.cover.alt}
-          fetchpriority="high"
-          decoding="async"
-          class="block h-full w-full object-cover"
-        />
+    <section class="border-line relative overflow-hidden border-b">
+      <div class="gridlines"></div>
+      <div class="float-in relative container pt-12 pb-16">
+        <nav aria-label="Breadcrumb">
+          <ol class="label m-0 flex list-none flex-wrap items-center gap-2.5 p-0">
+            <li><a href="/" class="text-faint hover:text-text">Home</a></li>
+            <li class="flex items-center gap-2.5">
+              <span class="text-line-strong" aria-hidden="true">/</span>
+              <a href="/projects/" class="text-faint hover:text-text">Work</a>
+            </li>
+            <li class="flex items-center gap-2.5">
+              <span class="text-line-strong" aria-hidden="true">/</span>
+              <span aria-current="page" class="text-muted">{p.title}</span>
+            </li>
+          </ol>
+        </nav>
+        <p class="label mt-9 mb-0 tracking-[0.14em]">{meta}</p>
+        <h1 class="mt-4 mb-0 text-[clamp(40px,5vw,60px)] leading-none font-medium tracking-[-0.04em]">
+          {p.title}
+        </h1>
+        <div class="mt-6 flex flex-wrap items-end justify-between gap-8">
+          <p class="text-body m-0 max-w-[560px] text-lg leading-[1.65]">{p.excerpt}</p>
+          <div class="flex flex-wrap gap-3 max-[720px]:w-full max-[720px]:flex-nowrap max-[720px]:gap-2">
+            {
+              p.url && (
+                <a
+                  href={p.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="btn max-[720px]:flex-1 max-[720px]:px-2 max-[720px]:text-[11px]"
+                >
+                  Visit live site <span aria-hidden="true">↗</span>
+                  <span class="sr-only">(opens in a new tab)</span>
+                </a>
+              )
+            }
+            <a href="/contact/" class="btn btn-primary max-[720px]:flex-1 max-[720px]:px-2 max-[720px]:text-[11px]">
+              Start a project <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <section class="py-16 md:py-24">
-      <div
-        class="container grid grid-cols-[minmax(0,1fr)_minmax(260px,340px)] items-start gap-16 max-[900px]:grid-cols-1"
-      >
-        <RichText value={p.body} />
+    {
+      compare ? (
+        <BeforeAfter
+          before={compare.before}
+          after={compare.after}
+          beforeLabel={compare.beforeLabel}
+          afterLabel={compare.afterLabel}
+          caption={compare.caption}
+        />
+      ) : (
+        <div class="border-line border-b">
+          <div class="container pt-12 pb-16 max-[720px]:pt-8 max-[720px]:pb-12">
+            <div class="border-line bg-deep aspect-video overflow-hidden border">
+              <img
+                src={cover.src}
+                srcset={cover.srcset}
+                sizes="(max-width: 1200px) calc(100vw - 3rem), 1152px"
+                width={cover.width}
+                height={cover.height}
+                alt={p.cover.alt}
+                fetchpriority="high"
+                decoding="async"
+                class="block h-full w-full object-cover object-top"
+              />
+            </div>
+          </div>
+        </div>
+      )
+    }
 
-        <div
-          class="border-border bg-card border p-8 min-[901px]:sticky min-[901px]:top-28"
-        >
-          <h2 class="label m-0 mb-6">Project details</h2>
-          <dl class="m-0 flex flex-col gap-5 text-[0.88rem]">
+    <section class="border-line border-b">
+      <div class="container grid grid-cols-[minmax(0,1fr)] items-start gap-16 py-28 max-[720px]:gap-12 max-[720px]:py-16 min-[961px]:grid-cols-[minmax(0,1fr)_340px]">
+        <RichText value={p.body} class="min-w-0" />
+
+        <div role="group" aria-label="Project details" class="border-line bg-card border p-7 min-[961px]:sticky min-[961px]:top-20">
+          <dl class="m-0 flex flex-col gap-5">
             {
               details.map((d) => (
                 <div>
-                  <dt class="text-med-grey mb-1 text-[0.68rem] tracking-[0.16em] uppercase">
-                    {d.label}
-                  </dt>
-                  <dd class="text-text m-0">{d.value}</dd>
+                  <dt class="label mb-1.5 text-[10px]">{d.label}</dt>
+                  <dd class="m-0 text-base">{d.value}</dd>
                 </div>
               ))
             }
             {
               p.services.length > 0 && (
                 <div>
-                  <dt class="text-med-grey mb-1 text-[0.68rem] tracking-[0.16em] uppercase">
-                    Services
-                  </dt>
-                  <dd class="m-0">
-                    <ul class="m-0 flex list-none flex-col gap-1 p-0">
-                      {p.services.map((s) => (
-                        <li>
-                          <a
-                            href={`/services/${s.slug}/`}
-                            class="text-text underline underline-offset-4"
-                          >
-                            {s.title}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
+                  <dt class="label mb-2 text-[10px]">Services</dt>
+                  <dd class="m-0 flex flex-wrap gap-2">
+                    {p.services.map((s) => (
+                      <a href={`/services/${s.slug}/`} class="tag border-control hover:border-text">
+                        {s.title}
+                      </a>
+                    ))}
                   </dd>
                 </div>
               )
             }
             {
-              p.url && (
+              p.tags.length > 0 && (
                 <div>
-                  <dt class="text-med-grey mb-1 text-[0.68rem] tracking-[0.16em] uppercase">
-                    Website
-                  </dt>
-                  <dd class="m-0">
-                    <a
-                      href={p.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="text-text break-all underline underline-offset-4"
-                    >
-                      {p.url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "")} ↗
-                    </a>
-                  </dd>
+                  <dt class="label mb-1.5 text-[10px]">Built with</dt>
+                  <dd class="text-body m-0 font-mono text-[13px]">{p.tags.join(" · ")}</dd>
                 </div>
               )
             }
           </dl>
+          {
+            p.url && (
+              <a href={p.url} target="_blank" rel="noopener noreferrer" class="btn mt-7 w-full text-center whitespace-normal [overflow-wrap:anywhere]">
+                Visit {liveHost} <span aria-hidden="true">↗</span>
+                <span class="sr-only">(opens in a new tab)</span>
+              </a>
+            )
+          }
         </div>
       </div>
     </section>
 
+    {p.gallery.length > 0 && <Gallery images={p.gallery} />}
+
     {
       more.length > 0 && (
-        <section class="border-border border-t py-16 md:py-24">
-          <div class="container">
-            <div class="mb-10 flex flex-wrap items-end justify-between gap-4">
-              <h2 class="text-text m-0 text-[clamp(1.5rem,3vw,2.2rem)] font-medium tracking-[-0.02em]">
-                More projects
-              </h2>
-              <a href="/projects/" class="nav-link text-light-grey text-[0.82rem]">
-                View all projects →
+        <section class="border-line border-b">
+          <div class="container py-28 max-[720px]:py-16">
+            <div class="mb-12 flex flex-wrap items-end justify-between gap-6">
+              <div>
+                <div class="label">More work</div>
+                <h2 class="mt-4 mb-0 text-[clamp(30px,3.6vw,46px)] leading-[1.08] font-medium tracking-[-0.03em]">
+                  Other recent projects.
+                </h2>
+              </div>
+              <a href="/projects/" class="text-body border-line-strong hover:text-text border-b pb-1 font-mono text-[13px]">
+                All projects →
               </a>
             </div>
-            <div class="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-6">
-              {more.map((m, i) => (
-                <ProjectCard project={m} index={i} />
-              ))}
+            <div class="swipe-sm grid gap-6 md:grid-cols-[repeat(auto-fit,minmax(300px,1fr))]">
+              {more.map((m) => <ProjectCard project={m} />)}
             </div>
           </div>
         </section>
       )
     }
-
-    <div class="container pb-20 md:pb-32">
-      <CallToAction />
-    </div>
   </main>
   <Footer />
 </BaseLayout>

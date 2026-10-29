@@ -4,11 +4,13 @@ import { getCollection, getEntry } from "astro:content";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import Nav from "@/global/Nav.astro";
 import Footer from "@/global/Footer.astro";
-import PageHero from "@/components/content/PageHero.astro";
-import RichText from "@/components/content/RichText.astro";
+import { PortableText } from "astro-portabletext";
+import RichLink from "@/components/content/RichLink.astro";
+import ServiceIcon from "@/components/ServiceIcon.astro";
+import ServiceDiagram, { type DiagramName } from "@/components/ServiceDiagram.astro";
+import PlatformComparison from "@/components/PlatformComparison.astro";
 import ProjectCard from "@/components/ProjectCard.astro";
-import CallToAction from "@/components/CTA.astro";
-import { getSiteSettings } from "@/lib/sanity";
+import { getSiteSettings, imageSrcset } from "@/lib/sanity";
 import {
   breadcrumbNode,
   businessNode,
@@ -37,6 +39,32 @@ const related = (
 
 const faqs = s.faqs ?? [];
 
+// "How I approach it": the body's sections, split at each H2, become columns
+type Block = { _type: string; style?: string; children?: { text: string }[] };
+const approach = ((s.body ?? []) as Block[]).reduce<{ title: string; blocks: Block[] }[]>(
+  (cols, b) => {
+    if (b.style === "h2") cols.push({ title: b.children?.map((c) => c.text).join("") ?? "", blocks: [] });
+    else cols.at(-1)?.blocks.push(b);
+    return cols;
+  },
+  [],
+);
+const diagrams: Record<string, DiagramName[]> = {
+  "web-design": ["journey", "custom", "search"],
+  "wordpress-development": ["plugins", "editor", "migrate"],
+  "custom-development": ["pipeline", "editor", "choice"],
+  seo: ["structure", "local", "report"],
+  "website-maintenance": ["checklist", "support", "takeover"],
+};
+const approachDiagrams = diagrams[s.slug] ?? ["journey", "custom", "search"];
+
+// "In practice": an annotated screenshot of one project
+const exampleProject = s.example?.project ? await getEntry("projects", s.example.project) : undefined;
+const notes = s.example?.notes ?? [];
+const example = exampleProject && notes.length ? exampleProject.data : undefined;
+const exampleCover = example ? imageSrcset(example.cover, [700, 1000, 1400], 16 / 10) : undefined;
+const exampleDomain = example?.url ? new URL(example.url).hostname.replace(/^www\./, "") : undefined;
+
 const jsonLd = graph(
   businessNode(settings, site),
   breadcrumbNode(
@@ -58,56 +86,171 @@ const jsonLd = graph(
 >
   <Nav page="page" />
   <main id="main-content">
-    <PageHero
-      heading={s.heading}
-      intro={s.intro}
-      breadcrumbs={[
-        { label: "Services", href: "/services/" },
-        { label: s.title },
-      ]}
-    >
-      <a href="/contact/" class="btn btn-primary float-in mt-10" style="animation-delay: 0.3s">
-        Start a project <span aria-hidden="true">→</span>
-      </a>
-    </PageHero>
-
-    <section class="py-16 md:py-24">
-      <div
-        class="container grid grid-cols-[minmax(0,1fr)_minmax(260px,340px)] items-start gap-16 max-[900px]:grid-cols-1"
-      >
-        <RichText value={s.body} />
-
-        {
-          s.included?.length && (
-            <div class="border-border bg-card border p-8 min-[901px]:sticky min-[901px]:top-28">
-              <h2 class="label m-0 mb-6">What's included</h2>
-              <ul class="text-accent m-0 flex list-none flex-col gap-3 p-0 text-[0.88rem] leading-[1.6]">
-                {s.included.map((item) => (
-                  <li class="flex gap-[0.7rem]">
-                    <span class="text-med-grey" aria-hidden="true">
-                      →
-                    </span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
+    <!-- Hero: short heading and intro beside "What's included" -->
+    <section class="border-line relative overflow-hidden border-b">
+      <div class="gridlines"></div>
+      <div class="relative container pt-12 pb-16">
+        <nav aria-label="Breadcrumb" class="float-in">
+          <ol class="label m-0 flex list-none flex-wrap items-center gap-2.5 p-0">
+            <li><a href="/" class="text-faint hover:text-text">Home</a></li>
+            <li class="flex items-center gap-2.5">
+              <span class="text-line-strong" aria-hidden="true">/</span>
+              <a href="/services/" class="text-faint hover:text-text">Services</a>
+            </li>
+            <li class="flex items-center gap-2.5">
+              <span class="text-line-strong" aria-hidden="true">/</span>
+              <span aria-current="page" class="text-muted">{s.title}</span>
+            </li>
+          </ol>
+        </nav>
+        <div class="mt-9 grid items-start gap-12 min-[961px]:grid-cols-[minmax(0,1fr)_400px] min-[961px]:gap-16">
+          <div class="float-in" style="animation-delay: 0.1s">
+            <ServiceIcon slug={s.slug} class="h-11 w-11" />
+            <h1 class="mt-6 mb-0 text-[clamp(40px,5vw,60px)] leading-none font-medium tracking-[-0.04em]">
+              {s.heading}
+            </h1>
+            {s.subline && <p class="subline mt-3.5 mb-0">{s.subline}</p>}
+            <p class="text-body mt-6 mb-0 max-w-[540px] text-lg leading-[1.65]">{s.intro}</p>
+            <div class="mt-9 flex flex-wrap gap-3 max-[720px]:flex-nowrap max-[720px]:gap-2">
+              <a href="/contact/" class="btn btn-primary max-[720px]:flex-1 max-[720px]:px-2 max-[720px]:text-[11px]">
+                Start a project <span aria-hidden="true">→</span>
+              </a>
+              {
+                related.length > 0 && (
+                  <a href="#related" class="btn max-[720px]:flex-1 max-[720px]:px-2 max-[720px]:text-[11px]">
+                    See related work <span aria-hidden="true">↓</span>
+                  </a>
+                )
+              }
             </div>
-          )
-        }
+          </div>
+          {
+            s.included?.length && (
+              <div class="border-line bg-card float-in border p-7" style="animation-delay: 0.2s">
+                <h2 class="label m-0 mb-5 font-normal">What's included</h2>
+                <ul class="m-0 flex list-none flex-col gap-3.5 p-0">
+                  {s.included.map((item) => (
+                    <li class="text-body flex gap-3 text-[15px] leading-normal">
+                      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true" class="mt-0.5 shrink-0">
+                        <rect x="0.5" y="0.5" width="19" height="19" class="stroke-line-strong" />
+                        <path d="M5 10.5 L8.5 14 L15 6.5" stroke-width="1.6" class="stroke-signal" />
+                      </svg>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )
+          }
+        </div>
       </div>
     </section>
 
     {
-      related.length > 0 && (
-        <section class="border-border border-t py-16 md:py-24">
-          <div class="container">
-            <h2 class="text-text m-0 mb-10 text-[clamp(1.5rem,3vw,2.2rem)] font-medium tracking-[-0.02em]">
-              Related work
-            </h2>
-            <div class="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-6">
-              {related.map((p, i) => (
-                <ProjectCard project={p} index={i} />
+      approach.length > 0 && (
+        <section class="border-line border-b">
+          <div class="container py-28 max-[720px]:py-16">
+            <div class="label">How I approach it</div>
+            <div class="mt-12 grid gap-10 md:grid-cols-[repeat(auto-fit,minmax(260px,1fr))]">
+              {approach.map((col, i) => (
+                <div class="border-line-strong border-t pt-6">
+                  <figure class="border-line bg-deep m-0 mb-6 border p-5 max-[720px]:mb-4.5 max-[720px]:p-3.5">
+                    <ServiceDiagram name={approachDiagrams[i] ?? "journey"} query={s.slug === "web-design" ? "web designer near me" : undefined} result={s.slug === "web-design" ? "Your Business — Web Design" : undefined} />
+                  </figure>
+                  <h2 class="m-0 mb-3 text-[22px] font-medium tracking-[-0.01em]">{col.title}</h2>
+                  <div class="text-body text-base leading-[1.7] [&_a]:text-text [&_a]:underline [&_a]:underline-offset-4 [&_p]:m-0 [&_p+p]:mt-3">
+                    <PortableText value={col.blocks as never} components={{ mark: { link: RichLink } }} />
+                  </div>
+                </div>
               ))}
+            </div>
+          </div>
+        </section>
+      )
+    }
+
+    {s.showComparison && <PlatformComparison />}
+
+    {
+      example && exampleCover && (
+        <section class="band border-line border-b">
+          <div class="container py-28 max-[720px]:py-16">
+            <div class="label">In practice</div>
+            <h2 class="mt-4 mb-12 text-[clamp(30px,3.6vw,46px)] leading-[1.08] font-medium tracking-[-0.03em]">
+              How it comes together for {example.title}.
+            </h2>
+            <div class="grid items-start gap-12 min-[961px]:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]">
+              <figure class="border-line bg-card m-0 border">
+                <div class="border-line flex items-center gap-1.5 border-b px-3.5 py-2.5" aria-hidden="true">
+                  <span class="bg-line-strong h-2 w-2 rounded-full" />
+                  <span class="bg-line-strong h-2 w-2 rounded-full" />
+                  <span class="bg-line-strong h-2 w-2 rounded-full" />
+                  {exampleDomain && <span class="text-faint ml-3 font-mono text-[11px]">{exampleDomain}</span>}
+                </div>
+                <div class="relative">
+                  <img
+                    src={exampleCover.src}
+                    srcset={exampleCover.srcset}
+                    sizes="(max-width: 960px) 100vw, 640px"
+                    width={exampleCover.width}
+                    height={exampleCover.height}
+                    alt={example.cover.alt}
+                    loading="lazy"
+                    decoding="async"
+                    class="block h-auto w-full"
+                  />
+                  {notes.map((n, i) =>
+                    n.x != null && n.y != null ? (
+                      <span
+                        aria-hidden="true"
+                        class="bg-signal text-on-signal absolute flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full font-mono text-xs font-medium shadow-[0_0_0_4px_rgba(122,167,255,0.3)] max-[720px]:h-6 max-[720px]:w-6 max-[720px]:text-[11px]"
+                        style={`left: ${n.x}%; top: ${n.y}%`}
+                      >
+                        {i + 1}
+                      </span>
+                    ) : null,
+                  )}
+                </div>
+              </figure>
+              <ol class="m-0 flex list-none flex-col p-0">
+                {notes.map((n, i) => (
+                  <li class="border-line grid grid-cols-[36px_minmax(0,1fr)] gap-4 border-t py-5.5 first:border-t-0 first:pt-0">
+                    <span class="border-signal text-signal-ink flex h-7 w-7 items-center justify-center rounded-full border font-mono text-xs">
+                      {i + 1}
+                    </span>
+                    <div>
+                      <h3 class="m-0 mb-1.5 text-lg font-medium">{n.title}</h3>
+                      <p class="text-body m-0 text-[15px] leading-[1.6]">{n.text}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </div>
+            <a href={`/projects/${example.slug}/`} class="link-more mt-10 inline-block">
+              Read the {example.title} case study →
+            </a>
+          </div>
+        </section>
+      )
+    }
+
+    {
+      related.length > 0 && (
+        <section id="related" class="border-line scroll-mt-4 border-b">
+          <div class="container py-28 max-[720px]:py-16">
+            <div class="mb-12 flex flex-wrap items-end justify-between gap-6">
+              <div>
+                <div class="label">Related work</div>
+                <h2 class="mt-4 mb-0 text-[clamp(30px,3.6vw,46px)] leading-[1.08] font-medium tracking-[-0.03em]">
+                  Recent {s.heading} projects.
+                </h2>
+              </div>
+              <a href="/projects/" class="text-body border-line-strong hover:text-text border-b pb-1 font-mono text-[13px]">
+                All projects →
+              </a>
+            </div>
+            <div class="swipe-sm grid gap-6 md:grid-cols-[repeat(auto-fit,minmax(300px,1fr))]">
+              {related.map((p) => <ProjectCard project={p} />)}
             </div>
           </div>
         </section>
@@ -116,26 +259,24 @@ const jsonLd = graph(
 
     {
       faqs.length > 0 && (
-        <section class="border-border border-t py-16 md:py-24">
-          <div class="container">
-            <h2 class="text-text m-0 mb-10 text-[clamp(1.5rem,3vw,2.2rem)] font-medium tracking-[-0.02em]">
-              Frequently asked questions
-            </h2>
-            <div class="border-border max-w-[76ch] border-t">
-              {faqs.map((f) => (
-                <details class="group border-border border-b">
-                  <summary class="text-text flex cursor-pointer list-none items-center justify-between gap-6 py-6 text-[1rem] font-medium [&::-webkit-details-marker]:hidden">
+        <section class="border-line border-b">
+          <div class="container grid gap-10 py-28 max-[720px]:py-16 min-[961px]:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] min-[961px]:gap-16">
+            <div>
+              <div class="label">FAQ</div>
+              <h2 class="mt-4 mb-0 text-[clamp(30px,3.6vw,46px)] leading-[1.08] font-medium tracking-[-0.03em]">
+                Questions, answered.
+              </h2>
+            </div>
+            <div class="border-line border-b">
+              {faqs.map((f, i) => (
+                <details class="group border-line border-t" open={i === 0}>
+                  <summary class="flex cursor-pointer list-none items-center justify-between gap-6 py-6 text-lg font-medium max-[720px]:py-5 max-[720px]:text-[17px] [&::-webkit-details-marker]:hidden">
                     {f.question}
-                    <span
-                      aria-hidden="true"
-                      class="text-light-grey shrink-0 transition-transform duration-200 group-open:rotate-45"
-                    >
+                    <span aria-hidden="true" class="text-signal-ink shrink-0 font-mono text-lg transition-transform duration-250 group-open:rotate-45">
                       +
                     </span>
                   </summary>
-                  <p class="text-accent m-0 pb-6 text-[0.92rem] leading-[1.75]">
-                    {f.answer}
-                  </p>
+                  <p class="text-body m-0 max-w-[68ch] pb-6 text-base leading-[1.7]">{f.answer}</p>
                 </details>
               ))}
             </div>
@@ -143,10 +284,6 @@ const jsonLd = graph(
         </section>
       )
     }
-
-    <div class="container pb-20 md:pb-32">
-      <CallToAction />
-    </div>
   </main>
   <Footer />
 </BaseLayout>

@@ -7,33 +7,35 @@ export interface Crumb {
 
 interface Props {
   heading: string;
+  /** Short mono line under the heading, e.g. "Web designer & developer" */
+  subline?: string | null;
   intro?: string | null;
   /** Trail after Home, ending with the current page */
   breadcrumbs: Crumb[];
 }
-const { heading, intro, breadcrumbs } = Astro.props;
+const { heading, subline, intro, breadcrumbs } = Astro.props;
 ---
 
-<section
-  class="border-border relative overflow-hidden border-b pt-30 pb-16 md:pt-40 md:pb-20"
->
+<section class="border-line relative overflow-hidden border-b">
   <div class="gridlines"></div>
-  <div class="relative z-2 container">
-    <nav aria-label="Breadcrumb" class="float-in mb-8">
-      <ol class="label m-0 flex list-none flex-wrap items-center gap-[0.6rem] p-0">
-        <li><a href="/" class="text-light-grey hover:text-text">Home</a></li>
+  <div class="relative z-2 container pt-12 pb-16">
+    <nav aria-label="Breadcrumb" class="float-in">
+      <ol class="label m-0 flex list-none flex-wrap items-center gap-2.5 p-0">
+        <li><a href="/" class="text-faint hover:text-text">Home</a></li>
         {
           breadcrumbs.map((c) => (
-            <li class="flex items-center gap-[0.6rem]">
-              <span class="text-med-grey" aria-hidden="true">
+            <li class="flex items-center gap-2.5">
+              <span class="text-line-strong" aria-hidden="true">
                 /
               </span>
               {c.href ? (
-                <a href={c.href} class="text-light-grey hover:text-text">
+                <a href={c.href} class="text-faint hover:text-text">
                   {c.label}
                 </a>
               ) : (
-                <span aria-current="page">{c.label}</span>
+                <span aria-current="page" class="text-muted">
+                  {c.label}
+                </span>
               )}
             </li>
           ))
@@ -41,15 +43,22 @@ const { heading, intro, breadcrumbs } = Astro.props;
       </ol>
     </nav>
     <h1
-      class="text-text float-in m-0 max-w-[22ch] text-[clamp(2.2rem,5.4vw,4.4rem)] leading-[1.04] font-medium tracking-[-0.03em] text-balance"
+      class="text-text float-in mt-9 mb-0 max-w-[22ch] text-[clamp(40px,5vw,60px)] leading-none font-medium tracking-[-0.04em] text-balance"
       style="animation-delay: 0.1s"
     >
       {heading}
     </h1>
     {
+      subline && (
+        <p class="subline float-in mt-3.5 mb-0" style="animation-delay: 0.15s">
+          {subline}
+        </p>
+      )
+    }
+    {
       intro && (
         <p
-          class="text-accent float-in mt-8 mb-0 max-w-[62ch] text-base leading-[1.7]"
+          class="text-body float-in mt-6 mb-0 max-w-[540px] text-lg leading-[1.65]"
           style="animation-delay: 0.2s"
         >
           {intro}

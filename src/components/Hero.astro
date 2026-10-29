@@ -1,159 +1,118 @@
 ---
-interface Props {
-  headline?: string;
-  description?: string;
-  location?: string;
-  year?: string;
-}
-const {
-  headline = "Websites that work like they should.",
-  description = "Jason Marshall Digital helps small businesses and studios look sharp, rank higher, and grow online. Through thoughtful design, solid development, and SEO that actually moves the needle.",
-  location = "West Chester, PA",
-  year = "2026",
-} = Astro.props;
+import { Image } from "astro:assets";
+import StatusBadge from "@/ui/StatusBadge.astro";
+import headshot from "@/assets/jason-headshot.jpg";
 ---
 
-<section id="top" class="relative overflow-hidden pt-30 pb-30 md:pt-45">
+<section id="top" class="border-line relative overflow-hidden border-b">
   <div class="gridlines"></div>
-  <div class="relative z-2 container">
-    <div
-      data-hero="badge"
-      class="mb-12 flex flex-wrap items-center gap-6"
-      style="opacity: 0; transform: translateY(16px)"
-    >
-      <div class="border-border text-light-grey inline-flex items-center gap-[0.6rem] border px-[0.8rem] py-[0.4rem] text-[0.72rem] tracking-[0.12em] uppercase">
-        <p class="flex items-center gap-[0.6rem]">
-          <span class="pulse-dot inline-block h-2 w-2 shrink-0 rounded-full bg-success"></span>
-          Available for new projects · {year}
+  <div
+    class="relative container grid items-center gap-14 pt-24 pb-22 max-[720px]:pt-12 max-[720px]:pb-14 min-[961px]:grid-cols-2"
+  >
+    <div class="float-in">
+      <div class="border-line inline-flex border px-3.5 py-2">
+        <StatusBadge />
+      </div>
+
+      <h1
+        class="text-text mt-7 mb-0 text-[clamp(44px,6vw,80px)] leading-none font-medium tracking-[-0.04em]"
+      >
+        Websites that work like they should.<span
+          aria-hidden="true"
+          class="blink bg-signal ml-[0.08em] inline-block h-[0.82em] w-[0.5em] align-[-0.06em]"
+        ></span>
+      </h1>
+
+      <div class="mt-8 flex max-w-[560px] items-start gap-4.5">
+        <Image
+          src={headshot}
+          alt="Jason Marshall"
+          width={128}
+          height={128}
+          class="border-line-strong bg-card h-16 w-16 shrink-0 border object-cover"
+          loading="eager"
+        />
+        <p class="text-body m-0 text-lg leading-[1.65]">
+          <span class="text-text font-medium">Hi, I'm Jason</span> — a web designer and
+          developer. I build fast, findable sites for small businesses, and you work
+          directly with me.
         </p>
       </div>
-      <div class="label flex items-center gap-2">
-        <span>
-          ↳ <span id="hero-time">--:--</span> EST
-        </span>
-        <span class="text-med-grey">|</span>
-        <span>{location}</span>
+
+      <div
+        class="mt-9 flex flex-wrap gap-3.5 max-[720px]:mt-7 max-[720px]:flex-nowrap max-[720px]:gap-2"
+      >
+        <a
+          href="#work"
+          class="btn btn-primary py-4 max-[720px]:flex-1 max-[720px]:px-2 max-[720px]:py-3.5 max-[720px]:text-[11px]"
+        >
+          View recent work <span aria-hidden="true">↓</span>
+        </a>
+        <a
+          href="/contact/"
+          class="btn py-4 max-[720px]:flex-1 max-[720px]:px-2 max-[720px]:py-3.5 max-[720px]:text-[11px]"
+        >
+          Start a project <span aria-hidden="true">→</span>
+        </a>
       </div>
     </div>
 
-    <h1
-      data-hero="headline"
-      class="text-text m-0 text-[clamp(2.4rem,6.6vw,5.6rem)] leading-[1.02] font-medium tracking-[-0.03em] text-balance"
-      style="opacity: 0"
-    >
-      {headline}
-      <span class="blink bg-text ml-[0.1em] inline-block h-[0.9em] w-[0.55em] align-[-0.1em]"></span>
-    </h1>
-
-    <div
-      data-hero="desc"
-      class="text-accent mt-10 grid max-w-160 grid-cols-[auto_1fr] gap-x-6 gap-y-4 text-base leading-[1.7]"
-      style="opacity: 0; transform: translateY(16px)"
-    >
-      <span class="text-light-grey select-none">{`>`}</span>
-      <p class="m-0">{description}</p>
-    </div>
-
-    <div
-      data-hero="cta"
-      class="mt-12 flex flex-wrap gap-4"
-      style="opacity: 0; transform: translateY(16px)"
-    >
-      <a href="#work" class="btn btn-primary">
-        View Selected Work <span aria-hidden="true">↓</span>
-      </a>
-      <a href="#contact" class="btn">
-        Start a Project <span aria-hidden="true">→</span>
-      </a>
-    </div>
-  </div>
-
-  <div class="text-med-grey absolute right-0 bottom-6 left-0 flex justify-between px-6 text-[0.7rem] tracking-[0.14em] uppercase">
-    <span>01 / Index</span>
-    <span class="hide-mobile">Jason Marshall Digital · est. 2023</span>
-    <span>Scroll ↓</span>
+    <!-- Animated build graphic (decorative; hidden on phones) -->
+    <figure class="hide-mobile m-0" aria-hidden="true">
+      <svg viewBox="0 0 560 440" width="100%" class="block h-auto">
+        <rect x="1" y="1" width="520" height="380" class="fill-card stroke-line"></rect>
+        <g class="band">
+          <rect x="1" y="1" width="520" height="34" class="fill-deep stroke-line"></rect>
+          <circle cx="20" cy="18" r="4" class="fill-line-strong"></circle>
+          <circle cx="34" cy="18" r="4" class="fill-line-strong"></circle>
+          <circle cx="48" cy="18" r="4" class="fill-line-strong"></circle>
+          <rect x="80" y="10" width="300" height="16" class="fill-card stroke-line"></rect>
+          <text x="92" y="22" font-size="9" class="fill-faint font-mono">yourbusiness.com</text>
+        </g>
+        <g fill="none" stroke-width="1.5" class="stroke-text">
+          <path class="draw" d="M28 60 H200" style="animation-delay: 0.1s"></path>
+          <path
+            class="draw stroke-line-strong"
+            d="M28 92 H420 M28 112 H360"
+            stroke-width="10"
+            style="animation-delay: 0.3s"></path>
+          <path
+            class="draw stroke-line-strong"
+            d="M28 142 H300 M28 158 H340"
+            stroke-width="6"
+            style="animation-delay: 0.5s"></path>
+          <path class="draw stroke-signal" d="M28 186 H140 V214 H28 Z" style="animation-delay: 0.7s"
+          ></path>
+          <path
+            class="draw stroke-muted"
+            d="M28 244 H176 V352 H28 Z M196 244 H344 V352 H196 Z M364 244 H492 V352 H364 Z"
+            style="animation-delay: 0.9s"></path>
+        </g>
+        <rect class="scan fill-signal" x="2" y="38" width="518" height="2" opacity="0.35"></rect>
+        <g class="band" transform="translate(400 300)">
+          <rect x="-12" y="-12" width="168" height="152" class="fill-deep stroke-line"></rect>
+          <circle cx="72" cy="56" r="40" fill="none" stroke-width="7" class="stroke-line"></circle>
+          <circle
+            class="ring stroke-signal"
+            cx="72"
+            cy="56"
+            r="40"
+            fill="none"
+            stroke-width="7"
+            transform="rotate(-90 72 56)"></circle>
+          <text x="72" y="64" text-anchor="middle" font-size="24" class="fill-text font-mono"
+            >100</text
+          >
+          <text
+            x="72"
+            y="124"
+            text-anchor="middle"
+            font-size="9"
+            letter-spacing="1.5"
+            class="fill-faint font-mono">PERFORMANCE</text
+          >
+        </g>
+      </svg>
+    </figure>
   </div>
 </section>
-
-<script>
-  const el = document.getElementById("hero-time");
-  const tick = () => {
-    if (!el) return;
-    el.textContent = new Date().toLocaleTimeString("en-US", {
-      timeZone: "America/New_York",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    });
-  };
-  tick();
-  setInterval(tick, 30000);
-</script>
-
-<script>
-  import { gsap } from "gsap";
-  import { SplitText } from "gsap/SplitText";
-  gsap.registerPlugin(SplitText);
-
-  const mm = gsap.matchMedia();
-
-  mm.add("(prefers-reduced-motion: no-preference)", () => {
-    const badge = document.querySelector('[data-hero="badge"]');
-    const headline = document.querySelector('[data-hero="headline"]');
-    const desc = document.querySelector('[data-hero="desc"]');
-    const cta = document.querySelector('[data-hero="cta"]');
-
-    const tl = gsap.timeline({ delay: 0.15 });
-
-    if (badge) {
-      tl.to(badge, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" });
-    }
-
-    if (headline) {
-      const cursor = headline.querySelector(".blink");
-      const split = new SplitText(headline, { type: "chars,words" });
-      gsap.set(split.chars, { opacity: 0 });
-      gsap.set(headline, { opacity: 1 });
-      if (cursor) gsap.set(cursor, { opacity: 0 });
-      tl.to(
-        split.chars,
-        {
-          opacity: 1,
-          duration: 0,
-          stagger: 0.028,
-          ease: "none",
-          onComplete: () => cursor && gsap.set(cursor, { opacity: 1 }),
-        },
-        "<0.2",
-      );
-    }
-
-    if (desc) {
-      tl.to(
-        desc,
-        { opacity: 1, y: 0, duration: 0.75, ease: "power3.out" },
-        "-=0.7",
-      );
-    }
-
-    if (cta) {
-      tl.to(
-        cta,
-        { opacity: 1, y: 0, duration: 0.75, ease: "power3.out" },
-        "<0.3",
-      );
-    }
-  });
-
-  mm.add("(prefers-reduced-motion: reduce)", () => {
-    gsap.set(
-      [
-        '[data-hero="badge"]',
-        '[data-hero="headline"]',
-        '[data-hero="desc"]',
-        '[data-hero="cta"]',
-      ],
-      { opacity: 1, clearProps: "transform" },
-    );
-  });
-</script>

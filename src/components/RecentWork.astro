@@ -1,0 +1,97 @@
+---
+import { getCollection } from "astro:content";
+import ProjectCard from "@/components/ProjectCard.astro";
+import { imageSrcset } from "@/lib/sanity";
+
+// The three most recent featured projects: the newest gets the large card on
+// desktop; on phones all three become equal cards in one swipe row.
+const [latest, ...rest] = (await getCollection("projects"))
+  .filter((p) => p.data.isFeatured)
+  .sort((a, b) => b.data.postDate.valueOf() - a.data.postDate.valueOf())
+  .slice(0, 3);
+
+const cover = imageSrcset(latest.data.cover, [600, 900, 1200], 16 / 10);
+const year = latest.data.postDate.getFullYear();
+---
+
+<section id="work" class="border-line scroll-mt-4 border-b">
+  <div class="container py-28 max-[720px]:py-16">
+    <div class="mb-12 flex flex-wrap items-end justify-between gap-6">
+      <div>
+        <div class="label">Recent work</div>
+        <h2
+          class="mt-4 mb-0 text-[clamp(32px,4vw,52px)] leading-[1.05] font-medium tracking-[-0.03em]"
+        >
+          Real sites for real businesses.
+        </h2>
+      </div>
+      <a
+        href="/projects/"
+        class="text-body border-line-strong hover:text-text border-b pb-1 font-mono text-[13px]"
+      >
+        All projects →
+      </a>
+    </div>
+
+    <div class="swipe-sm">
+      <!-- Featured (desktop) -->
+      <a
+        href={`/projects/${latest.data.slug}/`}
+        class="lift border-line bg-card text-text relative mb-6 grid overflow-hidden border max-[720px]:hidden min-[961px]:grid-cols-2"
+      >
+        <div class="bg-deep aspect-16/10 overflow-hidden min-[961px]:aspect-auto min-[961px]:min-h-90">
+          <img
+            src={cover.src}
+            srcset={cover.srcset}
+            sizes="(max-width: 960px) 100vw, 576px"
+            width={cover.width}
+            height={cover.height}
+            alt={latest.data.cover.alt}
+            decoding="async"
+            class="block h-full w-full object-cover object-top"
+          />
+        </div>
+        <div class="flex flex-col gap-4 p-10">
+          <span
+            class="bg-signal text-on-signal absolute top-5 right-5 z-1 px-2.5 py-1.5 font-mono text-[11px] font-medium tracking-[0.14em] uppercase"
+          >
+            Latest project · {year}
+          </span>
+          {(latest.data.industry || latest.data.location) && (
+            <div class="label tracking-[0.14em]">
+              {[latest.data.industry, latest.data.location].filter(Boolean).join(" · ")}
+            </div>
+          )}
+          <h3 class="m-0 text-[32px] font-medium tracking-[-0.02em]">{latest.data.title}</h3>
+          <p class="text-body m-0 text-base leading-[1.7]">{latest.data.excerpt}</p>
+          {
+            latest.data.services.length > 0 && (
+              <div>
+                <div class="label mb-2.5 text-[10px]">Services provided</div>
+                <div class="flex flex-wrap gap-2">
+                  {latest.data.services.map((s) => (
+                    <span class="tag">{s.title}</span>
+                  ))}
+                </div>
+              </div>
+            )
+          }
+          <div
+            class="border-line text-muted mt-auto flex justify-between gap-4 border-t pt-5 font-mono text-xs"
+          >
+            <span class="truncate">{latest.data.tags.join(" / ")}</span>
+            <span class="text-signal-ink shrink-0">Case study →</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Equal cards: the latest one only shows on phones -->
+      <ProjectCard project={latest} latest class="min-[721px]:hidden" />
+      <div class="grid gap-6 max-[720px]:contents md:grid-cols-2">
+        {rest.map((p) => (
+          <ProjectCard project={p} class="max-[720px]:flex-[0_0_84%] max-[720px]:snap-start" />
+        ))}
+      </div>
+    </div>
+  </div>
+</section>

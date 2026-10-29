@@ -1,118 +1,62 @@
 ---
-import SectionHeading from "@/ui/SectionHeading.astro";
+import ServiceIcon from "@/components/ServiceIcon.astro";
 
-const items = [
+// Homepage services: four short cards. Development groups the WordPress and
+// custom services, so it links to the overview.
+const cards = [
   {
-    n: "01",
-    title: "Design",
+    title: "Web design",
+    text: "Custom, mobile-first layouts built around how your customers choose you.",
     href: "/services/web-design/",
-    tag: "Visual · Brand · UX",
-    body: "Clean, intentional design built around how your customers actually move through a site. Every layout decision earns its place. No templates, no bloat.",
-    bullets: [
-      "Brand-aligned visual systems",
-      "UX-first page layouts",
-      "Design handoff & component docs",
-    ],
+    icon: "web-design",
   },
   {
-    n: "02",
     title: "Development",
+    text: "WordPress you can edit yourself, or a custom build when speed matters most.",
     href: "/services/",
-    tag: "WordPress · Astro · Next.js",
-    body: "Custom or template builds on the right stack for the job. WordPress for sites clients need to edit, Astro or Next.js when performance and scale demand it.",
-    bullets: [
-      "Custom themes & block libraries",
-      "CMS-driven page templates",
-      "Full-stack apps & headless builds",
-    ],
+    icon: "custom-development",
   },
   {
-    n: "03",
     title: "SEO",
+    text: "Technical and local SEO so customers find you when they search.",
     href: "/services/seo/",
-    tag: "Search · Performance · Content",
-    body: "Visibility that compounds. Technical SEO baked into every build. Fast load times, clean markup, and content structure that search engines and humans both understand.",
-    bullets: [
-      "Technical audits & optimization",
-      "Schema, metadata & Core Web Vitals",
-      "Content strategy & keyword targeting",
-    ],
+    icon: "seo",
+  },
+  {
+    title: "Maintenance",
+    text: "Updates, backups and fixes from the developer who knows your site.",
+    href: "/services/website-maintenance/",
+    icon: "website-maintenance",
   },
 ];
 ---
 
-<section id="services" class="border-border border-t py-20 md:py-32">
-  <div class="container">
-    <SectionHeading
-      index="02"
-      eyebrow="Services / What I Do"
-      title="The work, start to finish."
-      description="Design, development, and SEO. Everything a small business needs to show up online and actually convert."
-    />
-
+<section id="services" class="border-line scroll-mt-4 border-b">
+  <div class="container py-28 max-[720px]:py-16">
+    <div class="label">Services</div>
+    <h2
+      class="mt-4 mb-12 max-w-[720px] text-[clamp(32px,4vw,52px)] leading-[1.05] font-medium tracking-[-0.03em]"
+    >
+      Everything your website needs, from one developer.
+    </h2>
     <div
-      class="bg-border border-border grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-px border"
+      class="bg-line border-line grid grid-cols-[repeat(auto-fit,minmax(min(100%,250px),1fr))] gap-px border"
     >
       {
-        items.map((it) => (
-          <div
-            data-service
-            class="bg-card px-8 py-[2.4rem] transition-colors duration-200 hover:bg-text/[0.025]"
+        cards.map((c) => (
+          <a
+            href={c.href}
+            class="group bg-card text-text grid grid-cols-[auto_minmax(0,1fr)] content-start items-center gap-x-3.5 gap-y-3.5 p-8 max-[720px]:gap-y-2.5 max-[720px]:p-6 min-[721px]:flex min-[721px]:flex-col min-[721px]:items-start"
           >
-            <div class="mb-[1.6rem] flex items-baseline justify-between">
-              <span class="text-med-grey text-[0.72rem] tracking-[0.12em]">
-                / {it.n}
-              </span>
-              <span class="label text-[0.66rem]">{it.tag}</span>
-            </div>
-            <h3 class="m-0 mb-4 text-[1.6rem] font-medium tracking-[-0.01em]">
-              {it.title}
-            </h3>
-            <p class="text-accent m-0 text-[0.9rem] leading-[1.65]">
-              {it.body}
-            </p>
-            <ul class="text-light-grey mt-[1.8rem] flex list-none flex-col gap-2 p-0 text-[0.82rem]">
-              {it.bullets.map((b) => (
-                <li class="flex gap-[0.7rem]">
-                  <span class="text-med-grey">→</span> {b}
-                </li>
-              ))}
-            </ul>
-            <a
-              href={it.href}
-              class="nav-link text-light-grey hover:text-text mt-[1.8rem] inline-block text-[0.75rem] tracking-[0.08em] uppercase"
-            >
-              Learn more<span class="sr-only"> about {it.title}</span> →
-            </a>
-          </div>
+            <ServiceIcon slug={c.icon} class="h-12 w-12 max-[720px]:h-8 max-[720px]:w-8" />
+            <h3 class="m-0 text-[22px] font-medium max-[720px]:text-xl">{c.title}</h3>
+            <p class="text-body col-span-2 m-0 text-[15px] leading-[1.65]">{c.text}</p>
+            <span class="text-muted group-hover:text-text col-span-2 mt-auto font-mono text-xs whitespace-nowrap">
+              Learn more →
+            </span>
+          </a>
         ))
       }
     </div>
-
-    <div class="mt-12">
-      <a href="/services/" class="btn">
-        View all services <span aria-hidden="true">→</span>
-      </a>
-    </div>
   </div>
 </section>
-
-<script>
-  import { gsap } from "gsap";
-  import { ScrollTrigger } from "gsap/ScrollTrigger";
-  gsap.registerPlugin(ScrollTrigger);
-
-  gsap.matchMedia().add("(prefers-reduced-motion: no-preference)", () => {
-    const serviceItems = document.querySelectorAll("[data-service]");
-    if (serviceItems.length) {
-      gsap.from(serviceItems, {
-        opacity: 0,
-        y: 30,
-        duration: 0.8,
-        stagger: 0.14,
-        ease: "power3.out",
-        scrollTrigger: { trigger: "#services", start: "top 75%" },
-      });
-    }
-  });
-</script>
