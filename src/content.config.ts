@@ -11,6 +11,7 @@ const PROJECTS_QUERY = `*[_type == "project" && defined(slug.current)]{
   isFeatured,
   cover{ asset, crop, hotspot, alt },
   url,
+  industry,
   location,
   "services": services[]->{ title, "slug": slug.current },
   body,
@@ -76,6 +77,7 @@ export const collections = {
         alt: z.string(),
       }),
       url: z.url().nullish(),
+      industry: z.string().nullish(),
       location: z.string().nullish(),
       // Unpublished service references resolve to null
       services: z

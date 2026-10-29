@@ -20,7 +20,8 @@ const {
 const { data } = project;
 
 const cover = imageSrcset(data.cover, [400, 600, 800, 1200], 16 / 9);
-const meta = [data.location].filter(Boolean).join(" · ");
+const meta = [data.industry, data.location].filter(Boolean).join(" · ");
+const year = data.postDate.getFullYear();
 ---
 
 <!-- One link per card: everything inside is plain text, never a nested link -->
@@ -49,7 +50,10 @@ const meta = [data.location].filter(Boolean).join(" · ");
     )
   }
   <div class="flex flex-1 flex-col p-7">
-    {meta && <div class="label tracking-[0.14em]">{meta}</div>}
+    <div class="label flex justify-between gap-3 tracking-[0.14em]">
+      <span class="truncate">{meta}</span>
+      <span class="shrink-0">{year}</span>
+    </div>
     <h3 class="mt-2.5 mb-2 text-2xl font-medium tracking-[-0.01em]">{data.title}</h3>
     <p class="text-body mt-0 mb-5 text-[15px] leading-[1.65]">
       {description ?? data.excerpt}

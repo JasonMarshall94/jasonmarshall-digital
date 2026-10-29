@@ -57,7 +57,11 @@ const year = latest.data.postDate.getFullYear();
           >
             Latest project · {year}
           </span>
-          {latest.data.location && <div class="label tracking-[0.14em]">{latest.data.location}</div>}
+          {(latest.data.industry || latest.data.location) && (
+            <div class="label tracking-[0.14em]">
+              {[latest.data.industry, latest.data.location].filter(Boolean).join(" · ")}
+            </div>
+          )}
           <h3 class="m-0 text-[32px] font-medium tracking-[-0.02em]">{latest.data.title}</h3>
           <p class="text-body m-0 text-base leading-[1.7]">{latest.data.excerpt}</p>
           {
