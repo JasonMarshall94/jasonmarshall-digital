@@ -1,7 +1,6 @@
 ---
 import { getCollection } from "astro:content";
 import ProjectCard from "@/components/ProjectCard.astro";
-import CallToAction from "@/components/CTA.astro";
 
 const allProjects = (await getCollection("projects")).sort(
   (a, b) => b.data.postDate.valueOf() - a.data.postDate.valueOf(),
@@ -155,8 +154,6 @@ const startYear = 2023;
         Show all projects
       </button>
     </div>
-
-    <CallToAction />
   </div>
 </section>
 

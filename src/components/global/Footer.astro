@@ -1,74 +1,179 @@
 ---
+import { getCollection } from "astro:content";
 import Logo from "@/global/Logo.astro";
+import StatusBadge from "@/ui/StatusBadge.astro";
+import { getSiteSettings } from "@/lib/sanity";
 
 interface Props {
-  startYear?: number;
-  githubUrl?: string;
+  /** The "Got a project?" band with the four steps (off on /contact/). */
+  contactBand?: boolean;
 }
-const { startYear = 2016, githubUrl = "https://github.com/JasonMarshall94" } =
-  Astro.props;
+const { contactBand = true } = Astro.props;
+
+const settings = await getSiteSettings();
+const services = (await getCollection("services")).sort(
+  (a, b) => a.data.order - b.data.order,
+);
 const currentYear = new Date().getFullYear();
-const ghLabel = githubUrl.replace(/^https?:\/\//, "");
+const telHref = `tel:${settings.phone.replace(/[^\d+]/g, "")}`;
+const place = [settings.city, settings.region].filter(Boolean).join(", ");
+
+const steps = [
+  ["Reply within 24h", "Send a short brief and I'll get back to you within a day."],
+  ["Free 30-min call", "We talk through your goals and what the site needs to do."],
+  ["Fixed-price proposal", "A clear scope and price in writing, with no surprises."],
+  ["Kickoff", "Once you sign, we get building, with updates along the way."],
+];
+
+const company = [
+  ["Work", "/projects/"],
+  ["About", "/about/"],
+  ["Contact", "/contact/"],
+  ["Privacy Policy", "/privacy/"],
+];
 ---
 
-<footer class="border-border mt-8 border-t pt-12 pb-8">
-  <div class="container">
+<div class="band">
+  {
+    contactBand && (
+      <section aria-labelledby="contact-band-heading">
+        <div class="container flex flex-wrap items-end justify-between gap-8 pt-24 pb-10 max-[720px]:pt-16 max-[720px]:pb-7">
+          <div>
+            <div class="label">Contact</div>
+            <h2
+              id="contact-band-heading"
+              class="text-text mt-4 mb-0 text-[clamp(30px,3.4vw,46px)] leading-[1.1] font-medium tracking-[-0.03em]"
+            >
+              Got a project? <span class="text-faint">Let's talk.</span>
+            </h2>
+          </div>
+          <a href="/contact/" class="btn btn-primary px-6.5 py-4.5">
+            Start a project <span aria-hidden="true">→</span>
+          </a>
+        </div>
+        <div class="container pb-26 max-[720px]:pb-16">
+          <h3 class="label mt-0 mb-4 font-normal">How it works</h3>
+          <ol class="bg-line border-line m-0 grid list-none grid-cols-4 gap-px border p-0 max-[960px]:grid-cols-2">
+            {steps.map(([title, text], i) => (
+              <li class="bg-card px-6 py-5.5">
+                <span class="text-signal-ink font-mono text-xs">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <div class="text-text mt-2.5 text-[17px] font-medium">
+                  {title}
+                </div>
+                <p class="text-body mt-1.5 mb-0 text-sm leading-[1.55]">
+                  {text}
+                </p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+    )
+  }
+
+  <footer class:list={[contactBand && "border-line border-t"]}>
     <div
-      data-footer-cta
-      class="border-border mb-6 grid grid-cols-[auto_1fr_auto] items-center gap-8 border-b pb-10 max-[720px]:grid-cols-1 max-[720px]:justify-items-center max-[720px]:text-center"
+      class="container grid grid-cols-2 gap-x-10 gap-y-12 pt-18 pb-14 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)_auto]"
     >
-      <a
-        href="#top"
-        class="text-text flex items-center gap-[0.8rem]"
-        aria-label="Return to top"
-      >
-        <Logo size={36} />
-      </a>
-      <div
-        class="text-text text-[clamp(1.2rem,2.4vw,1.8rem)] leading-[1.2] tracking-[-0.01em]"
-      >
-        Building on the web since {startYear}.<br />
-        <span class="text-light-grey">Always open to interesting work.</span>
+      <div class="col-span-2 flex flex-col gap-5 md:col-span-1">
+        <a
+          href="/"
+          class="text-text flex items-center gap-3"
+          aria-label="Jason Marshall Digital home"
+        >
+          <Logo size={36} />
+          <span class="font-mono text-xs tracking-[0.14em] uppercase"
+            >Jason Marshall Digital</span
+          >
+        </a>
+        <p class="text-body m-0 max-w-[340px] text-[15px] leading-[1.65]">
+          Web design, development and SEO for small businesses in {
+            settings.city ?? "West Chester"
+          }, Philadelphia and the surrounding area.
+        </p>
+        <StatusBadge />
       </div>
-      <a href="/contact/" class="btn">Get in touch →</a>
+
+      <nav aria-label="Services">
+        <h2 class="label mt-0 mb-5 font-medium">Services</h2>
+        <ul class="m-0 flex list-none flex-col gap-3 p-0 text-[15px]">
+          {
+            services.map((s) => (
+              <li>
+                <a href={`/services/${s.data.slug}/`} class="text-body hover:text-text">
+                  {s.data.title}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <nav aria-label="Company">
+        <h2 class="label mt-0 mb-5 font-medium">Company</h2>
+        <ul class="m-0 flex list-none flex-col gap-3 p-0 text-[15px]">
+          {
+            company.map(([title, href]) => (
+              <li>
+                <a href={href} class="text-body hover:text-text">
+                  {title}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <div>
+        <h2 class="label mt-0 mb-5 font-medium">Contact</h2>
+        <ul class="m-0 flex list-none flex-col gap-3 p-0 text-[15px]">
+          <li>
+            <a href={`mailto:${settings.email}`} class="text-body hover:text-text break-all md:break-normal">
+              {settings.email}
+            </a>
+          </li>
+          <li>
+            <a href={telHref} class="text-body hover:text-text">{settings.phone}</a>
+          </li>
+          {
+            place && (
+              <li class="text-body">
+                {place}
+                <br />
+                <span class="text-faint text-sm">Serving Philadelphia &amp; the suburbs</span>
+              </li>
+            )
+          }
+          {
+            settings.githubUrl && (
+              <li>
+                <a
+                  href={settings.githubUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-body hover:text-text"
+                >
+                  GitHub <span aria-hidden="true">↗</span>
+                  <span class="sr-only">(opens in a new tab)</span>
+                </a>
+              </li>
+            )
+          }
+        </ul>
+      </div>
     </div>
 
-    <div
-      class="text-med-grey flex flex-wrap items-center justify-between gap-4 text-[0.74rem] tracking-widest max-[720px]:justify-center max-[720px]:text-center"
-    >
-      <span class="flex flex-wrap items-center justify-center gap-x-2 gap-y-3">
-        <span>© {currentYear} Jason Marshall Digital · All rights reserved</span>
-        <span class="hide-mobile" aria-hidden="true">·</span>
-        <a href="/privacy/" class="nav-link text-light-grey">Privacy</a>
-      </span>
-      <span class="hide-mobile">Built with Astro &amp; Tailwind</span>
-      <a
-        href={githubUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="nav-link text-light-grey"
+    <div class="border-line border-t">
+      <div
+        class="text-faint container flex flex-wrap justify-between gap-4 py-6 font-mono text-[11px] tracking-[0.1em]"
       >
-        {ghLabel} ↗
-      </a>
+        <span>© {currentYear} Jason Marshall Digital · All rights reserved</span>
+        <a href="#main-content" class="text-muted hover:text-text">
+          Back to top <span aria-hidden="true">↑</span>
+        </a>
+      </div>
     </div>
-  </div>
-</footer>
-
-<script>
-  import { gsap } from "gsap";
-  import { ScrollTrigger } from "gsap/ScrollTrigger";
-  gsap.registerPlugin(ScrollTrigger);
-
-  gsap.matchMedia().add("(prefers-reduced-motion: no-preference)", () => {
-    const cta = document.querySelector("[data-footer-cta]");
-    if (cta) {
-      gsap.from(cta, {
-        opacity: 0,
-        y: 24,
-        duration: 0.85,
-        ease: "power3.out",
-        scrollTrigger: { trigger: cta, start: "top 90%" },
-      });
-    }
-  });
-</script>
+  </footer>
+</div>

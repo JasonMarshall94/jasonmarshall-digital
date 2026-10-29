@@ -37,10 +37,10 @@ This is a personal portfolio/agency site built with **Astro 7**, explicitly set 
 - `@/global/*` → `src/components/global/*`
 
 ### Component organisation
-- `src/components/` — page section components (Hero, About, Services, Contact, ContactForm, ProjectCard, ProjectsGrid, ProjectsArchive, StackMarquee, CTA)
-- `src/components/global/` — site-wide shell components (Nav, Footer, Logo)
-- `src/components/ui/` — reusable primitives (SectionHeading, CopyChip, ThemeToggle)
-- `src/components/content/` — CMS page building blocks: `PageHero` (breadcrumb trail + H1 + intro, used by inner pages), `RichText` (Portable Text in a `prose-site` wrapper; `RichLink` opens external links in a new tab, `RichImage` renders Sanity images at 16:9)
+- `src/components/` — page section components (Hero, About, Services, Contact, ContactForm, ProjectCard, ProjectsGrid, ProjectsArchive, StackMarquee)
+- `src/components/global/` — site-wide shell components (Nav, Footer, Logo). `Footer` renders inside a dark `band`: the "Got a project? Let's talk." contact band with four steps (turn off with `contactBand={false}`, as on /contact/ and the 404), then the multi-column footer (services from Sanity, company links, contact details from Site Settings).
+- `src/components/ui/` — reusable primitives (SectionHeading, CopyChip, ThemeToggle, StatusBadge)
+- `src/components/content/` — CMS page building blocks: `PageHero` (breadcrumb trail + H1 + optional mono `subline` + intro, used by inner pages), `RichText` (Portable Text in a `prose-site` wrapper; `RichLink` opens external links in a new tab, `RichImage` renders Sanity images at 16:9)
 
 ### Content (Sanity)
 Projects, services, pages and site settings live in **Sanity** (project `3x5s0bg9`, dataset `production`, public-read). The Studio is a **separate repo** in the sibling folder `../studio-jason-marshall-digital/` (schemas in `schemaTypes/`), hosted by Sanity via `sanity deploy`. Content is fetched **at build time only** — publishing in Sanity does nothing until the site is rebuilt.
@@ -78,8 +78,10 @@ Projects, services, pages and site settings live in **Sanity** (project `3x5s0bg
 ### Styling conventions
 Custom design tokens are defined in `src/styles/global.css` under `@theme`. Reusable utility classes are defined with `@utility` and should be extended there — not in component `<style>` blocks — when shared. Key utilities:
 
-- `btn` / `btn-primary` — outline and filled button styles
-- `label` — small uppercase tracking label
+- `btn` / `btn-primary` / `btn-sm` — outline and filled buttons whose fill wipes in from the left on hover
+- `label` — small mono uppercase eyebrow in `faint`; `subline` — mono line under a page title
+- `tag` / `tag-quiet` — square mono tags; `link-more` — "Learn more →" accent link
+- `band` — a section that stays dark in both themes (`color-scheme: dark`, so every `light-dark()` token resolves dark inside it)
 - `prose-site` — long-form text styling (headings, lists, links, images) for CMS rich text and the privacy policy
 - `nav-link` — underline-on-hover nav anchor
 - `hide-mobile` — `display: none` at ≤720px
@@ -87,10 +89,10 @@ Custom design tokens are defined in `src/styles/global.css` under `@theme`. Reus
 - `gridlines`, `float-in`, `marquee`, `scroll-fade-mask`, `pulse-dot`, `blink`
 - `.container` — max-width 1200px, centered
 
-The design language is monochrome with light and dark themes, using JetBrains Mono as the sole typeface. The font is configured via Astro's built-in font API (`fontProviders.fontsource()` in `astro.config.mjs`) and loaded with `<Font cssVariable="--font-jetbrains-mono" preload />` in `BaseLayout.astro`.
+The design language ("Evolve: Signal") is near-monochrome and square-cornered with one blue accent, in light and dark themes. It follows the design system at https://claude.ai/artifact/Uk46fGXDgdWgFRXt2xNUaS. **Geist** (`font-sans`, the default) is used for headings and copy, **JetBrains Mono** (`font-mono`) for labels, buttons, tags and meta. Both come from Astro's font API (`fontProviders.fontsource()` in `astro.config.mjs`) and load with `<Font … preload />` in `BaseLayout.astro`. Marketing copy never names specific frameworks; say "a custom build" or "a modern framework".
 
 ### Light / dark theme
-Every `--color-*` token in `@theme` is a `light-dark(<light>, <dark>)` pair, so utilities like `text-text` or `bg-dark-grey/70` switch automatically. Token names date from the dark-only design: `dark-grey` is the **page background** (white in light mode) and `text` is the foreground. Never hard-code hex/rgba colours in components — add a token (e.g. `success`, `error`) or a `:root` variable (e.g. `--glow`, `--gridline`) instead. All text tokens meet WCAG AA (4.5:1) against `dark-grey`, `card` and `deep` in both themes; re-check contrast when changing them.
+Every `--color-*` token in `@theme` is a `light-dark(<light>, <dark>)` pair, so utilities like `text-text` or `bg-bg/70` switch automatically. Surfaces: `bg`, `deep`, `card`. Borders: `line` (hairlines), `line-strong` (decorative), `control` (anything clickable or typeable; 3:1 on every surface). Text, strongest to weakest: `text`, `body`, `muted`, `faint`. Accent: `signal` for fills and strokes (never text in light mode), `signal-ink` for accent text, `on-signal` for text on a blue fill; `focus` for the focus ring. The old names (`dark-grey`, `border`, `med-grey`, `light-grey`, `accent`) are temporary aliases for pages not yet rebuilt. Never hard-code hex/rgba colours in components — add a token (e.g. `success`, `error`) or a `:root` variable (e.g. `--gridline`) instead. All text tokens meet WCAG AA (4.5:1) against `bg`, `card` and `deep` in both themes; re-check contrast when changing them.
 
 - Default follows the OS via `color-scheme: light dark` on `:root` — works without JS.
 - `ThemeToggle.astro` (in the nav, visible on all breakpoints) sets `data-theme="light|dark"` on `<html>` and stores it in `localStorage.theme`. If the new choice matches the OS setting, the attribute and storage are cleared so the site resumes following the OS.

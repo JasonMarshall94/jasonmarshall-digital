@@ -5,26 +5,50 @@
    the visitor picks one with the theme toggle. */
 @theme {
   --color-*: initial;
-  --color-dark-grey: light-dark(#f2f2f2, #121212);
+  /* Surfaces */
+  --color-bg: light-dark(#f2f2f2, #121212);
   --color-deep: light-dark(#e8e8e8, #0c0c0c);
   --color-card: light-dark(#fafafa, #181818);
-  --color-border: light-dark(#dedede, #262626);
-  --color-med-grey: light-dark(#626262, #8a8a8a);
-  --color-light-grey: light-dark(#505050, #a8a8a8);
+  /* Borders: line = hairlines, line-strong = decorative, control = anything
+     clickable or typeable (3:1 on every surface in both themes) */
+  --color-line: light-dark(#dedede, #262626);
+  --color-line-strong: light-dark(#c9c9c9, #3a3a3a);
+  --color-control: light-dark(#808080, #666666);
+  /* Text, strongest to weakest (all 4.5:1+ on bg, card and deep) */
   --color-text: light-dark(#121212, #e0e0e0);
-  --color-accent: light-dark(#333333, #c4c4c4);
+  --color-body: light-dark(#333333, #c4c4c4);
+  --color-muted: light-dark(#505050, #a8a8a8);
+  --color-faint: light-dark(#626262, #8a8a8a);
+  --color-ink-max: light-dark(#000000, #ffffff);
+  /* Accent: signal = fills/strokes (same in both themes, never text in
+     light), signal-ink = accent text, on-signal = text on a signal fill */
+  --color-signal: #7aa7ff;
+  --color-signal-ink: light-dark(#202f4d, #7aa7ff);
+  --color-on-signal: #121212;
+  --color-focus: light-dark(#202f4d, #7aa7ff);
   --color-success: light-dark(#1a7f37, #7fc88a);
   --color-error: light-dark(#b42318, #e08080);
   --color-white: #ffffff;
 
-  --default-font-family: var(--font-jetbrains-mono), monospace;
+  /* Legacy names from the previous design (same values), removed once every
+     page uses the names above */
+  --color-dark-grey: var(--color-bg);
+  --color-border: var(--color-line);
+  --color-med-grey: var(--color-faint);
+  --color-light-grey: var(--color-muted);
+  --color-accent: var(--color-body);
+
+  --font-sans: var(--font-geist), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+  --default-font-family: var(--font-sans);
+
+  --ease-expo: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 :root {
   color-scheme: light dark;
-  --glow: light-dark(rgba(255, 255, 255, 0.7), rgba(176, 176, 176, 0.05));
-  --gridline: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.03));
-  --btn-bg: light-dark(var(--color-white), transparent);
+  --gridline: light-dark(rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.04));
+  --btn-bg: transparent;
 }
 :root[data-theme="light"] {
   color-scheme: light;
@@ -83,8 +107,8 @@
 
 /* ----- Focus styles ----- */
 :focus-visible {
-  outline: 2px solid var(--color-text);
-  outline-offset: 3px;
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
 }
 
 /* ----- Base ----- */
@@ -104,18 +128,14 @@ body {
 
 body {
   min-height: 100vh;
-  background:
-    radial-gradient(
-      1100px 600px at 80% -10%,
-      var(--glow),
-      transparent 60%
-    ),
-    radial-gradient(
-      900px 500px at 0% 90%,
-      var(--glow),
-      transparent 60%
-    ),
-    var(--color-dark-grey);
+}
+
+/* A section that stays dark in both themes (ticker, contact band, footer):
+   light-dark() tokens resolve against the element's colour scheme. */
+@utility band {
+  color-scheme: dark;
+  background: var(--color-deep);
+  color: var(--color-text);
 }
 
 ::selection {
@@ -267,43 +287,118 @@ body {
   }
 }
 
+/* Buttons: inverted fill; on hover a fill wipes in from the left */
 @utility btn {
+  position: relative;
+  z-index: 0;
+  overflow: hidden;
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.85rem 1.4rem;
-  font-size: 0.85rem;
-  letter-spacing: 0.04em;
-  border: 1px solid var(--color-border);
-  background: var(--btn-bg);
-  color: var(--color-text);
-  transition: all 0.25s;
+  justify-content: center;
+  gap: 10px;
+  padding: 15px 22px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  cursor: pointer;
-  font-family: inherit;
+  white-space: nowrap;
   text-decoration: none;
-  &:hover {
+  cursor: pointer;
+  color: var(--color-text);
+  background: transparent;
+  border: 1px solid var(--color-control);
+  transition:
+    color 0.35s var(--ease-expo),
+    border-color 0.35s;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
     background: var(--color-text);
-    color: var(--color-dark-grey);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.45s var(--ease-expo);
+  }
+  &:hover {
+    color: var(--color-bg);
     border-color: var(--color-text);
+  }
+  &:hover::before {
+    transform: scaleX(1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    &::before {
+      transition: none;
+    }
   }
 }
 
 @utility btn-primary {
   background: var(--color-text);
-  color: var(--color-dark-grey);
+  color: var(--color-bg);
   border-color: var(--color-text);
+  &::before {
+    background: var(--color-bg);
+  }
   &:hover {
-    background: var(--btn-bg);
     color: var(--color-text);
   }
 }
 
+@utility btn-sm {
+  padding: 11px 16px;
+  font-size: 12px;
+}
+
+/* "Learn more →" style text link in the accent */
+@utility link-more {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-signal-ink);
+}
+
+/* Eyebrow above a heading: small mono uppercase in the faintest text tier */
 @utility label {
-  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--color-light-grey);
+  color: var(--color-faint);
+}
+
+/* Mono subline under a page title */
+@utility subline {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
+}
+
+/* Square outlined tag (tech lists) */
+@utility tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 11px;
+  border: 1px solid var(--color-line-strong);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+/* Smaller filled tag (services provided on cards) */
+@utility tag-quiet {
+  padding: 4px 8px;
+  border-color: var(--color-line);
+  background: var(--color-card);
+  font-size: 10px;
+  color: var(--color-muted);
 }
 
 /* Long-form text from the CMS and legal pages */

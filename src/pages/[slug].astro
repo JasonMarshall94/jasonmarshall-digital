@@ -6,7 +6,6 @@ import Nav from "@/global/Nav.astro";
 import Footer from "@/global/Footer.astro";
 import PageHero from "@/components/content/PageHero.astro";
 import RichText from "@/components/content/RichText.astro";
-import CallToAction from "@/components/CTA.astro";
 import { getSiteSettings } from "@/lib/sanity";
 import { breadcrumbNode, businessNode, graph } from "@/lib/structuredData";
 
@@ -42,7 +41,6 @@ const jsonLd = graph(
     <section class="py-16 md:py-24">
       <div class="container">
         <RichText value={p.body} />
-        <CallToAction />
       </div>
     </section>
   </main>

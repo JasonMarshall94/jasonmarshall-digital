@@ -1,7 +1,6 @@
 ---
 import Logo from "@/global/Logo.astro";
 import ThemeToggle from "@/ui/ThemeToggle.astro";
-import { Icon } from "astro-icon/components";
 import navLinksData from "@/data/navLinks.json";
 
 interface Props {
@@ -28,58 +27,49 @@ const links = (navLinksData as NavLink[]).map(({ title, slug, pageHref, href }) 
     ? currentPath.startsWith(href)
     : !isHome && !!pageHref && currentPath.startsWith(pageHref),
 }));
+// Contact is the header button, so it stays out of the desktop link row
+const rowLinks = links.filter((l) => l.slug !== "contact");
 ---
 
 <header
   id="site-nav"
-  data-scrolled="false"
   data-open="false"
-  class="group/nav data-[scrolled=true]:bg-dark-grey/78 data-[scrolled=true]:border-border fixed top-0 right-0 left-0 z-50 border-b border-transparent bg-transparent backdrop-blur-[14px] transition-[background-color,border-color] duration-300"
+  class="group/nav border-line bg-bg relative z-50 border-b"
 >
-  <div class="container flex h-18 items-center justify-between">
+  <div class="container flex h-18 items-center justify-between gap-6">
     <a
       href={isHome ? "#top" : homeHref}
-      class="text-text flex items-center gap-[0.7rem]"
+      class="text-text flex items-center gap-3"
       aria-label="Jason Marshall Digital home"
     >
-      <Logo size={28} />
+      <Logo size={30} />
       <span
-        class="hide-mobile text-light-grey text-[0.78rem] tracking-[0.14em] uppercase"
+        class="hide-mobile text-muted font-mono text-xs tracking-[0.14em] uppercase"
         >Jason Marshall Digital</span
       >
     </a>
 
-    <nav aria-label="Main" class="flex items-center gap-6 text-[0.82rem]">
+    <nav aria-label="Main" class="flex items-center gap-7">
       {
-        links.map((l) => {
-          const active = l.active;
-          return (
-            <a
-              href={l.href}
-              data-section={l.slug}
-            aria-current={active ? "page" : undefined}
-              aria-current={active ? "page" : undefined}
-              class={`nav-link nav-anchor hide-mobile tracking-[0.06em] transition-colors duration-200 ${
-                active ? "text-text active" : "text-light-grey"
-              }`}
-            >
-              {l.title}
-            </a>
-          );
-        })
+        rowLinks.map((l) => (
+          <a
+            href={l.href}
+            data-section={l.slug}
+            aria-current={l.active ? "page" : undefined}
+            class={`nav-link nav-anchor hide-mobile font-mono text-[13px] transition-colors duration-200 ${
+              l.active ? "text-text active" : "text-muted hover:text-text"
+            }`}
+          >
+            {l.title}
+          </a>
+        ))
       }
 
-      <a
-        href="https://github.com/JasonMarshall94"
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="GitHub"
-        class="hide-mobile border-border text-light-grey hover:text-text hover:border-light-grey inline-flex h-9 w-9 items-center justify-center border transition-colors duration-200"
-      >
-        <Icon name="github" width={14} height={14} />
-      </a>
-
       <ThemeToggle />
+
+      <a href="/contact/" class="btn btn-primary btn-sm hide-mobile">
+        Start a project <span aria-hidden="true">→</span>
+      </a>
 
       <!-- Hamburger -->
       <button
@@ -88,7 +78,7 @@ const links = (navLinksData as NavLink[]).map(({ title, slug, pageHref, href }) 
         aria-expanded="false"
         aria-controls="mobile-menu"
         aria-label="Open menu"
-        class="hide-desktop border-border text-light-grey hover:text-text relative flex h-9 w-9 flex-col items-center justify-center gap-1.25 border bg-(--btn-bg) transition-colors duration-200"
+        class="hide-desktop border-control text-text relative flex h-11 w-11 cursor-pointer flex-col items-center justify-center gap-1.25 border bg-transparent"
       >
         <span
           class="block h-px w-4.5 origin-center bg-current transition-all duration-300 group-data-[open=true]/nav:translate-y-1.5 group-data-[open=true]/nav:rotate-45"
@@ -108,7 +98,7 @@ const links = (navLinksData as NavLink[]).map(({ title, slug, pageHref, href }) 
 <div
   id="nav-backdrop"
   aria-hidden="true"
-  class="bg-dark-grey/70 pointer-events-none fixed inset-0 z-40 opacity-0 backdrop-blur-sm transition-opacity duration-300"
+  class="bg-bg/70 pointer-events-none fixed inset-0 z-40 opacity-0 backdrop-blur-sm transition-opacity duration-300"
 >
 </div>
 
@@ -118,18 +108,18 @@ const links = (navLinksData as NavLink[]).map(({ title, slug, pageHref, href }) 
   role="dialog"
   aria-modal="true"
   aria-label="Navigation"
-  class="border-border bg-card fixed top-0 right-0 bottom-0 z-50 flex w-[min(320px,85vw)] translate-x-full flex-col border-l transition-transform duration-350 ease-[cubic-bezier(0.22,1,0.36,1)]"
+  class="border-line bg-card fixed top-0 right-0 bottom-0 z-50 flex w-[min(320px,85vw)] translate-x-full flex-col border-l transition-transform duration-350 ease-(--ease-expo)"
 >
   <!-- Drawer header -->
   <div
-    class="border-border flex h-18 shrink-0 items-center justify-between border-b px-6"
+    class="border-line flex h-18 shrink-0 items-center justify-between border-b px-6"
   >
-    <span class="label text-[0.68rem]">Menu</span>
+    <span class="label">Menu</span>
     <button
       id="nav-close"
       type="button"
       aria-label="Close menu"
-      class="border-border text-light-grey hover:text-text inline-flex h-9 w-9 items-center justify-center border bg-(--btn-bg) transition-colors duration-200"
+      class="border-control text-text inline-flex h-11 w-11 cursor-pointer items-center justify-center border bg-transparent"
     >
       <span aria-hidden="true" class="text-[1.1rem] leading-none">×</span>
     </button>
@@ -138,34 +128,25 @@ const links = (navLinksData as NavLink[]).map(({ title, slug, pageHref, href }) 
   <!-- Links -->
   <nav aria-label="Mobile" class="flex flex-1 flex-col px-6 py-6">
     {
-      links.map((l) => {
-        const active = l.active;
-        return (
-          <a
-            href={l.href}
-            data-section={l.slug}
-            aria-current={active ? "page" : undefined}
-            class={`mobile-nav-link border-border border-b py-5 text-[1.4rem] tracking-[-0.01em] transition-colors duration-200 ${
-              active ? "text-text" : "text-light-grey hover:text-text"
-            }`}
-          >
-            {l.title}
-          </a>
-        );
-      })
+      links.map((l) => (
+        <a
+          href={l.href}
+          data-section={l.slug}
+          aria-current={l.active ? "page" : undefined}
+          class={`mobile-nav-link border-line border-b py-5 text-2xl font-medium tracking-[-0.02em] transition-colors duration-200 ${
+            l.active ? "text-text" : "text-muted hover:text-text"
+          }`}
+        >
+          {l.title}
+        </a>
+      ))
     }
   </nav>
 
   <!-- Drawer footer -->
-  <div class="border-border shrink-0 border-t px-6 py-6">
-    <a
-      href="https://github.com/JasonMarshall94"
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label="GitHub"
-      class="border-border text-light-grey hover:text-text hover:border-light-grey inline-flex h-9 w-9 items-center justify-center border transition-colors duration-200"
-    >
-      <Icon name="github" width={14} height={14} />
+  <div class="border-line shrink-0 border-t px-6 py-6">
+    <a href="/contact/" class="btn btn-primary w-full">
+      Start a project <span aria-hidden="true">→</span>
     </a>
   </div>
 </div>
@@ -219,7 +200,7 @@ const links = (navLinksData as NavLink[]).map(({ title, slug, pageHref, href }) 
     link.addEventListener("click", closeMenu);
   });
 
-  // ── Scroll detection + active section ────────────────────────
+  // ── Active homepage section ──────────────────────────────────
 
   const sectionIds = ["top", "work", "services", "about", "contact"];
   const anchors = Array.from(
@@ -230,14 +211,10 @@ const links = (navLinksData as NavLink[]).map(({ title, slug, pageHref, href }) 
   const setActive = (a: HTMLAnchorElement, active: boolean) => {
     a.classList.toggle("active", active);
     a.classList.toggle("text-text", active);
-    a.classList.toggle("text-light-grey", !active);
+    a.classList.toggle("text-muted", !active);
   };
 
   const onScroll = () => {
-    if (!nav) return;
-    nav.dataset.scrolled = window.scrollY > 24 ? "true" : "false";
-
-    if (!hasSections) return;
     const y = window.scrollY + window.innerHeight / 3;
     let current = "top";
     for (const id of sectionIds) {
@@ -251,6 +228,8 @@ const links = (navLinksData as NavLink[]).map(({ title, slug, pageHref, href }) 
     });
   };
 
-  window.addEventListener("scroll", onScroll, { passive: true });
-  onScroll();
+  if (hasSections) {
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+  }
 </script>
