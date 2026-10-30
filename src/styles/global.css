@@ -396,6 +396,28 @@ body {
   }
 }
 
+/* The same wipe-in underline with no resting underline and no colour of its
+   own (footer links) */
+@utility link-wipe {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  padding-bottom: 3px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition:
+    background-size 0.45s var(--ease-expo),
+    color 0.2s;
+  &:hover,
+  &:focus-visible {
+    background-size: 100% 1px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
 /* "Learn more →" style text link in the accent */
 @utility link-more {
   font-family: var(--font-mono);

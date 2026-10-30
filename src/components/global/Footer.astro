@@ -102,7 +102,7 @@ const company = [
           {
             services.map((s) => (
               <li>
-                <a href={`/services/${s.data.slug}/`} class="text-body hover:text-text">
+                <a href={`/services/${s.data.slug}/`} class="link-wipe text-body hover:text-text">
                   {s.data.title}
                 </a>
               </li>
@@ -117,7 +117,7 @@ const company = [
           {
             company.map(([title, href]) => (
               <li>
-                <a href={href} class="text-body hover:text-text">
+                <a href={href} class="link-wipe text-body hover:text-text">
                   {title}
                 </a>
               </li>
@@ -130,12 +130,12 @@ const company = [
         <h2 class="label mt-0 mb-5 font-medium">Contact</h2>
         <ul class="m-0 flex list-none flex-col gap-3 p-0 text-[15px]">
           <li>
-            <a href={`mailto:${settings.email}`} class="text-body hover:text-text break-all md:break-normal">
+            <a href={`mailto:${settings.email}`} class="link-wipe text-body hover:text-text break-all md:break-normal">
               {settings.email}
             </a>
           </li>
           <li>
-            <a href={telHref} class="text-body hover:text-text">{settings.phone}</a>
+            <a href={telHref} class="link-wipe text-body hover:text-text">{settings.phone}</a>
           </li>
           {
             place && (
@@ -153,7 +153,7 @@ const company = [
                   href={settings.githubUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-body hover:text-text"
+                  class="link-wipe text-body hover:text-text"
                 >
                   GitHub <span aria-hidden="true">↗</span>
                   <span class="sr-only">(opens in a new tab)</span>
@@ -170,7 +170,7 @@ const company = [
         class="text-faint container flex flex-wrap justify-between gap-4 py-6 font-mono text-[11px] tracking-[0.1em]"
       >
         <span>© {currentYear} Jason Marshall Digital · All rights reserved</span>
-        <a href="#main-content" class="text-muted hover:text-text">
+        <a href="#main-content" class="link-wipe text-muted hover:text-text">
           Back to top <span aria-hidden="true">↑</span>
         </a>
       </div>

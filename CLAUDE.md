@@ -82,7 +82,7 @@ Custom design tokens are defined in `src/styles/global.css` under `@theme`. Reus
 - `btn` / `btn-primary` / `btn-sm` — outline and filled buttons whose fill wipes in from the left on hover
 - `label` — small mono uppercase eyebrow in `faint`; `subline` — mono line under a page title
 - `tag` / `tag-quiet` — square mono tags; `link-more` — "Learn more →" accent link
-- `text-link` — every standalone plain text link ("All projects →", the case study Website link, inline links in copy, the Privacy Policy link): faint underline at rest, a full underline wipes in from the left on hover. `prose-site` links use the same treatment
+- `text-link` — every standalone plain text link ("All projects →", the case study Website link, inline links in copy, the Privacy Policy link): faint underline at rest, a full underline wipes in from the left on hover. `prose-site` links use the same treatment. `link-wipe` is the same wipe with no resting underline and no colour of its own, used for the footer links
 - `band` — a dark section (services ticker, footer, In practice, gallery, About tools band, "Not sure yet?" card): `color-scheme: dark` so every `light-dark()` token resolves dark inside it, plus a light-mode override that softens it to charcoal (#2e2e2e). The "Got a project?" contact band is not a band: it is `bg-deep` (light grey in light mode) with white cards and a white button.
 - Light mode is a white page with grey cards (`card` #f4f4f4) and panels (`deep` #ebebeb); primary buttons use the `btn-*` tokens (light grey with dark text in light mode).
 - `prose-site` — long-form text styling (headings, lists, links, images) for CMS rich text and the privacy policy
