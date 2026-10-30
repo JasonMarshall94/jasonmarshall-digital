@@ -1,0 +1,83 @@
+---
+// Accordion of <details> items: one open at a time, animated open and close.
+// The shared `name` makes them exclusive even without JS; the script adds
+// the height animation (skipped under reduced motion).
+interface Props {
+  items: { question: string; answer: string }[];
+  /** Groups the items so opening one closes the others */
+  name: string;
+  /** Open the first item on load */
+  openFirst?: boolean;
+}
+const { items, name, openFirst = true } = Astro.props;
+---
+
+<div class="border-line border-b" data-accordion>
+  {
+    items.map((item, i) => (
+      <details class="group border-line border-t" name={name} open={openFirst && i === 0}>
+        <summary class="flex cursor-pointer list-none items-center justify-between gap-6 py-6 text-lg font-medium max-[720px]:py-5 max-[720px]:text-[17px] [&::-webkit-details-marker]:hidden">
+          {item.question}
+          <span
+            aria-hidden="true"
+            class="text-signal-ink shrink-0 font-mono text-lg transition-transform duration-300 ease-(--ease-expo) group-open:rotate-45"
+          >
+            +
+          </span>
+        </summary>
+        <div class="overflow-hidden" data-accordion-panel>
+          <p class="text-body m-0 max-w-[68ch] pb-6 text-base leading-[1.7]">{item.answer}</p>
+        </div>
+      </details>
+    ))
+  }
+</div>
+
+<script>
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const timing = { duration: 380, easing: "cubic-bezier(0.22, 1, 0.36, 1)" };
+
+  const animate = (panel: HTMLElement, from: number, to: number) =>
+    panel.animate(
+      [
+        { height: `${from}px`, opacity: from ? 1 : 0 },
+        { height: `${to}px`, opacity: to ? 1 : 0 },
+      ],
+      timing,
+    ).finished;
+
+  const close = async (item: HTMLDetailsElement) => {
+    const panel = item.querySelector<HTMLElement>("[data-accordion-panel]")!;
+    if (!reduceMotion.matches) {
+      item.dataset.closing = "";
+      await animate(panel, panel.offsetHeight, 0).catch(() => {});
+      delete item.dataset.closing;
+    }
+    item.open = false;
+  };
+
+  const open = (item: HTMLDetailsElement) => {
+    const panel = item.querySelector<HTMLElement>("[data-accordion-panel]")!;
+    item.open = true;
+    if (!reduceMotion.matches) animate(panel, 0, panel.offsetHeight).catch(() => {});
+  };
+
+  document.querySelectorAll<HTMLElement>("[data-accordion]").forEach((group) => {
+    const items = Array.from(group.querySelectorAll<HTMLDetailsElement>(":scope > details"));
+    // The script handles exclusivity now; the browser's own version would
+    // snap the other items shut before they finish animating
+    items.forEach((item) => item.removeAttribute("name"));
+    items.forEach((item) => {
+      item.querySelector("summary")!.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (item.dataset.closing !== undefined) return;
+        if (item.open) {
+          close(item);
+        } else {
+          items.filter((other) => other !== item && other.open).forEach(close);
+          open(item);
+        }
+      });
+    });
+  });
+</script>

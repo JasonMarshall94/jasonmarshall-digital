@@ -39,8 +39,8 @@ const more = (await getCollection("projects"))
   .sort((a, b) => b.data.postDate.valueOf() - a.data.postDate.valueOf())
   .slice(0, 3);
 
-const meta = [p.industry, p.location, String(year)].filter(Boolean).join(" · ");
 const liveHost = p.url?.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
+const meta = [p.industry, p.location, String(year)].filter(Boolean).join(" · ");
 const compare =
   p.comparison?.before && p.comparison?.after
     ? { ...p.comparison, before: p.comparison.before, after: p.comparison.after }
@@ -191,15 +191,26 @@ const jsonLd = graph(
                 </div>
               )
             }
+            {
+              p.url && (
+                <div>
+                  <dt class="label mb-1.5 text-[10px]">Website</dt>
+                  <dd class="m-0">
+                    <a
+                      href={p.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-link text-[15px] break-all"
+                    >
+                      {liveHost}{" "}
+                      <span aria-hidden="true">↗</span>
+                      <span class="sr-only">(opens in a new tab)</span>
+                    </a>
+                  </dd>
+                </div>
+              )
+            }
           </dl>
-          {
-            p.url && (
-              <a href={p.url} target="_blank" rel="noopener noreferrer" class="btn mt-7 w-full text-center whitespace-normal [overflow-wrap:anywhere]">
-                Visit {liveHost} <span aria-hidden="true">↗</span>
-                <span class="sr-only">(opens in a new tab)</span>
-              </a>
-            )
-          }
         </div>
       </div>
     </section>
@@ -217,7 +228,7 @@ const jsonLd = graph(
                   Other recent projects.
                 </h2>
               </div>
-              <a href="/projects/" class="text-body border-line-strong hover:text-text border-b pb-1 font-mono text-[13px]">
+              <a href="/projects/" class="text-link font-mono text-[13px]">
                 All projects →
               </a>
             </div>

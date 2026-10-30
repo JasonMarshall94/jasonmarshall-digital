@@ -7,6 +7,7 @@ import Footer from "@/global/Footer.astro";
 import { PortableText } from "astro-portabletext";
 import RichLink from "@/components/content/RichLink.astro";
 import ServiceIcon from "@/components/ServiceIcon.astro";
+import Accordion from "@/ui/Accordion.astro";
 import ServiceDiagram, { type DiagramName } from "@/components/ServiceDiagram.astro";
 import PlatformComparison from "@/components/PlatformComparison.astro";
 import ProjectCard from "@/components/ProjectCard.astro";
@@ -86,7 +87,7 @@ const jsonLd = graph(
 >
   <Nav page="page" />
   <main id="main-content">
-    <!-- Hero: short heading and intro beside "What's included" -->
+    <!-- Hero: short heading and intro beside "At a glance" -->
     <section class="border-line relative overflow-hidden border-b">
       <div class="gridlines"></div>
       <div class="relative container pt-12 pb-16">
@@ -127,9 +128,9 @@ const jsonLd = graph(
           {
             s.included?.length && (
               <div class="border-line bg-card float-in border p-7" style="animation-delay: 0.2s">
-                <h2 class="label m-0 mb-5 font-normal">What's included</h2>
+                <h2 class="label m-0 mb-5 font-normal">At a glance</h2>
                 <ul class="m-0 flex list-none flex-col gap-3.5 p-0">
-                  {s.included.map((item) => (
+                  {s.included.slice(0, 4).map((item) => (
                     <li class="text-body flex gap-3 text-[15px] leading-normal">
                       <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true" class="mt-0.5 shrink-0">
                         <rect x="0.5" y="0.5" width="19" height="19" class="stroke-line-strong" />
@@ -158,7 +159,7 @@ const jsonLd = graph(
                     <ServiceDiagram name={approachDiagrams[i] ?? "journey"} query={s.slug === "web-design" ? "web designer near me" : undefined} result={s.slug === "web-design" ? "Your Business — Web Design" : undefined} />
                   </figure>
                   <h2 class="m-0 mb-3 text-[22px] font-medium tracking-[-0.01em]">{col.title}</h2>
-                  <div class="text-body text-base leading-[1.7] [&_a]:text-text [&_a]:underline [&_a]:underline-offset-4 [&_p]:m-0 [&_p+p]:mt-3">
+                  <div class="text-body text-base leading-[1.7] [&_a]:text-link [&_p]:m-0 [&_p+p]:mt-3">
                     <PortableText value={col.blocks as never} components={{ mark: { link: RichLink } }} />
                   </div>
                 </div>
@@ -245,7 +246,7 @@ const jsonLd = graph(
                   Recent {s.heading} projects.
                 </h2>
               </div>
-              <a href="/projects/" class="text-body border-line-strong hover:text-text border-b pb-1 font-mono text-[13px]">
+              <a href="/projects/" class="text-link font-mono text-[13px]">
                 All projects →
               </a>
             </div>
@@ -267,19 +268,7 @@ const jsonLd = graph(
                 Questions, answered.
               </h2>
             </div>
-            <div class="border-line border-b">
-              {faqs.map((f, i) => (
-                <details class="group border-line border-t" open={i === 0}>
-                  <summary class="flex cursor-pointer list-none items-center justify-between gap-6 py-6 text-lg font-medium max-[720px]:py-5 max-[720px]:text-[17px] [&::-webkit-details-marker]:hidden">
-                    {f.question}
-                    <span aria-hidden="true" class="text-signal-ink shrink-0 font-mono text-lg transition-transform duration-250 group-open:rotate-45">
-                      +
-                    </span>
-                  </summary>
-                  <p class="text-body m-0 max-w-[68ch] pb-6 text-base leading-[1.7]">{f.answer}</p>
-                </details>
-              ))}
-            </div>
+            <Accordion items={faqs} name={`faq-${s.slug}`} />
           </div>
         </section>
       )
