@@ -39,7 +39,7 @@ This is a personal portfolio/agency site built with **Astro 7**, explicitly set 
 ### Component organisation
 - `src/components/` — page section components. Homepage: `Hero` (status badge, H1 with blinking accent cursor, headshot from `src/assets/jason-headshot.jpg`, two buttons, animated build graphic hidden on phones), `ServicesTicker` (scrolling service links on a dark band), `RecentWork` (newest featured project as a large card plus two equal `ProjectCard`s; all three become one swipe row on phones), `Services` (four short cards). Also ContactForm, ProjectCard (equal-size card linking to the case study), ProjectsArchive.
 - `src/components/global/` — site-wide shell components (Nav, Footer, Logo). `Footer` renders inside a dark `band`: the "Got a project? Let's talk." contact band with four steps (turn off with `contactBand={false}`, as on /contact/ and the 404), then the multi-column footer (services from Sanity, company links, contact details from Site Settings).
-- `src/components/ui/` — reusable primitives (ThemeToggle, StatusBadge)
+- `src/components/ui/` — reusable primitives (ThemeToggle, StatusBadge, Accordion). `Accordion` (`items`, `name`, `openFirst`) is the one accordion pattern: `<details>` items that animate open/closed and keep only one open (native `name` grouping without JS; the script takes over so closing items can animate). Use it for any new accordion.
 - `src/components/content/` — CMS page building blocks: `PageHero` (breadcrumb trail + H1 + optional mono `subline` + intro, used by inner pages), `RichText` (Portable Text in a `prose-site` wrapper; `RichLink` opens external links in a new tab, `RichImage` renders Sanity images at 16:9)
 
 ### Content (Sanity)
