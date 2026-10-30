@@ -27,7 +27,7 @@ This is a personal portfolio/agency site built with **Astro 7**, explicitly set 
 - **astro-icon** — SVG icons placed in `src/icons/` are auto-resolved by name (e.g. `<Icon name="github" />` → `src/icons/github.svg`)
 - **React** (`@astrojs/react`) — used for email templates only (`src/emails/`). No React components are used in the browser; no `client:*` directives exist in the project
 - **Sanity** (`@sanity/client`, `@sanity/image-url`) — headless CMS for projects, services, pages and site settings, fetched at build time. Rich text is rendered with `astro-portabletext`. See *Content (Sanity)* below
-- **GSAP** — no longer used; the redesigned pages use CSS animations (see the motion utilities below). All animations are gated with `gsap.matchMedia()` on `prefers-reduced-motion: no-preference`
+- **GSAP** (with ScrollTrigger and SplitText) — entrance motion only, all in `src/scripts/motion.ts` (loaded by BaseLayout). GSAP is dynamically imported and nothing runs under `prefers-reduced-motion: reduce`; SplitText only loads on pages with a `[data-split]` headline. Hover and press micro-interactions stay in CSS
 - **Partytown** (`@astrojs/partytown`) — offloads third-party scripts to a web worker. Configured with `forward: ["dataLayer.push", "gtag"]` in `astro.config.mjs`. Google Analytics (`G-ZMTW1L1YJX`) is loaded via Partytown in `BaseLayout.astro` using `type="text/partytown"` script tags. Do NOT use Partytown for Cloudflare Turnstile — it requires DOM access unavailable in workers.
 - **Prettier** — configured via `.prettierrc` with `prettier-plugin-astro` and `prettier-plugin-tailwindcss`
 
@@ -39,7 +39,7 @@ This is a personal portfolio/agency site built with **Astro 7**, explicitly set 
 ### Component organisation
 - `src/components/` — page section components. Homepage: `Hero` (status badge, H1 with blinking accent cursor, headshot from `src/assets/jason-headshot.jpg`, two buttons, animated build graphic hidden on phones), `ServicesTicker` (scrolling service links on a dark band), `RecentWork` (newest featured project as a large card plus two equal `ProjectCard`s; all three become one swipe row on phones), `Services` (four short cards). Also ContactForm, ProjectCard (equal-size card linking to the case study), ProjectsArchive.
 - `src/components/global/` — site-wide shell components (Nav, Footer, Logo). `Footer` renders inside a dark `band`: the "Got a project? Let's talk." contact band with four steps (turn off with `contactBand={false}`, as on /contact/ and the 404), then the multi-column footer (services from Sanity, company links, contact details from Site Settings).
-- `src/components/ui/` — reusable primitives (ThemeToggle, StatusBadge, Accordion). `Accordion` (`items`, `name`, `openFirst`) is the one accordion pattern: `<details>` items that animate open/closed and keep only one open (native `name` grouping without JS; the script takes over so closing items can animate). Use it for any new accordion.
+- `src/components/ui/` — reusable primitives (ThemeToggle, ThemeMode, StatusBadge, Accordion). `Accordion` (`items`, `name`, `openFirst`) is the one accordion pattern: `<details>` items that animate open/closed and keep only one open (native `name` grouping without JS; the script takes over so closing items can animate). Use it for any new accordion.
 - `src/components/content/` — CMS page building blocks: `PageHero` (breadcrumb trail + H1 + optional mono `subline` + intro, used by inner pages), `RichText` (Portable Text in a `prose-site` wrapper; `RichLink` opens external links in a new tab, `RichImage` renders Sanity images at 16:9)
 
 ### Content (Sanity)
@@ -76,6 +76,8 @@ Projects, services, pages and site settings live in **Sanity** (project `3x5s0bg
 ### Navigation
 `src/components/global/Nav.astro` includes a desktop nav and a mobile off-canvas drawer. The drawer slides in from the right and is driven entirely by a `data-open` attribute on the `<header>` — no framework needed. Hamburger → × animation uses `group-data-[open=true]/nav` Tailwind variants. The `inert` attribute is applied to `<main>` when the drawer is open.
 
+The header is sticky and tightens from 72px to 56px with a soft shadow once the page scrolls (`data-scrolled` on `<header>`). On desktop, "Services" is a button that opens a 700px dropdown (`.svc-menu` / `.svc-item` in global.css): a 2×3 grid of the five services (icon, title, one-line summary from the `summaries` map in Nav.astro) plus "All services". It opens on hover (after a short delay) or click, dims the page behind (`#svc-dim`), and closes on Escape, an outside click or when focus leaves it. In the drawer, Services is an expandable item (`inert` while closed) listing "All services →" and the five services, and the drawer footer has the System · Light · Dark theme choice.
+
 ### Styling conventions
 Custom design tokens are defined in `src/styles/global.css` under `@theme`. Reusable utility classes are defined with `@utility` and should be extended there — not in component `<style>` blocks — when shared. Key utilities:
 
@@ -99,7 +101,7 @@ The design language ("Evolve: Signal") is near-monochrome and square-cornered wi
 Every `--color-*` token in `@theme` is a `light-dark(<light>, <dark>)` pair, so utilities like `text-text` or `bg-bg/70` switch automatically. Surfaces: `bg`, `deep`, `card`. Borders: `line` (hairlines), `line-strong` (decorative), `control` (anything clickable or typeable; 3:1 on every surface). Text, strongest to weakest: `text`, `body`, `muted`, `faint`. Accent: `signal` for fills and strokes (never text in light mode), `signal-ink` for accent text, `on-signal` for text on a blue fill; `focus` for the focus ring. Never hard-code hex/rgba colours in components — add a token (e.g. `success`, `error`) or a `:root` variable (e.g. `--gridline`) instead. All text tokens meet WCAG AA (4.5:1) against `bg`, `card` and `deep` in both themes; re-check contrast when changing them.
 
 - Default follows the OS via `color-scheme: light dark` on `:root` — works without JS.
-- `ThemeToggle.astro` (in the nav, visible on all breakpoints) sets `data-theme="light|dark"` on `<html>` and stores it in `localStorage.theme`. If the new choice matches the OS setting, the attribute and storage are cleared so the site resumes following the OS.
+- Theme controls share `src/scripts/theme.ts`. `ThemeToggle.astro` is a bare sun/moon icon in the header (no box; the icons rotate and cross-fade). `ThemeMode.astro` is the "Theme System · Light · Dark" choice in the footer bottom bar and the mobile drawer: Light/Dark store that choice, System clears it. The icon sets `data-theme="light|dark"` on `<html>` and stores it in `localStorage.theme`. If the new choice matches the OS setting, the attribute and storage are cleared so the site resumes following the OS.
 - An `is:inline` script at the top of `<head>` in `BaseLayout.astro` applies the stored choice before first paint (no flash).
 - A custom `light:` Tailwind variant (defined in `global.css`) targets the effective light theme — explicit or OS — e.g. the sun/moon icon swap.
 
@@ -108,3 +110,13 @@ Every `--color-*` token in `@theme` is a `light-dark(<light>, <dark>)` pair, so 
 
 ### 404 page
 `src/pages/404.astro` — Astro outputs this as `404.html`; Netlify serves it automatically for unknown routes. Uses the same Hero-section design language (gridlines, blinking cursor, `float-in` staggered entry). The page wraps Nav + main + Footer in a `flex min-h-svh flex-col` div (with `flex-1 flex flex-col` on `<main>` and `flex-1` on the section) to pin the footer to the bottom of the viewport.
+
+## Motion
+
+Entrance motion (`src/scripts/motion.ts`, GSAP, skipped under reduced motion; elements already on screen at load are left alone):
+- `[data-split]` — the homepage headline reveals word by word. `html.motion` (set by the inline head script) keeps it hidden until it is split, with a 2s CSS failsafe.
+- `main h2` (with the `.label` just before it) and `.lift` / `[data-reveal]` cards rise in as they scroll into view, in staggered batches; `[data-reveal-group]` staggers each child. Use `[data-reveal]` (whole element) for `gap-px` grids, whose cells would show the line colour while fading. The filterable work archive (`#project-grid`) is excluded.
+- `[data-diagram]` (ServiceDiagram) — lines draw and labels fade in on view. Other `.draw` / `.ring` SVGs below the fold wait (`data-await-view`) until they scroll in.
+- `[data-timeline]` (About) — each item's `[data-tl-line]` draws across and its `[data-tl-dot]` pops in.
+
+CSS micro-interactions: `.btn` arrows nudge 4px on hover (`data-arrow="down"` / `"out"` for ↓ and ↗) and the button dips 1px when pressed; `lift` cards rise, zoom the image to 1.05 and slide their `[data-cue]` arrow 6px; contact "What do you need?" tiles press to .97 and the ✓ springs in; the Gallery cross-fades with a slight scale settle; `ServiceIcon still` drops the icon's own motion (menus).

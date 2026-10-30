@@ -1,0 +1,41 @@
+---
+// "Theme System · Light · Dark" choice (footer bottom bar, mobile drawer).
+// Kept in sync with the header icon by src/scripts/theme.ts.
+interface Props {
+  class?: string;
+}
+const { class: className = "" } = Astro.props;
+
+const modes = [
+  ["system", "System"],
+  ["light", "Light"],
+  ["dark", "Dark"],
+];
+---
+
+<div role="group" aria-label="Theme" class={`flex items-center font-mono text-[11px] tracking-[0.1em] ${className}`}>
+  <span class="text-faint mr-1.5" aria-hidden="true">Theme</span>
+  {
+    modes.map(([mode, label], i) => (
+      <>
+        {i > 0 && (
+          <span aria-hidden="true" class="text-line-strong">
+            ·
+          </span>
+        )}
+        <button
+          type="button"
+          data-theme-mode={mode}
+          aria-pressed={mode === "system" ? "true" : "false"}
+          class="link-wipe text-faint hover:text-text aria-pressed:text-text mx-1.5 cursor-pointer border-0 bg-transparent px-0.5 py-1.5 font-[inherit] tracking-[inherit] aria-pressed:bg-size-[100%_1px]"
+        >
+          {label}
+        </button>
+      </>
+    ))
+  }
+</div>
+
+<script>
+  import "@/scripts/theme";
+</script>

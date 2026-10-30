@@ -34,13 +34,16 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="light dark" />
-    <!-- Apply a saved theme choice before first paint (no flash) -->
+    <!-- Apply a saved theme choice before first paint (no flash), and flag
+         that scroll motion will run (src/scripts/motion.ts) -->
     <script is:inline>
       try {
         const t = localStorage.getItem("theme");
         if (t === "light" || t === "dark")
           document.documentElement.dataset.theme = t;
       } catch {}
+      if (!matchMedia("(prefers-reduced-motion: reduce)").matches)
+        document.documentElement.classList.add("motion");
     </script>
     <title>{title}</title>
     <meta name="description" content={description} />
@@ -91,5 +94,8 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
   <body>
     <a href="#main-content" class="skip-link">Skip to main content</a>
     <slot />
+    <script>
+      import "@/scripts/motion";
+    </script>
   </body>
 </html>

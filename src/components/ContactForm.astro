@@ -22,9 +22,9 @@ const fieldClass =
     <div class="grid grid-cols-2 gap-2 min-[721px]:grid-cols-3">
       {
         needs.map((n, i) => (
-          <label class="border-control text-text hover:border-text has-checked:border-signal has-checked:bg-[color-mix(in_oklab,var(--color-signal)_9%,var(--color-card))] has-focus-visible:outline-focus relative flex cursor-pointer items-center gap-2.5 border py-2.75 pr-8.5 pl-3.5 text-sm whitespace-nowrap transition-colors duration-250 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 max-[720px]:flex-col max-[720px]:items-start max-[720px]:p-3.5">
+          <label class="border-control text-text hover:border-text has-checked:border-signal has-checked:bg-[color-mix(in_oklab,var(--color-signal)_9%,var(--color-card))] has-focus-visible:outline-focus relative flex cursor-pointer items-center gap-2.5 border py-2.75 pr-8.5 pl-3.5 text-sm whitespace-nowrap transition-[border-color,background-color,transform] duration-250 active:scale-[.97] active:duration-150 motion-reduce:active:scale-100 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 max-[720px]:flex-col max-[720px]:items-start max-[720px]:p-3.5">
             <input type="checkbox" name="needs" value={n.value} checked={i === 0} class="peer sr-only" />
-            <span aria-hidden="true" class="text-signal-ink absolute top-1/2 right-3 -translate-y-1/2 font-mono text-xs opacity-0 transition-opacity peer-checked:opacity-100 max-[720px]:top-3 max-[720px]:translate-y-0">
+            <span aria-hidden="true" class="text-signal-ink absolute top-1/2 right-3 -mt-2 font-mono text-xs leading-4 opacity-0 scale-40 transition-[opacity,scale] duration-[200ms,350ms] ease-[cubic-bezier(.34,1.56,.64,1)] peer-checked:opacity-100 peer-checked:scale-100 motion-reduce:transition-none max-[720px]:top-3 max-[720px]:mt-0">
               ✓
             </span>
             <svg viewBox="0 0 48 48" fill="none" stroke-width="1.8" aria-hidden="true" class="stroke-signal h-4.5 w-4.5 shrink-0 max-[720px]:h-5.5 max-[720px]:w-5.5">

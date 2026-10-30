@@ -82,16 +82,41 @@ const navButton =
     const caption = g.querySelector("[data-caption]")!;
     const pos = g.querySelector("[data-pos]")!;
     const captions = dots.map((d) => d.getAttribute("aria-label")!.replace(/^Show /, ""));
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let i = 0;
-    const go = (n: number) => {
+    let fade: Animation | undefined;
+    const go = async (n: number) => {
+      const from = slides[i];
       i = (n + slides.length) % slides.length;
-      slides.forEach((s, k) => {
-        s.hidden = k !== i;
-        if (k === i) s.loading = "eager";
-      });
+      const to = slides[i];
       dots.forEach((d, k) => d.setAttribute("aria-pressed", String(k === i)));
       caption.textContent = captions[i];
       pos.textContent = String(i + 1).padStart(2, "0");
+      if (to === from) return;
+      // The new image fades in on top with a slight scale settle, then the
+      // old one is hidden
+      fade?.finish();
+      to.loading = "eager";
+      if (reduceMotion.matches) {
+        to.hidden = false;
+        from.hidden = true;
+        return;
+      }
+      to.style.opacity = "0";
+      to.style.zIndex = "1";
+      to.hidden = false;
+      await to.decode().catch(() => {});
+      fade = to.animate(
+        [
+          { opacity: 0, transform: "scale(1.04)" },
+          { opacity: 1, transform: "none" },
+        ],
+        { duration: 700, easing: "cubic-bezier(0.22, 1, 0.36, 1)" },
+      );
+      to.style.opacity = "";
+      await fade.finished.catch(() => {});
+      to.style.zIndex = "";
+      if (slides[i] !== from) from.hidden = true;
     };
     g.querySelector("[data-prev]")!.addEventListener("click", () => go(i - 1));
     g.querySelector("[data-next]")!.addEventListener("click", () => go(i + 1));

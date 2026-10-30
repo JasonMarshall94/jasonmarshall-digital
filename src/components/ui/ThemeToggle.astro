@@ -5,55 +5,36 @@ interface Props {
   class?: string;
 }
 const { class: className = "" } = Astro.props;
+
+// Both icons sit in the same spot; the hidden one is rotated and faded out
+const icon =
+  "absolute transition-[rotate,scale,opacity] duration-500 ease-(--ease-expo) motion-reduce:transition-none";
 ---
 
+<!-- A bare icon (no box), muted until hover; 44px hit area -->
 <button
   type="button"
   data-theme-toggle
-  aria-label="Switch to light theme"
-  class={`border-control text-muted hover:text-text hover:border-text inline-flex h-11 w-11 cursor-pointer items-center justify-center border bg-transparent transition-colors duration-200 ${className}`}
+  class={`text-muted hover:text-text relative inline-flex h-11 w-11 cursor-pointer items-center justify-center border-0 bg-transparent transition-colors duration-200 ${className}`}
 >
+  <span class="sr-only" data-theme-label>Switch to light theme</span>
   <!-- Sun shows in dark mode (switch to light); moon shows in light mode -->
-  <Icon name="sun" width={14} height={14} class="light:hidden" />
-  <Icon name="moon" width={14} height={14} class="hidden light:block" />
+  <Icon
+    name="sun"
+    width={16}
+    height={16}
+    aria-hidden="true"
+    class={`${icon} light:-rotate-90 light:scale-50 light:opacity-0`}
+  />
+  <Icon
+    name="moon"
+    width={16}
+    height={16}
+    aria-hidden="true"
+    class={`${icon} rotate-90 scale-50 opacity-0 light:rotate-0 light:scale-100 light:opacity-100`}
+  />
 </button>
 
 <script>
-  // The initial theme is applied by the inline script in BaseLayout <head>.
-  // An explicit choice is only stored when it differs from the OS setting,
-  // so toggling back to match the OS resumes following it.
-  const root = document.documentElement;
-  const media = window.matchMedia("(prefers-color-scheme: dark)");
-
-  const current = () =>
-    (root.dataset.theme as "light" | "dark" | undefined) ??
-    (media.matches ? "dark" : "light");
-
-  const syncLabels = () => {
-    const next = current() === "dark" ? "light" : "dark";
-    document
-      .querySelectorAll<HTMLButtonElement>("[data-theme-toggle]")
-      .forEach((btn) =>
-        btn.setAttribute("aria-label", `Switch to ${next} theme`),
-      );
-  };
-
-  document
-    .querySelectorAll<HTMLButtonElement>("[data-theme-toggle]")
-    .forEach((btn) =>
-      btn.addEventListener("click", () => {
-        const next = current() === "dark" ? "light" : "dark";
-        const system = media.matches ? "dark" : "light";
-        try {
-          if (next === system) localStorage.removeItem("theme");
-          else localStorage.setItem("theme", next);
-        } catch {}
-        if (next === system) delete root.dataset.theme;
-        else root.dataset.theme = next;
-        syncLabels();
-      }),
-    );
-
-  media.addEventListener("change", syncLabels);
-  syncLabels();
+  import "@/scripts/theme";
 </script>
