@@ -6,19 +6,19 @@
 @theme {
   --color-*: initial;
   /* Surfaces */
-  --color-bg: light-dark(#f2f2f2, #121212);
-  --color-deep: light-dark(#e8e8e8, #0c0c0c);
-  --color-card: light-dark(#fafafa, #181818);
+  --color-bg: light-dark(#ffffff, #121212);
+  --color-deep: light-dark(#ebebeb, #0c0c0c);
+  --color-card: light-dark(#f4f4f4, #181818);
   /* Borders: line = hairlines, line-strong = decorative, control = anything
      clickable or typeable (3:1 on every surface in both themes) */
-  --color-line: light-dark(#dedede, #262626);
+  --color-line: light-dark(#e2e2e2, #262626);
   --color-line-strong: light-dark(#c9c9c9, #3a3a3a);
-  --color-control: light-dark(#808080, #666666);
+  --color-control: light-dark(#7a7a7a, #666666);
   /* Text, strongest to weakest (all 4.5:1+ on bg, card and deep) */
   --color-text: light-dark(#121212, #e0e0e0);
   --color-body: light-dark(#333333, #c4c4c4);
-  --color-muted: light-dark(#505050, #a8a8a8);
-  --color-faint: light-dark(#626262, #8a8a8a);
+  --color-muted: light-dark(#4d4d4d, #a8a8a8);
+  --color-faint: light-dark(#5e5e5e, #8a8a8a);
   --color-ink-max: light-dark(#000000, #ffffff);
   /* Accent: signal = fills/strokes (same in both themes, never text in
      light), signal-ink = accent text, on-signal = text on a signal fill */
@@ -26,6 +26,12 @@
   --color-signal-ink: light-dark(#202f4d, #7aa7ff);
   --color-on-signal: #121212;
   --color-focus: light-dark(#202f4d, #7aa7ff);
+  /* Primary button: light grey with dark text in light mode, light on dark
+     in dark mode; the hover wipe is dark in both */
+  --color-btn-fill: light-dark(#e4e4e4, #e0e0e0);
+  --color-btn-edge: light-dark(#bdbdbd, #e0e0e0);
+  --color-btn-ink: #121212;
+  --color-btn-hover: light-dark(#ffffff, #e0e0e0);
   --color-success: light-dark(#1a7f37, #7fc88a);
   --color-error: light-dark(#b42318, #e08080);
   --color-white: #ffffff;
@@ -121,12 +127,25 @@ body {
   min-height: 100vh;
 }
 
-/* A section that stays dark in both themes (ticker, contact band, footer):
-   light-dark() tokens resolve against the element's colour scheme. */
+/* A dark section (ticker, footer, In practice, gallery, tools band): the
+   page's own dark palette in dark mode, a softer charcoal in light mode.
+   color-scheme: dark makes every other light-dark() token resolve dark. */
 @utility band {
   color-scheme: dark;
   background: var(--color-deep);
   color: var(--color-text);
+  @variant light {
+    --color-bg: #2e2e2e;
+    --color-deep: #2e2e2e;
+    --color-card: #383838;
+    --color-line: #444444;
+    --color-line-strong: #555555;
+    --color-control: #858585;
+    --color-text: #f2f2f2;
+    --color-body: #d4d4d4;
+    --color-muted: #bdbdbd;
+    --color-faint: #a8a8a8;
+  }
 }
 
 ::selection {
@@ -327,14 +346,15 @@ body {
 }
 
 @utility btn-primary {
-  background: var(--color-text);
-  color: var(--color-bg);
-  border-color: var(--color-text);
+  background: var(--color-btn-fill);
+  color: var(--color-btn-ink);
+  border-color: var(--color-btn-edge);
   &::before {
-    background: var(--color-bg);
+    background: var(--color-btn-ink);
   }
   &:hover {
-    color: var(--color-text);
+    color: var(--color-btn-hover);
+    border-color: var(--color-btn-ink);
   }
 }
 
