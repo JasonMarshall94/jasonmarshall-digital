@@ -158,7 +158,7 @@ const jsonLd = graph(
                     <ServiceDiagram name={approachDiagrams[i] ?? "journey"} query={s.slug === "web-design" ? "web designer near me" : undefined} result={s.slug === "web-design" ? "Your Business — Web Design" : undefined} />
                   </figure>
                   <h2 class="m-0 mb-3 text-[22px] font-medium tracking-[-0.01em]">{col.title}</h2>
-                  <div class="text-body text-base leading-[1.7] [&_a]:text-text [&_a]:underline [&_a]:underline-offset-4 [&_p]:m-0 [&_p+p]:mt-3">
+                  <div class="text-body text-base leading-[1.7] [&_a]:text-link [&_p]:m-0 [&_p+p]:mt-3">
                     <PortableText value={col.blocks as never} components={{ mark: { link: RichLink } }} />
                   </div>
                 </div>
@@ -245,7 +245,7 @@ const jsonLd = graph(
                   Recent {s.heading} projects.
                 </h2>
               </div>
-              <a href="/projects/" class="text-body border-line-strong hover:text-text border-b pb-1 font-mono text-[13px]">
+              <a href="/projects/" class="text-link font-mono text-[13px]">
                 All projects →
               </a>
             </div>

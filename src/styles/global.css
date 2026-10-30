@@ -366,6 +366,36 @@ body {
   font-size: 12px;
 }
 
+/* Plain text link: a faint underline at rest; on hover a full-strength
+   underline wipes in from the left, like the button fill */
+@utility text-link {
+  color: var(--color-text);
+  text-decoration: none;
+  background-image:
+    linear-gradient(currentColor, currentColor),
+    linear-gradient(var(--color-line-strong), var(--color-line-strong));
+  background-size:
+    0% 1px,
+    100% 1px;
+  background-position:
+    0 100%,
+    0 100%;
+  background-repeat: no-repeat;
+  padding-bottom: 3px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition: background-size 0.45s var(--ease-expo);
+  &:hover,
+  &:focus-visible {
+    background-size:
+      100% 1px,
+      100% 1px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
 /* "Learn more →" style text link in the accent */
 @utility link-more {
   font-family: var(--font-mono);
@@ -475,8 +505,30 @@ body {
   }
   & a {
     color: var(--color-text);
-    text-decoration: underline;
-    text-underline-offset: 4px;
+    text-decoration: none;
+    background-image:
+      linear-gradient(currentColor, currentColor),
+      linear-gradient(var(--color-line-strong), var(--color-line-strong));
+    background-size:
+      0% 1px,
+      100% 1px;
+    background-position:
+      0 100%,
+      0 100%;
+    background-repeat: no-repeat;
+    padding-bottom: 2px;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    transition: background-size 0.45s var(--ease-expo);
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+  & a:hover,
+  & a:focus-visible {
+    background-size:
+      100% 1px,
+      100% 1px;
   }
   & strong {
     color: var(--color-text);
