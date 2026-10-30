@@ -40,7 +40,6 @@ const more = (await getCollection("projects"))
   .slice(0, 3);
 
 const meta = [p.industry, p.location, String(year)].filter(Boolean).join(" · ");
-const liveHost = p.url?.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
 const compare =
   p.comparison?.before && p.comparison?.after
     ? { ...p.comparison, before: p.comparison.before, after: p.comparison.after }
@@ -194,8 +193,8 @@ const jsonLd = graph(
           </dl>
           {
             p.url && (
-              <a href={p.url} target="_blank" rel="noopener noreferrer" class="btn mt-7 w-full text-center whitespace-normal [overflow-wrap:anywhere]">
-                Visit {liveHost} <span aria-hidden="true">↗</span>
+              <a href={p.url} target="_blank" rel="noopener noreferrer" class="btn mt-7 w-full">
+                Visit website <span aria-hidden="true">↗</span>
                 <span class="sr-only">(opens in a new tab)</span>
               </a>
             )
