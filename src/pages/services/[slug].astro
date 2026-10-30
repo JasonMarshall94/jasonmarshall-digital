@@ -129,7 +129,7 @@ const jsonLd = graph(
               <div class="border-line bg-card float-in border p-7" style="animation-delay: 0.2s">
                 <h2 class="label m-0 mb-5 font-normal">What's included</h2>
                 <ul class="m-0 flex list-none flex-col gap-3.5 p-0">
-                  {s.included.map((item) => (
+                  {s.included.slice(0, 4).map((item) => (
                     <li class="text-body flex gap-3 text-[15px] leading-normal">
                       <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true" class="mt-0.5 shrink-0">
                         <rect x="0.5" y="0.5" width="19" height="19" class="stroke-line-strong" />
