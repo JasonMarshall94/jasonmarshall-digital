@@ -32,6 +32,9 @@
   --color-btn-edge: light-dark(#bdbdbd, #e0e0e0);
   --color-btn-ink: #121212;
   --color-btn-hover: light-dark(#ffffff, #e0e0e0);
+  /* Border once the hover fill has wiped in: keeps the button outlined on a
+     dark page, where the fill matches the background */
+  --color-btn-hover-edge: light-dark(#121212, #e0e0e0);
   --color-success: light-dark(#1a7f37, #7fc88a);
   --color-error: light-dark(#b42318, #e08080);
   --color-white: #ffffff;
@@ -354,7 +357,7 @@ body {
   }
   &:hover {
     color: var(--color-btn-hover);
-    border-color: var(--color-btn-ink);
+    border-color: var(--color-btn-hover-edge);
   }
 }
 
