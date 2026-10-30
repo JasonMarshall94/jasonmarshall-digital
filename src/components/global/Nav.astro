@@ -1,6 +1,9 @@
 ---
+import { getCollection } from "astro:content";
 import Logo from "@/global/Logo.astro";
+import ServiceIcon from "@/components/ServiceIcon.astro";
 import ThemeToggle from "@/ui/ThemeToggle.astro";
+import ThemeMode from "@/ui/ThemeMode.astro";
 import navLinksData from "@/data/navLinks.json";
 
 interface Props {
@@ -29,14 +32,38 @@ const links = (navLinksData as NavLink[]).map(({ title, slug, pageHref, href }) 
 }));
 // Contact is the header button, so it stays out of the desktop link row
 const rowLinks = links.filter((l) => l.slug !== "contact");
+
+// Services menu: one line under each service (menu copy, kept short)
+const summaries: Record<string, string> = {
+  "web-design": "Custom sites that win customers.",
+  "wordpress-development": "Fast sites you can update yourself.",
+  "custom-development": "Built for speed and flexibility.",
+  seo: "Get found in local search.",
+  "website-maintenance": "Updates, backups and support.",
+};
+const services = (await getCollection("services"))
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((s) => ({
+    title: s.data.title,
+    slug: s.data.slug,
+    summary: summaries[s.data.slug] ?? s.data.summary,
+  }));
+
+const linkClass = (active: boolean) =>
+  `nav-link nav-anchor hide-mobile font-mono text-[13px] transition-colors duration-200 ${
+    active ? "text-text active" : "text-muted hover:text-text"
+  }`;
 ---
 
 <header
   id="site-nav"
   data-open="false"
-  class="group/nav border-line bg-bg relative z-50 border-b"
+  data-scrolled="false"
+  class="group/nav border-line bg-bg sticky top-0 z-50 border-b transition-shadow duration-350 data-[scrolled=true]:shadow-[0_12px_32px_-20px_rgba(0,0,0,0.45)]"
 >
-  <div class="container flex h-18 items-center justify-between gap-6">
+  <div
+    class="container flex h-18 items-center justify-between gap-6 transition-[height] duration-350 ease-(--ease-expo) group-data-[scrolled=true]/nav:h-14 motion-reduce:transition-none"
+  >
     <a
       href={isHome ? "#top" : homeHref}
       class="text-text flex items-center gap-3"
@@ -49,50 +76,112 @@ const rowLinks = links.filter((l) => l.slug !== "contact");
       >
     </a>
 
-    <nav aria-label="Main" class="flex items-center gap-7">
+    <nav aria-label="Main" class="flex items-center gap-7 self-stretch">
       {
-        rowLinks.map((l) => (
-          <a
-            href={l.href}
-            data-section={l.slug}
-            aria-current={l.active ? "page" : undefined}
-            class={`nav-link nav-anchor hide-mobile font-mono text-[13px] transition-colors duration-200 ${
-              l.active ? "text-text active" : "text-muted hover:text-text"
-            }`}
-          >
-            {l.title}
-          </a>
-        ))
+        rowLinks.map((l) =>
+          l.slug === "services" ? (
+            <div class="hide-mobile relative flex h-full items-center" data-svc>
+              <button
+                type="button"
+                aria-expanded="false"
+                aria-controls="services-menu"
+                data-svc-trigger
+                class={`${linkClass(l.active)} flex cursor-pointer items-center gap-1.5 border-0 bg-transparent`}
+              >
+                {l.title}
+                <span
+                  aria-hidden="true"
+                  class="text-[10px] transition-transform duration-300 ease-(--ease-expo) [[aria-expanded=true]>&]:rotate-180"
+                >
+                  ▾
+                </span>
+              </button>
+
+              <div id="services-menu" class="svc-menu" data-svc-menu>
+                <ul class="m-0 grid list-none grid-cols-2 gap-1 p-0">
+                  {services.map((s) => (
+                    <li>
+                      <a href={`/services/${s.slug}/`} class="svc-item" aria-current={currentPath.startsWith(`/services/${s.slug}/`) ? "page" : undefined}>
+                        <ServiceIcon slug={s.slug} still class="h-7 w-7" />
+                        <span class="min-w-0">
+                          <span class="text-text block text-base font-medium">{s.title}</span>
+                          <span class="text-body mt-1 block truncate text-sm leading-normal">{s.summary}</span>
+                        </span>
+                        <span aria-hidden="true" class="svc-go">→</span>
+                      </a>
+                    </li>
+                  ))}
+                  <li>
+                    <a href="/services/" class="svc-item">
+                      <svg viewBox="0 0 48 48" fill="none" stroke-width="1.5" aria-hidden="true" class="stroke-signal h-7 w-7 shrink-0">
+                        <rect x="6" y="6" width="15" height="15" />
+                        <rect x="27" y="6" width="15" height="15" />
+                        <rect x="6" y="27" width="15" height="15" />
+                        <path d="M27 34.5 H42 M36 28.5 L42 34.5 L36 40.5" />
+                      </svg>
+                      <span class="min-w-0">
+                        <span class="text-text block text-base font-medium">All services</span>
+                        <span class="text-body mt-1 block truncate text-sm leading-normal">Compare everything I offer.</span>
+                      </span>
+                      <span aria-hidden="true" class="svc-go">→</span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          ) : (
+            <div class="hide-mobile flex h-full items-center">
+              <a
+                href={l.href}
+                data-section={l.slug}
+                aria-current={l.active ? "page" : undefined}
+                class={linkClass(l.active)}
+              >
+                {l.title}
+              </a>
+            </div>
+          ),
+        )
       }
 
-      <ThemeToggle />
+      <div class="flex items-center gap-3">
+        <ThemeToggle />
 
-      <a href="/contact/" class="btn btn-primary btn-sm hide-mobile">
-        Start a project <span aria-hidden="true">→</span>
-      </a>
+        <a href="/contact/" class="btn btn-primary btn-sm hide-mobile">
+          Start a project <span aria-hidden="true">→</span>
+        </a>
 
-      <!-- Hamburger -->
-      <button
-        id="nav-hamburger"
-        type="button"
-        aria-expanded="false"
-        aria-controls="mobile-menu"
-        aria-label="Open menu"
-        class="hide-desktop border-control text-text relative flex h-11 w-11 cursor-pointer flex-col items-center justify-center gap-1.25 border bg-transparent"
-      >
-        <span
-          class="block h-px w-4.5 origin-center bg-current transition-all duration-300 group-data-[open=true]/nav:translate-y-1.5 group-data-[open=true]/nav:rotate-45"
-        ></span>
-        <span
-          class="block h-px w-4.5 bg-current transition-all duration-300 group-data-[open=true]/nav:opacity-0"
-        ></span>
-        <span
-          class="block h-px w-4.5 origin-center bg-current transition-all duration-300 group-data-[open=true]/nav:-translate-y-1.5 group-data-[open=true]/nav:-rotate-45"
-        ></span>
-      </button>
+        <!-- Hamburger -->
+        <button
+          id="nav-hamburger"
+          type="button"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+          aria-label="Open menu"
+          class="hide-desktop border-control text-text relative flex h-11 w-11 cursor-pointer flex-col items-center justify-center gap-1.25 border bg-transparent"
+        >
+          <span
+            class="block h-px w-4.5 origin-center bg-current transition-all duration-300 group-data-[open=true]/nav:translate-y-1.5 group-data-[open=true]/nav:rotate-45"
+          ></span>
+          <span
+            class="block h-px w-4.5 bg-current transition-all duration-300 group-data-[open=true]/nav:opacity-0"
+          ></span>
+          <span
+            class="block h-px w-4.5 origin-center bg-current transition-all duration-300 group-data-[open=true]/nav:-translate-y-1.5 group-data-[open=true]/nav:-rotate-45"
+          ></span>
+        </button>
+      </div>
     </nav>
   </div>
 </header>
+
+<!-- Dims the page while the services menu is open -->
+<div
+  id="svc-dim"
+  aria-hidden="true"
+  class="pointer-events-none fixed inset-0 z-40 bg-black/25 opacity-0 transition-opacity duration-300 data-[open=true]:opacity-100"
+>
+</div>
 
 <!-- Backdrop -->
 <div
@@ -126,25 +215,74 @@ const rowLinks = links.filter((l) => l.slug !== "contact");
   </div>
 
   <!-- Links -->
-  <nav aria-label="Mobile" class="flex flex-1 flex-col px-6 py-6">
+  <nav aria-label="Mobile" class="flex flex-1 flex-col overflow-y-auto px-6 py-2">
     {
-      links.map((l) => (
-        <a
-          href={l.href}
-          data-section={l.slug}
-          aria-current={l.active ? "page" : undefined}
-          class={`mobile-nav-link border-line border-b py-5 text-2xl font-medium tracking-[-0.02em] transition-colors duration-200 ${
-            l.active ? "text-text" : "text-muted hover:text-text"
-          }`}
-        >
-          {l.title}
-        </a>
-      ))
+      links.map((l) =>
+        l.slug === "services" ? (
+          <div class="border-line border-b">
+            <button
+              type="button"
+              aria-expanded="false"
+              aria-controls="mobile-services"
+              data-sub-trigger
+              class={`flex w-full cursor-pointer items-center justify-between border-0 bg-transparent py-4.5 text-left text-2xl font-medium tracking-[-0.02em] transition-colors duration-200 aria-expanded:text-text ${
+                l.active ? "text-text" : "text-muted hover:text-text"
+              }`}
+            >
+              {l.title}
+              <span
+                aria-hidden="true"
+                class="text-signal-ink font-mono text-sm transition-transform duration-300 ease-(--ease-expo) [[aria-expanded=true]>&]:rotate-180"
+              >
+                ▾
+              </span>
+            </button>
+            <div
+              id="mobile-services"
+              inert
+              class="grid grid-rows-[0fr] transition-[grid-template-rows] duration-350 ease-(--ease-expo) data-[open=true]:grid-rows-[1fr] motion-reduce:transition-none"
+              data-sub
+            >
+              <ul class="m-0 min-h-0 list-none overflow-hidden p-0">
+                <li class="pb-1.5">
+                  <a href="/services/" class="mobile-nav-link text-link font-mono text-xs">
+                    All services <span aria-hidden="true">→</span>
+                  </a>
+                </li>
+                {services.map((s, i) => (
+                  <li class:list={[i === services.length - 1 && "pb-3.5"]}>
+                    <a
+                      href={`/services/${s.slug}/`}
+                      aria-current={currentPath.startsWith(`/services/${s.slug}/`) ? "page" : undefined}
+                      class="mobile-nav-link text-body hover:text-text aria-[current=page]:text-text flex items-center gap-3 py-2.75 text-[15px]"
+                    >
+                      <ServiceIcon slug={s.slug} still class="h-5 w-5" />
+                      {s.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        ) : (
+          <a
+            href={l.href}
+            data-section={l.slug}
+            aria-current={l.active ? "page" : undefined}
+            class={`mobile-nav-link border-line border-b py-4.5 text-2xl font-medium tracking-[-0.02em] transition-colors duration-200 ${
+              l.active ? "text-text" : "text-muted hover:text-text"
+            }`}
+          >
+            {l.title}
+          </a>
+        ),
+      )
     }
   </nav>
 
   <!-- Drawer footer -->
-  <div class="border-line shrink-0 border-t px-6 py-6">
+  <div class="border-line flex shrink-0 flex-col gap-4 border-t px-6 py-6">
+    <ThemeMode />
     <a href="/contact/" class="btn btn-primary w-full">
       Start a project <span aria-hidden="true">→</span>
     </a>
@@ -160,6 +298,64 @@ const rowLinks = links.filter((l) => l.slug !== "contact");
   const backdrop = document.getElementById("nav-backdrop");
   const drawer = document.getElementById("mobile-menu");
 
+  // ── Header on scroll: tightens and gains a shadow ────────────
+  // Two thresholds so it doesn't flicker as the height changes
+
+  const onHeaderScroll = () => {
+    const y = window.scrollY;
+    const scrolled = nav?.dataset.scrolled === "true";
+    if (!scrolled && y > 48) nav?.setAttribute("data-scrolled", "true");
+    else if (scrolled && y < 8) nav?.setAttribute("data-scrolled", "false");
+  };
+  window.addEventListener("scroll", onHeaderScroll, { passive: true });
+  onHeaderScroll();
+
+  // ── Services menu (desktop) ──────────────────────────────────
+  // Opens on hover (after a short delay) or click; closes on Escape,
+  // an outside click, or when focus leaves it.
+
+  const svc = document.querySelector<HTMLElement>("[data-svc]");
+  const trigger = svc?.querySelector<HTMLButtonElement>("[data-svc-trigger]");
+  const menu = svc?.querySelector<HTMLElement>("[data-svc-menu]");
+  const dim = document.getElementById("svc-dim");
+  let hoverTimer: number | undefined;
+
+  const setMenu = (open: boolean) => {
+    if (!trigger || !menu) return;
+    window.clearTimeout(hoverTimer);
+    if ((trigger.getAttribute("aria-expanded") === "true") === open) return;
+    trigger.setAttribute("aria-expanded", String(open));
+    menu.dataset.open = String(open);
+    dim?.setAttribute("data-open", String(open));
+  };
+
+  if (svc && trigger && menu) {
+    trigger.addEventListener("click", () =>
+      setMenu(trigger.getAttribute("aria-expanded") !== "true"),
+    );
+    svc.addEventListener("pointerenter", (e) => {
+      if (e.pointerType !== "mouse") return;
+      window.clearTimeout(hoverTimer);
+      hoverTimer = window.setTimeout(() => setMenu(true), 120);
+    });
+    svc.addEventListener("pointerleave", (e) => {
+      if (e.pointerType !== "mouse") return;
+      window.clearTimeout(hoverTimer);
+      hoverTimer = window.setTimeout(() => setMenu(false), 220);
+    });
+    svc.addEventListener("focusout", (e) => {
+      if (!svc.contains(e.relatedTarget as Node | null)) setMenu(false);
+    });
+    document.addEventListener("click", (e) => {
+      if (!svc.contains(e.target as Node)) setMenu(false);
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key !== "Escape" || trigger.getAttribute("aria-expanded") !== "true") return;
+      setMenu(false);
+      trigger.focus();
+    });
+  }
+
   // ── Mobile menu ──────────────────────────────────────────────
 
   const openMenu = () => {
@@ -172,7 +368,7 @@ const rowLinks = links.filter((l) => l.slug !== "contact");
     drawer?.classList.add("translate-x-0");
     document.body.classList.add("overflow-hidden");
     document.querySelector("main")?.setAttribute("inert", "");
-    drawer?.querySelector<HTMLAnchorElement>("a")?.focus();
+    drawer?.querySelector<HTMLAnchorElement>("nav a")?.focus();
   };
 
   const closeMenu = () => {
@@ -200,6 +396,16 @@ const rowLinks = links.filter((l) => l.slug !== "contact");
     link.addEventListener("click", closeMenu);
   });
 
+  // Services submenu in the drawer
+  const subTrigger = drawer?.querySelector<HTMLButtonElement>("[data-sub-trigger]");
+  const sub = drawer?.querySelector<HTMLElement>("[data-sub]");
+  subTrigger?.addEventListener("click", () => {
+    const open = subTrigger.getAttribute("aria-expanded") !== "true";
+    subTrigger.setAttribute("aria-expanded", String(open));
+    sub?.setAttribute("data-open", String(open));
+    sub?.toggleAttribute("inert", !open);
+  });
+
   // ── Active homepage section ──────────────────────────────────
 
   const sectionIds = ["top", "work", "services", "about", "contact"];
@@ -208,7 +414,7 @@ const rowLinks = links.filter((l) => l.slug !== "contact");
   );
   const hasSections = sectionIds.some((id) => document.getElementById(id));
 
-  const setActive = (a: HTMLAnchorElement, active: boolean) => {
+  const setActive = (a: HTMLElement, active: boolean) => {
     a.classList.toggle("active", active);
     a.classList.toggle("text-text", active);
     a.classList.toggle("text-muted", !active);
@@ -222,8 +428,9 @@ const rowLinks = links.filter((l) => l.slug !== "contact");
       if (el && el.offsetTop <= y) current = id;
     }
     anchors.forEach((a) => {
-      // Links to other pages keep their server-rendered active state
-      if (a.getAttribute("href")?.startsWith("/")) return;
+      // Links to other pages (and the Services menu button) keep their
+      // server-rendered active state
+      if (!a.matches("a") || a.getAttribute("href")?.startsWith("/")) return;
       setActive(a, a.dataset.section === current);
     });
   };

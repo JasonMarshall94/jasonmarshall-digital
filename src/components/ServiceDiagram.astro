@@ -52,7 +52,7 @@ const labels: Record<DiagramName, string> = {
 };
 ---
 
-<svg viewBox="0 0 300 120" width="100%" role="img" aria-label={labels[name]} class="block h-auto">
+<svg viewBox="0 0 300 120" width="100%" role="img" data-diagram aria-label={labels[name]} class="block h-auto">
   {
     name === "browser" && (
       <>

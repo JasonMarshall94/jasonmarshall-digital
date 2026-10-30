@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import Logo from "@/global/Logo.astro";
 import StatusBadge from "@/ui/StatusBadge.astro";
+import ThemeMode from "@/ui/ThemeMode.astro";
 import { getSiteSettings } from "@/lib/sanity";
 
 interface Props {
@@ -53,7 +54,7 @@ const company = [
         </div>
         <div class="container pb-26 max-[720px]:pb-16">
           <h3 class="label mt-0 mb-4 font-normal">How it works</h3>
-          <ol class="bg-line border-line m-0 grid list-none grid-cols-4 gap-px border p-0 max-[960px]:grid-cols-2">
+          <ol data-reveal class="bg-line border-line m-0 grid list-none grid-cols-4 gap-px border p-0 max-[960px]:grid-cols-2">
             {steps.map(([title, text], i) => (
               <li class="bg-card light:bg-white px-6 py-5.5">
                 <span class="text-signal-ink font-mono text-xs">
@@ -155,7 +156,7 @@ const company = [
                   rel="noopener noreferrer"
                   class="link-wipe text-body hover:text-text"
                 >
-                  GitHub <span aria-hidden="true">↗</span>
+                  GitHub <span aria-hidden="true" data-arrow="out">↗</span>
                   <span class="sr-only">(opens in a new tab)</span>
                 </a>
               </li>
@@ -167,12 +168,15 @@ const company = [
 
     <div class="border-line border-t">
       <div
-        class="text-faint container flex flex-wrap justify-between gap-4 py-6 font-mono text-[11px] tracking-[0.1em]"
+        class="text-faint container flex flex-wrap items-center justify-between gap-x-8 gap-y-3 py-4.5 font-mono text-[11px] tracking-[0.1em]"
       >
         <span>© {currentYear} Jason Marshall Digital · All rights reserved</span>
-        <a href="#main-content" class="link-wipe text-muted hover:text-text">
-          Back to top <span aria-hidden="true">↑</span>
-        </a>
+        <div class="flex flex-wrap items-center gap-x-8 gap-y-2">
+          <ThemeMode class="-mr-1.5" />
+          <a href="#main-content" class="link-wipe text-muted hover:text-text">
+            Back to top <span aria-hidden="true">↑</span>
+          </a>
+        </div>
       </div>
     </div>
   </footer>

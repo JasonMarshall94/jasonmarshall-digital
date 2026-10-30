@@ -24,6 +24,7 @@
     "astro": "^7.3.3",
     "astro-icon": "^1.2.0",
     "astro-portabletext": "^1.0.1",
+    "gsap": "3.13.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "react-email": "^6.9.5",

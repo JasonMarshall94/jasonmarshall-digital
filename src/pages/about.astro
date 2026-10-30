@@ -101,15 +101,24 @@ const jsonLd = graph(businessNode(settings, site), breadcrumbNode([["About", "/a
         <h2 class="mt-4 mb-14 text-[clamp(30px,3.6vw,46px)] leading-[1.08] font-medium tracking-[-0.03em] max-[720px]:mb-10">
           Ten years of client work.
         </h2>
-        <ol class="m-0 grid list-none gap-8 p-0 md:grid-cols-2 lg:grid-cols-4">
+        <ol data-timeline class="m-0 grid list-none gap-8 p-0 md:grid-cols-2 lg:grid-cols-4">
           {
             timeline.map((t) => (
-              <li class:list={["relative border-t pt-9", t.highlight ? "border-signal" : t.now ? "border-line-strong border-dashed" : "border-line-strong"]}>
+              <li class="relative pt-9">
+                <span
+                  aria-hidden="true"
+                  data-tl-line
+                  class:list={[
+                    "absolute top-0 right-0 left-0 origin-left border-t",
+                    t.highlight ? "border-signal" : t.now ? "border-line-strong border-dashed" : "border-line-strong",
+                  ]}
+                />
                 {t.now ? (
-                  <span aria-hidden="true" class="pulse-dot bg-signal absolute -top-1.5 left-0 h-2.75 w-2.75 rounded-full" />
+                  <span aria-hidden="true" data-tl-dot class="pulse-dot bg-signal absolute -top-1.5 left-0 h-2.75 w-2.75 rounded-full" />
                 ) : (
                   <span
                     aria-hidden="true"
+                    data-tl-dot
                     class:list={[
                       "absolute -top-1.5 left-0 h-2.75 w-2.75",
                       t.highlight ? "bg-signal" : "bg-bg border-line-strong border",
