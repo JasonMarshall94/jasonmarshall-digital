@@ -25,10 +25,10 @@ const PROJECTS_QUERY = `*[_type == "project" && defined(slug.current)]{
   seoDescription
 }`;
 
-const SERVICES_QUERY = `*[_type == "service" && defined(slug.current)] | order(order asc){
+// Ordered by the drag-and-drop rank from the Studio's Services list
+const SERVICES_QUERY = `*[_type == "service" && defined(slug.current)] | order(orderRank asc){
   title,
   "slug": slug.current,
-  order,
   summary,
   heading,
   subline,
@@ -122,7 +122,8 @@ export const collections = {
       const services =
         await sanity.fetch<Array<{ slug: string }>>(SERVICES_QUERY);
       if (!services.length) throw new Error("Sanity: no services returned");
-      return services.map((s) => ({ id: s.slug, ...s }));
+      // `order` is the position (1 = first), used to sort services
+      return services.map((s, i) => ({ id: s.slug, ...s, order: i + 1 }));
     },
     schema: z.object({
       title: z.string(),
