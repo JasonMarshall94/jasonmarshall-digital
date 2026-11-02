@@ -55,6 +55,8 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
       )
     }
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Project images come from Sanity's image CDN: open the connection early -->
+    <link rel="preconnect" href="https://cdn.sanity.io" />
     {
       jsonLd && (
         <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
